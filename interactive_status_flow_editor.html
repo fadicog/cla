@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UAE PASS Sharing Request Status Flow Editor</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            overflow: hidden;
+        }
+
+        #header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        #header h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        #header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        #controls {
+            background: white;
+            padding: 15px 30px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            background: #5568d3;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: #48bb78;
+        }
+
+        .btn-secondary:hover {
+            background: #38a169;
+        }
+
+        .btn-danger {
+            background: #f56565;
+        }
+
+        .btn-danger:hover {
+            background: #e53e3e;
+        }
+
+        #svg-container {
+            width: 100%;
+            height: calc(100vh - 160px);
+            overflow: hidden;
+            position: relative;
+        }
+
+        svg {
+            background: #fafbfc;
+            cursor: grab;
+        }
+
+        svg:active {
+            cursor: grabbing;
+        }
+
+        .node {
+            cursor: move;
+        }
+
+        .node rect {
+            stroke-width: 2;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+        }
+
+        .node.initial rect {
+            fill: #4299e1;
+            stroke: #2c5282;
+        }
+
+        .node.intermediate rect {
+            fill: #ecc94b;
+            stroke: #975a16;
+        }
+
+        .node.terminal-success rect {
+            fill: #48bb78;
+            stroke: #276749;
+        }
+
+        .node.terminal-failure rect {
+            fill: #f56565;
+            stroke: #9b2c2c;
+        }
+
+        .node.decision polygon {
+            fill: #ed8936;
+            stroke: #7c2d12;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+        }
+
+        .node text {
+            font-size: 12px;
+            font-weight: 600;
+            fill: white;
+            pointer-events: none;
+            user-select: none;
+        }
+
+        .node.selected rect,
+        .node.selected polygon {
+            stroke-width: 3;
+            stroke: #e53e3e;
+        }
+
+        .link {
+            fill: none;
+            stroke: #718096;
+            stroke-width: 2;
+            marker-end: url(#arrowhead);
+        }
+
+        .link.selected {
+            stroke: #e53e3e;
+            stroke-width: 3;
+        }
+
+        #legend {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            font-size: 13px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin: 8px 0;
+        }
+
+        .legend-color {
+            width: 30px;
+            height: 20px;
+            margin-right: 10px;
+            border-radius: 3px;
+            border: 2px solid #333;
+        }
+
+        #editor-panel {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            max-width: 350px;
+            display: none;
+        }
+
+        #editor-panel.active {
+            display: block;
+        }
+
+        #editor-panel h3 {
+            margin-bottom: 15px;
+            color: #2d3748;
+        }
+
+        #editor-panel label {
+            display: block;
+            margin-top: 10px;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #4a5568;
+            font-size: 13px;
+        }
+
+        #editor-panel input,
+        #editor-panel select,
+        #editor-panel textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #cbd5e0;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+
+        #editor-panel textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+
+        .editor-actions {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+        }
+
+        #stats {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            font-size: 13px;
+            min-width: 200px;
+        }
+
+        .stat-item {
+            margin: 5px 0;
+        }
+
+        .stat-label {
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        .stat-value {
+            color: #2d3748;
+            margin-left: 10px;
+        }
+
+        .zoom-controls {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .zoom-btn {
+            width: 40px;
+            height: 40px;
+            background: white;
+            border: 1px solid #cbd5e0;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .zoom-btn:hover {
+            background: #edf2f7;
+            border-color: #a0aec0;
+        }
+    </style>
+</head>
+<body>
+    <div id="header">
+        <h1>UAE PASS Sharing Request Status Flow Editor</h1>
+        <p>Interactive visualization and editing tool for document sharing request status transitions</p>
+    </div>
+
+    <div id="controls">
+        <button class="btn" onclick="resetView()">Reset View</button>
+        <button class="btn btn-secondary" onclick="autoLayout()">Auto Layout</button>
+        <button class="btn" onclick="exportJSON()">Export JSON</button>
+        <button class="btn" onclick="exportCSV()">Export CSV</button>
+        <button class="btn" onclick="exportPNG()">Export PNG</button>
+        <button class="btn btn-danger" onclick="clearSelection()">Clear Selection</button>
+        <label style="margin-left: auto; display: flex; align-items: center; gap: 5px;">
+            <input type="checkbox" id="showCodes" checked onchange="toggleStatusCodes()">
+            <span>Show Status Codes</span>
+        </label>
+    </div>
+
+    <div id="svg-container">
+        <svg id="flow-diagram"></svg>
+
+        <div id="legend">
+            <h4 style="margin-bottom: 10px; color: #2d3748;">Legend</h4>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #4299e1; border-color: #2c5282;"></div>
+                <span>Initial State</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #ecc94b; border-color: #975a16;"></div>
+                <span>Intermediate State</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #48bb78; border-color: #276749;"></div>
+                <span>Terminal Success</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #f56565; border-color: #9b2c2c;"></div>
+                <span>Terminal Failure</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #ed8936; border-color: #7c2d12; transform: rotate(45deg);"></div>
+                <span>Decision Point</span>
+            </div>
+        </div>
+
+        <div id="editor-panel">
+            <h3>Edit Status</h3>
+            <label>Status Code:</label>
+            <input type="number" id="edit-code" />
+
+            <label>Status Name:</label>
+            <input type="text" id="edit-name" />
+
+            <label>Status Type:</label>
+            <select id="edit-type">
+                <option value="Initial">Initial</option>
+                <option value="Intermediate">Intermediate</option>
+                <option value="Terminal">Terminal</option>
+            </select>
+
+            <label>Description:</label>
+            <textarea id="edit-description"></textarea>
+
+            <label>Is Success? (for Terminal states)</label>
+            <select id="edit-success">
+                <option value="true">Yes (Success)</option>
+                <option value="false">No (Failure)</option>
+                <option value="n/a">N/A</option>
+            </select>
+
+            <div class="editor-actions">
+                <button class="btn" onclick="saveNodeEdit()">Save</button>
+                <button class="btn btn-danger" onclick="closeEditor()">Cancel</button>
+            </div>
+        </div>
+
+        <div id="stats">
+            <h4 style="margin-bottom: 10px; color: #2d3748;">Flow Statistics</h4>
+            <div class="stat-item">
+                <span class="stat-label">Total States:</span>
+                <span class="stat-value" id="stat-total">0</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Initial:</span>
+                <span class="stat-value" id="stat-initial">0</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Intermediate:</span>
+                <span class="stat-value" id="stat-intermediate">0</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Terminal:</span>
+                <span class="stat-value" id="stat-terminal">0</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Transitions:</span>
+                <span class="stat-value" id="stat-transitions">0</span>
+            </div>
+        </div>
+
+        <div class="zoom-controls">
+            <button class="zoom-btn" onclick="zoomIn()">+</button>
+            <button class="zoom-btn" onclick="zoomOut()">−</button>
+            <button class="zoom-btn" onclick="resetZoom()">⊙</button>
+        </div>
+    </div>
+
+    <script>
+        // Status flow data
+        let statusData = [
+            {code: 100, name: "REQUEST_CREATED", type: "Initial", description: "SP created sharing request - initial state", nextStates: [110], isSuccess: null, x: 100, y: 100},
+            {code: 110, name: "OPENED", type: "Intermediate", description: "User opened the sharing request", nextStates: [200, 300], isSuccess: null, x: 100, y: 200},
+            {code: 200, name: "DOCUMENTS_NOT_IN_VAULT", type: "Intermediate", description: "Mandatory documents not available", nextStates: [210, 240, 600], isSuccess: null, x: 300, y: 300},
+            {code: 210, name: "DOCUMENTS_REQUEST_INITIATED", type: "Intermediate", description: "User initiated document request", nextStates: [220, 230, 300], isSuccess: null, x: 500, y: 400},
+            {code: 220, name: "DOCUMENTS_PARTIALLY_AVAILABLE", type: "Intermediate", description: "Some docs available, others failed", nextStates: [300, 230, 600], isSuccess: null, x: 700, y: 400},
+            {code: 230, name: "DOCUMENTS_REQUEST_FAILED", type: "Terminal", description: "All document requests failed", nextStates: [], isSuccess: false, x: 700, y: 550},
+            {code: 240, name: "DOCUMENTS_UNAVAILABLE_FOR_USER", type: "Terminal", description: "User not eligible for documents", nextStates: [], isSuccess: false, x: 500, y: 550},
+            {code: 300, name: "DOCUMENTS_AVAILABLE", type: "Intermediate", description: "All mandatory documents in vault", nextStates: [310], isSuccess: null, x: 300, y: 100},
+            {code: 310, name: "READY_TO_CONSENT", type: "Intermediate", description: "User viewing consent screen", nextStates: [320, 510, 600], isSuccess: null, x: 500, y: 100},
+            {code: 320, name: "CONSENT_GIVEN", type: "Intermediate", description: "User provided consent", nextStates: [330, 530, 600], isSuccess: null, x: 700, y: 100},
+            {code: 330, name: "SHARE_INITIATED", type: "Intermediate", description: "User pressed Share button", nextStates: [340], isSuccess: null, x: 900, y: 100},
+            {code: 340, name: "PIN_REQUESTED", type: "Intermediate", description: "PIN entry screen shown", nextStates: [350, 360], isSuccess: null, x: 1100, y: 100},
+            {code: 350, name: "PIN_ENTERED_CORRECTLY", type: "Intermediate", description: "PIN validated successfully", nextStates: [370, 550], isSuccess: null, x: 1300, y: 100},
+            {code: 360, name: "PIN_ENTERED_INCORRECTLY", type: "Terminal", description: "PIN failed after max attempts", nextStates: [], isSuccess: false, x: 1300, y: 250},
+            {code: 370, name: "SHARING_IN_PROGRESS", type: "Intermediate", description: "Creating and transmitting presentation", nextStates: [400, 550], isSuccess: null, x: 1500, y: 100},
+            {code: 400, name: "SHARING_SUCCESSFUL", type: "Terminal", description: "Documents delivered to SP", nextStates: [], isSuccess: true, x: 1700, y: 100},
+            {code: 510, name: "CONSENT_DECLINED", type: "Terminal", description: "User declined consent", nextStates: [], isSuccess: false, x: 500, y: 250},
+            {code: 520, name: "EXPIRED_BEFORE_CONSENT", type: "Terminal", description: "Request expired before consent", nextStates: [], isSuccess: false, x: 700, y: 250},
+            {code: 530, name: "EXPIRED_AFTER_CONSENT", type: "Terminal", description: "Request expired after consent", nextStates: [], isSuccess: false, x: 900, y: 250},
+            {code: 550, name: "SERVICE_ERROR", type: "Terminal", description: "Technical error during sharing", nextStates: [], isSuccess: false, x: 1500, y: 250},
+            {code: 600, name: "ABANDONED_BY_USER", type: "Terminal", description: "User left flow without completing", nextStates: [], isSuccess: false, x: 300, y: 550}
+        ];
+
+        // D3 setup
+        const width = document.getElementById('svg-container').clientWidth;
+        const height = document.getElementById('svg-container').clientHeight;
+
+        const svg = d3.select("#flow-diagram")
+            .attr("width", width)
+            .attr("height", height);
+
+        // Define arrowhead marker
+        svg.append("defs").append("marker")
+            .attr("id", "arrowhead")
+            .attr("viewBox", "0 0 10 10")
+            .attr("refX", 8)
+            .attr("refY", 5)
+            .attr("markerWidth", 6)
+            .attr("markerHeight", 6)
+            .attr("orient", "auto")
+            .append("path")
+            .attr("d", "M 0 0 L 10 5 L 0 10 z")
+            .attr("fill", "#718096");
+
+        // Zoom behavior
+        let transform = d3.zoomIdentity;
+        const zoom = d3.zoom()
+            .scaleExtent([0.1, 4])
+            .on("zoom", (event) => {
+                transform = event.transform;
+                g.attr("transform", transform);
+            });
+
+        svg.call(zoom);
+
+        const g = svg.append("g");
+
+        let selectedNode = null;
+        let showStatusCodes = true;
+
+        // Create links
+        const linkGroup = g.append("g").attr("class", "links");
+
+        // Create nodes
+        const nodeGroup = g.append("g").attr("class", "nodes");
+
+        function getNodeClass(node) {
+            if (node.type === "Initial") return "initial";
+            if (node.type === "Terminal") {
+                return node.isSuccess ? "terminal-success" : "terminal-failure";
+            }
+            return "intermediate";
+        }
+
+        function renderFlow() {
+            // Render links
+            const links = [];
+            statusData.forEach(node => {
+                node.nextStates.forEach(nextCode => {
+                    links.push({
+                        source: node,
+                        target: statusData.find(n => n.code === nextCode)
+                    });
+                });
+            });
+
+            const linkElements = linkGroup.selectAll("path")
+                .data(links, d => `${d.source.code}-${d.target.code}`);
+
+            linkElements.enter()
+                .append("path")
+                .attr("class", "link")
+                .merge(linkElements)
+                .attr("d", d => {
+                    const sourceX = d.source.x;
+                    const sourceY = d.source.y;
+                    const targetX = d.target.x;
+                    const targetY = d.target.y;
+
+                    const dx = targetX - sourceX;
+                    const dy = targetY - sourceY;
+                    const dr = Math.sqrt(dx * dx + dy * dy);
+
+                    // Calculate arrow offset based on node size
+                    const angle = Math.atan2(dy, dx);
+                    const offset = 80; // Half node width + some padding
+                    const endX = targetX - offset * Math.cos(angle);
+                    const endY = targetY - offset * Math.sin(angle);
+
+                    return `M${sourceX},${sourceY}L${endX},${endY}`;
+                });
+
+            linkElements.exit().remove();
+
+            // Render nodes
+            const nodeElements = nodeGroup.selectAll("g")
+                .data(statusData, d => d.code);
+
+            const nodeEnter = nodeElements.enter()
+                .append("g")
+                .attr("class", d => `node ${getNodeClass(d)}`)
+                .call(d3.drag()
+                    .on("start", dragStarted)
+                    .on("drag", dragged)
+                    .on("end", dragEnded))
+                .on("click", nodeClicked);
+
+            nodeEnter.append("rect")
+                .attr("width", 160)
+                .attr("height", 60)
+                .attr("x", -80)
+                .attr("y", -30)
+                .attr("rx", 5);
+
+            nodeEnter.append("text")
+                .attr("class", "node-code")
+                .attr("y", -8)
+                .attr("text-anchor", "middle")
+                .style("font-size", "10px");
+
+            nodeEnter.append("text")
+                .attr("class", "node-name")
+                .attr("y", 10)
+                .attr("text-anchor", "middle")
+                .style("font-size", "11px");
+
+            const nodeMerge = nodeEnter.merge(nodeElements);
+
+            nodeMerge
+                .attr("transform", d => `translate(${d.x},${d.y})`)
+                .attr("class", d => {
+                    let classes = `node ${getNodeClass(d)}`;
+                    if (selectedNode && selectedNode.code === d.code) {
+                        classes += " selected";
+                    }
+                    return classes;
+                });
+
+            nodeMerge.select(".node-code")
+                .text(d => showStatusCodes ? `[${d.code}]` : "")
+                .attr("y", showStatusCodes ? -8 : 0);
+
+            nodeMerge.select(".node-name")
+                .text(d => {
+                    const maxLen = 18;
+                    return d.name.length > maxLen ? d.name.substring(0, maxLen) + "..." : d.name;
+                })
+                .attr("y", showStatusCodes ? 10 : 0);
+
+            nodeElements.exit().remove();
+
+            updateStats();
+            saveToLocalStorage();
+        }
+
+        function dragStarted(event, d) {
+            d3.select(this).raise();
+        }
+
+        function dragged(event, d) {
+            d.x = event.x;
+            d.y = event.y;
+            renderFlow();
+        }
+
+        function dragEnded(event, d) {
+            renderFlow();
+        }
+
+        function nodeClicked(event, d) {
+            event.stopPropagation();
+            selectedNode = d;
+            openEditor(d);
+            renderFlow();
+        }
+
+        function openEditor(node) {
+            document.getElementById("edit-code").value = node.code;
+            document.getElementById("edit-name").value = node.name;
+            document.getElementById("edit-type").value = node.type;
+            document.getElementById("edit-description").value = node.description;
+            document.getElementById("edit-success").value = node.isSuccess === null ? "n/a" : node.isSuccess.toString();
+            document.getElementById("editor-panel").classList.add("active");
+        }
+
+        function closeEditor() {
+            document.getElementById("editor-panel").classList.remove("active");
+            selectedNode = null;
+            renderFlow();
+        }
+
+        function saveNodeEdit() {
+            if (!selectedNode) return;
+
+            selectedNode.code = parseInt(document.getElementById("edit-code").value);
+            selectedNode.name = document.getElementById("edit-name").value;
+            selectedNode.type = document.getElementById("edit-type").value;
+            selectedNode.description = document.getElementById("edit-description").value;
+
+            const successValue = document.getElementById("edit-success").value;
+            selectedNode.isSuccess = successValue === "n/a" ? null : (successValue === "true");
+
+            closeEditor();
+            renderFlow();
+        }
+
+        function clearSelection() {
+            selectedNode = null;
+            closeEditor();
+            renderFlow();
+        }
+
+        function updateStats() {
+            const total = statusData.length;
+            const initial = statusData.filter(n => n.type === "Initial").length;
+            const intermediate = statusData.filter(n => n.type === "Intermediate").length;
+            const terminal = statusData.filter(n => n.type === "Terminal").length;
+            const transitions = statusData.reduce((sum, n) => sum + n.nextStates.length, 0);
+
+            document.getElementById("stat-total").textContent = total;
+            document.getElementById("stat-initial").textContent = initial;
+            document.getElementById("stat-intermediate").textContent = intermediate;
+            document.getElementById("stat-terminal").textContent = terminal;
+            document.getElementById("stat-transitions").textContent = transitions;
+        }
+
+        function autoLayout() {
+            // Simple hierarchical layout
+            const layers = [];
+            const visited = new Set();
+
+            function assignLayer(node, layer) {
+                if (visited.has(node.code)) return;
+                visited.add(node.code);
+
+                if (!layers[layer]) layers[layer] = [];
+                layers[layer].push(node);
+
+                node.nextStates.forEach(nextCode => {
+                    const nextNode = statusData.find(n => n.code === nextCode);
+                    if (nextNode) assignLayer(nextNode, layer + 1);
+                });
+            }
+
+            // Start from initial state
+            const initialNode = statusData.find(n => n.type === "Initial");
+            if (initialNode) assignLayer(initialNode, 0);
+
+            // Layout nodes
+            layers.forEach((layer, layerIndex) => {
+                const layerHeight = 150;
+                const nodeSpacing = 200;
+                const startY = 100 + layerIndex * layerHeight;
+
+                layer.forEach((node, nodeIndex) => {
+                    const centerX = width / 2;
+                    const totalWidth = (layer.length - 1) * nodeSpacing;
+                    node.x = centerX - totalWidth / 2 + nodeIndex * nodeSpacing;
+                    node.y = startY;
+                });
+            });
+
+            renderFlow();
+        }
+
+        function resetView() {
+            svg.transition().duration(750).call(zoom.transform, d3.zoomIdentity);
+        }
+
+        function zoomIn() {
+            svg.transition().duration(300).call(zoom.scaleBy, 1.3);
+        }
+
+        function zoomOut() {
+            svg.transition().duration(300).call(zoom.scaleBy, 0.7);
+        }
+
+        function resetZoom() {
+            svg.transition().duration(500).call(zoom.scaleTo, 1);
+        }
+
+        function toggleStatusCodes() {
+            showStatusCodes = document.getElementById("showCodes").checked;
+            renderFlow();
+        }
+
+        function exportJSON() {
+            const dataStr = JSON.stringify(statusData, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'status_flow_data.json';
+            link.click();
+        }
+
+        function exportCSV() {
+            const headers = ["Status Code", "Status Name", "Status Type", "Description", "Possible Next States", "Is Final State", "Is Success"];
+            const rows = statusData.map(node => [
+                node.code,
+                node.name,
+                node.type,
+                node.description,
+                node.nextStates.join("|"),
+                node.nextStates.length === 0 ? "Yes" : "No",
+                node.isSuccess === null ? "N/A" : (node.isSuccess ? "Yes" : "No")
+            ]);
+
+            const csvContent = [headers, ...rows].map(row =>
+                row.map(cell => `"${cell}"`).join(",")
+            ).join("\n");
+
+            const dataBlob = new Blob([csvContent], {type: 'text/csv'});
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'status_flow_updated.csv';
+            link.click();
+        }
+
+        function exportPNG() {
+            const svgElement = document.getElementById("flow-diagram");
+            const svgData = new XMLSerializer().serializeToString(svgElement);
+            const canvas = document.createElement("canvas");
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext("2d");
+            const img = new Image();
+            const svgBlob = new Blob([svgData], {type: "image/svg+xml;charset=utf-8"});
+            const url = URL.createObjectURL(svgBlob);
+
+            img.onload = function() {
+                ctx.fillStyle = "#fafbfc";
+                ctx.fillRect(0, 0, width, height);
+                ctx.drawImage(img, 0, 0);
+                canvas.toBlob(function(blob) {
+                    const pngUrl = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = pngUrl;
+                    link.download = 'status_flow_diagram.png';
+                    link.click();
+                });
+            };
+            img.src = url;
+        }
+
+        function saveToLocalStorage() {
+            localStorage.setItem('uae_pass_status_flow', JSON.stringify(statusData));
+        }
+
+        function loadFromLocalStorage() {
+            const saved = localStorage.getItem('uae_pass_status_flow');
+            if (saved) {
+                try {
+                    const loaded = JSON.parse(saved);
+                    if (loaded && loaded.length > 0) {
+                        statusData = loaded;
+                    }
+                } catch (e) {
+                    console.error("Error loading from localStorage:", e);
+                }
+            }
+        }
+
+        // Click outside to deselect
+        svg.on("click", function(event) {
+            if (event.target === this) {
+                clearSelection();
+            }
+        });
+
+        // Initialize
+        loadFromLocalStorage();
+        renderFlow();
+        autoLayout();
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            const newWidth = document.getElementById('svg-container').clientWidth;
+            const newHeight = document.getElementById('svg-container').clientHeight;
+            svg.attr("width", newWidth).attr("height", newHeight);
+        });
+    </script>
+</body>
+</html>

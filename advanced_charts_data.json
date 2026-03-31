@@ -1,0 +1,344 @@
+{
+  "funnel": [
+    {
+      "stage": "S00",
+      "label": "Request Created",
+      "count": 500,
+      "drop_off_pct": 0
+    },
+    {
+      "stage": "S08",
+      "label": "Request Opened",
+      "count": 478,
+      "drop_off_pct": 4.4
+    },
+    {
+      "stage": "S20",
+      "label": "Consent Screen",
+      "count": 435,
+      "drop_off_pct": 9.0
+    },
+    {
+      "stage": "S21",
+      "label": "Reviewing Docs",
+      "count": 405,
+      "drop_off_pct": 6.9
+    },
+    {
+      "stage": "S30",
+      "label": "Docs Collected",
+      "count": 368,
+      "drop_off_pct": 9.1
+    },
+    {
+      "stage": "S31",
+      "label": "Verification Complete",
+      "count": 352,
+      "drop_off_pct": 4.3
+    },
+    {
+      "stage": "S40",
+      "label": "Success",
+      "count": 328,
+      "drop_off_pct": 6.8
+    }
+  ],
+  "sp_performance": [
+    {
+      "sp": "Botim",
+      "notification": 55.0,
+      "qr": 100.0,
+      "redirect": 100.0
+    },
+    {
+      "sp": "Etisalat Retail",
+      "notification": 63.6,
+      "qr": 66.7,
+      "redirect": 75.0
+    },
+    {
+      "sp": "InsureOne (Premier Insurance Brokers L.L.C-O.P.C)",
+      "notification": 31.6,
+      "qr": 33.3,
+      "redirect": 66.7
+    },
+    {
+      "sp": "ADNIC",
+      "notification": 78.6,
+      "qr": 71.4,
+      "redirect": 80.0
+    },
+    {
+      "sp": "National Bonds Corporation Sole Proprietorship P.S.C.",
+      "notification": 40.0,
+      "qr": 62.5,
+      "redirect": 100.0
+    },
+    {
+      "sp": "ADCB",
+      "notification": 56.2,
+      "qr": 75.0,
+      "redirect": 60.0
+    },
+    {
+      "sp": "Lulu",
+      "notification": 80.0,
+      "qr": 55.6,
+      "redirect": 100.0
+    },
+    {
+      "sp": "FAB Retail Banking",
+      "notification": 85.7,
+      "qr": 66.7,
+      "redirect": 85.7
+    },
+    {
+      "sp": "Beyon Money",
+      "notification": 40.0,
+      "qr": 83.3,
+      "redirect": 100.0
+    },
+    {
+      "sp": "Arab Bank",
+      "notification": 55.0,
+      "qr": 100.0,
+      "redirect": 100.0
+    }
+  ],
+  "error_distribution": [
+    {
+      "label": "Technical Error",
+      "count": 24
+    },
+    {
+      "label": "Expired",
+      "count": 47
+    },
+    {
+      "label": "User Aborted",
+      "count": 89
+    },
+    {
+      "label": "Not Eligible",
+      "count": 12
+    }
+  ],
+  "step_latency": [
+    {
+      "transition": "Review Docs",
+      "avg_seconds": 7.9
+    },
+    {
+      "transition": "Collecting Docs",
+      "avg_seconds": 2.0
+    },
+    {
+      "transition": "Verification",
+      "avg_seconds": 6.89
+    },
+    {
+      "transition": "Final Submit",
+      "avg_seconds": 3.16
+    }
+  ],
+  "platform_channel": [
+    {
+      "platform": "ios",
+      "notification": 61.7,
+      "qr": 62.3,
+      "redirect": 87.3
+    },
+    {
+      "platform": "android",
+      "notification": 58.1,
+      "qr": 67.8,
+      "redirect": 75.7
+    }
+  ],
+  "doc_complexity": [
+    {
+      "label": "1 doc",
+      "success_rate": 59.1,
+      "count": 186
+    },
+    {
+      "label": "2 docs",
+      "success_rate": 71.6,
+      "count": 257
+    },
+    {
+      "label": "3 docs",
+      "success_rate": 59.6,
+      "count": 57
+    },
+    {
+      "label": "4+ docs",
+      "success_rate": 0,
+      "count": 0
+    }
+  ],
+  "weekly_trend": [
+    {
+      "date": "2025-11-01",
+      "success_rate": 71.4
+    },
+    {
+      "date": "2025-11-02",
+      "success_rate": 55.6
+    },
+    {
+      "date": "2025-11-03",
+      "success_rate": 71.4
+    },
+    {
+      "date": "2025-11-04",
+      "success_rate": 66.7
+    },
+    {
+      "date": "2025-11-05",
+      "success_rate": 71.4
+    },
+    {
+      "date": "2025-11-06",
+      "success_rate": 58.3
+    },
+    {
+      "date": "2025-11-07",
+      "success_rate": 66.7
+    },
+    {
+      "date": "2025-11-08",
+      "success_rate": 56.2
+    },
+    {
+      "date": "2025-11-09",
+      "success_rate": 68.8
+    },
+    {
+      "date": "2025-11-10",
+      "success_rate": 63.3
+    },
+    {
+      "date": "2025-11-11",
+      "success_rate": 57.1
+    },
+    {
+      "date": "2025-11-12",
+      "success_rate": 80.0
+    },
+    {
+      "date": "2025-11-13",
+      "success_rate": 71.4
+    },
+    {
+      "date": "2025-11-14",
+      "success_rate": 83.3
+    },
+    {
+      "date": "2025-11-15",
+      "success_rate": 70.6
+    },
+    {
+      "date": "2025-11-16",
+      "success_rate": 84.6
+    },
+    {
+      "date": "2025-11-17",
+      "success_rate": 61.9
+    },
+    {
+      "date": "2025-11-18",
+      "success_rate": 69.2
+    },
+    {
+      "date": "2025-11-19",
+      "success_rate": 60.9
+    },
+    {
+      "date": "2025-11-20",
+      "success_rate": 80.0
+    },
+    {
+      "date": "2025-11-21",
+      "success_rate": 58.8
+    },
+    {
+      "date": "2025-11-22",
+      "success_rate": 65.2
+    },
+    {
+      "date": "2025-11-23",
+      "success_rate": 66.7
+    },
+    {
+      "date": "2025-11-24",
+      "success_rate": 41.2
+    },
+    {
+      "date": "2025-11-25",
+      "success_rate": 73.9
+    },
+    {
+      "date": "2025-11-26",
+      "success_rate": 58.8
+    },
+    {
+      "date": "2025-11-27",
+      "success_rate": 66.7
+    },
+    {
+      "date": "2025-11-28",
+      "success_rate": 47.4
+    }
+  ],
+  "path_analysis": [
+    {
+      "path": "S00 > S01 > S02 > S03 > S08...",
+      "outcome": "Success",
+      "count": 121,
+      "percentage": 24.2
+    },
+    {
+      "path": "S00 > S01 > S02 > S03 > S08...",
+      "outcome": "Success",
+      "count": 51,
+      "percentage": 10.2
+    },
+    {
+      "path": "S00 > S04 > S05 > S08 > S10...",
+      "outcome": "Success",
+      "count": 49,
+      "percentage": 9.8
+    },
+    {
+      "path": "S00 > S06 > S07 > S08 > S10...",
+      "outcome": "Success",
+      "count": 41,
+      "percentage": 8.2
+    },
+    {
+      "path": "S00 > S01 > S02 > S03 > S08...",
+      "outcome": "Aborted",
+      "count": 37,
+      "percentage": 7.4
+    }
+  ],
+  "bottleneck": [
+    {
+      "stage": "Opening",
+      "count": 22
+    },
+    {
+      "stage": "Doc Availability Check",
+      "count": 43
+    },
+    {
+      "stage": "Consent Screen",
+      "count": 67
+    },
+    {
+      "stage": "Collection & Verification",
+      "count": 40
+    }
+  ]
+}

@@ -1,0 +1,1542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UAE PASS Document Sharing - Status Model & Analytics Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #1a5f7a;
+            --secondary: #159895;
+            --success: #57c84d;
+            --warning: #ffc107;
+            --danger: #dc3545;
+            --info: #17a2b8;
+            --light: #f8f9fa;
+            --dark: #343a40;
+            --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f2f5;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .header {
+            background: var(--bg-gradient);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        .nav-tabs {
+            background: white;
+            padding: 1rem 2rem;
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-tab {
+            padding: 0.75rem 1.5rem;
+            background: var(--light);
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .nav-tab:hover {
+            background: #e9ecef;
+        }
+
+        .nav-tab.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .card h2 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #eee;
+        }
+
+        .card h3 {
+            color: var(--secondary);
+            margin: 1rem 0 0.75rem;
+        }
+
+        /* Status Model Diagram */
+        .status-diagram {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            padding: 1rem;
+        }
+
+        .phase-row {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .phase-label {
+            min-width: 140px;
+            padding: 0.75rem 1rem;
+            background: var(--primary);
+            color: white;
+            border-radius: 8px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .status-boxes {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            flex: 1;
+        }
+
+        .status-box {
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            min-width: 120px;
+            text-align: center;
+            border: 2px solid;
+            position: relative;
+        }
+
+        .status-box.initiation { background: #e3f2fd; border-color: #2196f3; }
+        .status-box.engagement { background: #fff3e0; border-color: #ff9800; }
+        .status-box.document { background: #f3e5f5; border-color: #9c27b0; }
+        .status-box.consent { background: #e8f5e9; border-color: #4caf50; }
+        .status-box.authorization { background: #fce4ec; border-color: #e91e63; }
+        .status-box.terminal-success { background: #c8e6c9; border-color: #388e3c; }
+        .status-box.terminal-failure { background: #ffcdd2; border-color: #d32f2f; }
+        .status-box.new { border: 3px solid #ff5722; animation: pulse 2s infinite; }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(255, 87, 34, 0.4); }
+            50% { box-shadow: 0 0 0 10px rgba(255, 87, 34, 0); }
+        }
+
+        .status-code {
+            font-weight: bold;
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+
+        .status-name {
+            font-size: 0.75rem;
+            color: #666;
+            margin-top: 0.25rem;
+        }
+
+        /* Flow Arrows */
+        .flow-container {
+            overflow-x: auto;
+            padding: 2rem 0;
+        }
+
+        .flow-diagram {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            min-width: 1200px;
+        }
+
+        .flow-row {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .flow-box {
+            padding: 0.4rem 0.6rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            text-align: center;
+            min-width: 80px;
+            border: 2px solid;
+        }
+
+        .flow-arrow {
+            font-size: 1.2rem;
+            color: #666;
+        }
+
+        .flow-branch {
+            border-left: 3px solid #ccc;
+            margin-left: 40px;
+            padding-left: 1rem;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 1.25rem;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .stat-card.success { background: linear-gradient(135deg, #43a047, #66bb6a); }
+        .stat-card.warning { background: linear-gradient(135deg, #fb8c00, #ffa726); }
+        .stat-card.danger { background: linear-gradient(135deg, #e53935, #ef5350); }
+        .stat-card.info { background: linear-gradient(135deg, #1e88e5, #42a5f5); }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        /* Charts */
+        .chart-container {
+            position: relative;
+            height: 400px;
+            margin: 1rem 0;
+        }
+
+        .chart-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 1.5rem;
+        }
+
+        /* Tables */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .data-table th, .data-table td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .data-table th {
+            background: var(--light);
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .data-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 24px;
+            background: #e9ecef;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 0.5rem;
+            color: white;
+            font-size: 0.8rem;
+            font-weight: 600;
+            transition: width 0.5s ease;
+        }
+
+        .progress-fill.high { background: linear-gradient(90deg, #43a047, #66bb6a); }
+        .progress-fill.medium { background: linear-gradient(90deg, #fb8c00, #ffa726); }
+        .progress-fill.low { background: linear-gradient(90deg, #e53935, #ef5350); }
+
+        /* Funnel */
+        .funnel-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 1rem;
+        }
+
+        .funnel-step {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem 1rem;
+            background: var(--primary);
+            color: white;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .funnel-step:hover {
+            transform: scale(1.02);
+        }
+
+        .funnel-step .label {
+            font-weight: 500;
+        }
+
+        .funnel-step .count {
+            position: absolute;
+            right: -80px;
+            font-size: 0.9rem;
+            color: #666;
+            white-space: nowrap;
+        }
+
+        .funnel-step .dropoff {
+            position: absolute;
+            left: -100px;
+            font-size: 0.8rem;
+            color: #dc3545;
+        }
+
+        /* Data Structure */
+        .schema-box {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 1.5rem;
+            border-radius: 8px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+        }
+
+        .schema-box .keyword { color: #569cd6; }
+        .schema-box .string { color: #ce9178; }
+        .schema-box .type { color: #4ec9b0; }
+        .schema-box .comment { color: #6a9955; }
+        .schema-box .field { color: #9cdcfe; }
+
+        /* Legend */
+        .legend {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            margin: 1rem 0;
+            padding: 1rem;
+            background: var(--light);
+            border-radius: 8px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            border: 2px solid;
+        }
+
+        /* Bottleneck highlights */
+        .bottleneck {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .bottleneck-title {
+            font-weight: bold;
+            color: #856404;
+            margin-bottom: 0.5rem;
+        }
+
+        .bottleneck-impact {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        /* Recommendations */
+        .recommendation {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem;
+            background: #e8f5e9;
+            border-radius: 8px;
+            margin: 0.75rem 0;
+        }
+
+        .recommendation-number {
+            width: 30px;
+            height: 30px;
+            background: #4caf50;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .recommendation-content h4 {
+            color: #2e7d32;
+            margin-bottom: 0.25rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header h1 { font-size: 1.75rem; }
+            .nav-tabs { padding: 0.75rem 1rem; }
+            .nav-tab { padding: 0.5rem 1rem; font-size: 0.85rem; }
+            .container { padding: 1rem; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .chart-row { grid-template-columns: 1fr; }
+        }
+
+        /* Print styles */
+        @media print {
+            .nav-tabs { display: none; }
+            .section { display: block !important; page-break-inside: avoid; }
+            .card { break-inside: avoid; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>UAE PASS Document Sharing</h1>
+        <p>Status Tracking Model & Analytics Dashboard</p>
+        <p style="font-size: 0.9rem; margin-top: 0.5rem;">Last Updated: January 2026 | Data Sample: 500 Requests</p>
+    </div>
+
+    <div class="nav-tabs">
+        <button class="nav-tab active" onclick="showSection('overview')">Overview</button>
+        <button class="nav-tab" onclick="showSection('status-model')">Status Model</button>
+        <button class="nav-tab" onclick="showSection('data-structure')">Data Structure</button>
+        <button class="nav-tab" onclick="showSection('funnel')">Conversion Funnel</button>
+        <button class="nav-tab" onclick="showSection('sp-performance')">SP Performance</button>
+        <button class="nav-tab" onclick="showSection('bottlenecks')">Bottlenecks</button>
+        <button class="nav-tab" onclick="showSection('transitions')">Status Transitions</button>
+    </div>
+
+    <div class="container">
+        <!-- OVERVIEW SECTION -->
+        <div id="overview" class="section active">
+            <div class="stats-grid">
+                <div class="stat-card info">
+                    <div class="stat-value">500</div>
+                    <div class="stat-label">Total Requests</div>
+                </div>
+                <div class="stat-card success">
+                    <div class="stat-value">65.6%</div>
+                    <div class="stat-label">Success Rate</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">328</div>
+                    <div class="stat-label">Successful Shares</div>
+                </div>
+                <div class="stat-card danger">
+                    <div class="stat-value">172</div>
+                    <div class="stat-label">Failed/Abandoned</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Executive Summary</h2>
+                <p>This dashboard presents the <strong>new status tracking model</strong> for UAE PASS document sharing requests. The model provides granular visibility into every step of the sharing flow, enabling precise identification of bottlenecks and optimization opportunities.</p>
+
+                <h3>Key Metrics at a Glance</h3>
+                <div class="stats-grid" style="margin-top: 1rem;">
+                    <div class="stat-card" style="background: linear-gradient(135deg, #2196f3, #64b5f6);">
+                        <div class="stat-value">25</div>
+                        <div class="stat-label">Status Codes</div>
+                    </div>
+                    <div class="stat-card" style="background: linear-gradient(135deg, #9c27b0, #ba68c8);">
+                        <div class="stat-value">6</div>
+                        <div class="stat-label">Flow Phases</div>
+                    </div>
+                    <div class="stat-card" style="background: linear-gradient(135deg, #4caf50, #81c784);">
+                        <div class="stat-value">3</div>
+                        <div class="stat-label">Entry Channels</div>
+                    </div>
+                    <div class="stat-card" style="background: linear-gradient(135deg, #ff5722, #ff8a65);">
+                        <div class="stat-value">5</div>
+                        <div class="stat-label">Terminal States</div>
+                    </div>
+                </div>
+
+                <h3>New Status Code: S22 (Send Documents Pressed)</h3>
+                <div style="background: #fff3e0; border-left: 4px solid #ff9800; padding: 1rem; border-radius: 0 8px 8px 0; margin-top: 0.5rem;">
+                    <strong>S22_SEND_DOCUMENTS_PRESSED</strong> - Captures the moment when user presses the "Send Documents" button on the consent screen. This fills the gap between S21 (reviewing consent) and S30 (consent given), enabling measurement of button click-to-consent conversion.
+                </div>
+            </div>
+
+            <div class="chart-row">
+                <div class="card">
+                    <h2>Outcome Distribution</h2>
+                    <div class="chart-container" style="height: 300px;">
+                        <canvas id="outcomeChart"></canvas>
+                    </div>
+                </div>
+                <div class="card">
+                    <h2>Channel Performance</h2>
+                    <div class="chart-container" style="height: 300px;">
+                        <canvas id="channelChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Platform Comparison</h2>
+                <div class="chart-container" style="height: 250px;">
+                    <canvas id="platformChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- STATUS MODEL SECTION -->
+        <div id="status-model" class="section">
+            <div class="card">
+                <h2>Status Code Reference</h2>
+                <p>The status model uses a structured coding system where the first digit indicates the phase:</p>
+
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #e3f2fd; border-color: #2196f3;"></div>
+                        <span>S0x - Initiation</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #fff3e0; border-color: #ff9800;"></div>
+                        <span>S08 - Engagement</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #f3e5f5; border-color: #9c27b0;"></div>
+                        <span>S1x - Document Check</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #e8f5e9; border-color: #4caf50;"></div>
+                        <span>S2x - Consent</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #fce4ec; border-color: #e91e63;"></div>
+                        <span>S3x - Authorization</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #c8e6c9; border-color: #388e3c;"></div>
+                        <span>S40 - Success</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #ffcdd2; border-color: #d32f2f;"></div>
+                        <span>S4x - Failure</span>
+                    </div>
+                </div>
+
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Code</th>
+                            <th>Name</th>
+                            <th>Description</th>
+                            <th>Phase</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><code>S00</code></td><td>REQUEST_CREATED</td><td>SP created sharing request - initial state</td><td>Initiation</td></tr>
+                        <tr><td><code>S01</code></td><td>NOTIFICATION_SENT</td><td>Push notification sent to user device</td><td>Initiation</td></tr>
+                        <tr><td><code>S02</code></td><td>NOTIFICATION_RECEIVED</td><td>Notification received on user device</td><td>Initiation</td></tr>
+                        <tr><td><code>S03</code></td><td>NOTIFICATION_OPENED</td><td>User tapped/opened the notification</td><td>Initiation</td></tr>
+                        <tr><td><code>S04</code></td><td>REDIRECT_INITIATED</td><td>SP redirect flow started</td><td>Initiation</td></tr>
+                        <tr><td><code>S05</code></td><td>REDIRECT_COMPLETED</td><td>User successfully redirected to UAE PASS</td><td>Initiation</td></tr>
+                        <tr><td><code>S06</code></td><td>QR_SCAN_STARTED</td><td>User initiated QR code scan</td><td>Initiation</td></tr>
+                        <tr><td><code>S07</code></td><td>QR_VALIDATED</td><td>QR code validated successfully</td><td>Initiation</td></tr>
+                        <tr style="background: #fff3e0;"><td><code>S08</code></td><td>APP_OPENED</td><td>UAE PASS app opened for sharing request</td><td>Engagement</td></tr>
+                        <tr><td><code>S10</code></td><td>DOCUMENTS_AVAILABLE</td><td>All required documents available in user vault</td><td>Document Check</td></tr>
+                        <tr><td><code>S11</code></td><td>MISSING_DOCS_DETECTED</td><td>Some required documents not in vault</td><td>Document Check</td></tr>
+                        <tr><td><code>S12</code></td><td>DOCS_REQUEST_INITIATED</td><td>User initiated request for missing documents</td><td>Document Acquisition</td></tr>
+                        <tr><td><code>S13</code></td><td>DOCS_REQUEST_SUCCESS</td><td>All missing documents successfully requested</td><td>Document Acquisition</td></tr>
+                        <tr><td><code>S14</code></td><td>DOCS_REQUEST_PARTIAL</td><td>Some documents requested successfully - others failed</td><td>Document Acquisition</td></tr>
+                        <tr><td><code>S15</code></td><td>DOCS_REQUEST_FAILED</td><td>Document request failed completely</td><td>Document Acquisition</td></tr>
+                        <tr><td><code>S20</code></td><td>CONSENT_SCREEN_SHOWN</td><td>Consent screen displayed to user</td><td>Consent</td></tr>
+                        <tr><td><code>S21</code></td><td>CONSENT_UNDER_REVIEW</td><td>User actively reviewing consent details</td><td>Consent</td></tr>
+                        <tr style="background: #ffecb3; border-left: 4px solid #ff9800;"><td><code style="color: #e65100; font-weight: bold;">S22</code></td><td><strong>SEND_DOCUMENTS_PRESSED</strong> <span style="background: #ff5722; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem;">NEW</span></td><td>User pressed Send Documents button</td><td>Consent</td></tr>
+                        <tr><td><code>S30</code></td><td>CONSENT_GIVEN</td><td>User provided consent to share documents</td><td>Authorization</td></tr>
+                        <tr><td><code>S31</code></td><td>PIN_ENTRY_STARTED</td><td>PIN entry screen displayed</td><td>Authorization</td></tr>
+                        <tr><td><code>S32</code></td><td>PIN_INCORRECT</td><td>User entered incorrect PIN</td><td>Authorization</td></tr>
+                        <tr style="background: #c8e6c9;"><td><code>S40</code></td><td>SUCCESS</td><td>Documents shared successfully</td><td>Terminal</td></tr>
+                        <tr style="background: #ffcdd2;"><td><code>S41</code></td><td>FAILURE_TIMEOUT</td><td>Request expired before completion</td><td>Terminal</td></tr>
+                        <tr style="background: #ffcdd2;"><td><code>S42</code></td><td>FAILURE_ABANDONED</td><td>User left flow without completing</td><td>Terminal</td></tr>
+                        <tr style="background: #ffcdd2;"><td><code>S43</code></td><td>FAILURE_CONSENT_DECLINED</td><td>User declined consent to share</td><td>Terminal</td></tr>
+                        <tr style="background: #ffcdd2;"><td><code>S44</code></td><td>FAILURE_DOCS_UNAVAILABLE</td><td>Documents not available for user</td><td>Terminal</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card">
+                <h2>Visual Status Flow</h2>
+                <div class="status-diagram">
+                    <div class="phase-row">
+                        <div class="phase-label">Initiation</div>
+                        <div class="status-boxes">
+                            <div class="status-box initiation">
+                                <div class="status-code">S00</div>
+                                <div class="status-name">Request Created</div>
+                            </div>
+                            <span style="font-size: 1.5rem; color: #999;">→</span>
+                            <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                                <div class="status-box initiation" style="font-size: 0.75rem;">
+                                    <div class="status-code">S01→S02→S03</div>
+                                    <div class="status-name">Notification Path</div>
+                                </div>
+                                <div class="status-box initiation" style="font-size: 0.75rem;">
+                                    <div class="status-code">S04→S05</div>
+                                    <div class="status-name">Redirect Path</div>
+                                </div>
+                                <div class="status-box initiation" style="font-size: 0.75rem;">
+                                    <div class="status-code">S06→S07</div>
+                                    <div class="status-name">QR Path</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="phase-row">
+                        <div class="phase-label" style="background: #ff9800;">Engagement</div>
+                        <div class="status-boxes">
+                            <div class="status-box engagement">
+                                <div class="status-code">S08</div>
+                                <div class="status-name">App Opened</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="phase-row">
+                        <div class="phase-label" style="background: #9c27b0;">Document Check</div>
+                        <div class="status-boxes">
+                            <div class="status-box document">
+                                <div class="status-code">S10</div>
+                                <div class="status-name">Docs Available</div>
+                            </div>
+                            <span style="color: #999;">or</span>
+                            <div class="status-box document">
+                                <div class="status-code">S11</div>
+                                <div class="status-name">Missing Docs</div>
+                            </div>
+                            <span style="font-size: 1.5rem; color: #999;">→</span>
+                            <div class="status-box document">
+                                <div class="status-code">S12</div>
+                                <div class="status-name">Requesting</div>
+                            </div>
+                            <span style="font-size: 1.5rem; color: #999;">→</span>
+                            <div style="display: flex; flex-direction: column; gap: 0.25rem;">
+                                <div class="status-box document" style="font-size: 0.7rem;">S13 OK</div>
+                                <div class="status-box document" style="font-size: 0.7rem;">S14 Partial</div>
+                                <div class="status-box document" style="font-size: 0.7rem;">S15 Failed</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="phase-row">
+                        <div class="phase-label" style="background: #4caf50;">Consent</div>
+                        <div class="status-boxes">
+                            <div class="status-box consent">
+                                <div class="status-code">S20</div>
+                                <div class="status-name">Consent Screen</div>
+                            </div>
+                            <span style="font-size: 1.5rem; color: #999;">→</span>
+                            <div class="status-box consent">
+                                <div class="status-code">S21</div>
+                                <div class="status-name">Reviewing</div>
+                            </div>
+                            <span style="font-size: 1.5rem; color: #999;">→</span>
+                            <div class="status-box consent new">
+                                <div class="status-code">S22</div>
+                                <div class="status-name">Send Pressed</div>
+                                <div style="font-size: 0.6rem; color: #ff5722; font-weight: bold;">NEW!</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="phase-row">
+                        <div class="phase-label" style="background: #e91e63;">Authorization</div>
+                        <div class="status-boxes">
+                            <div class="status-box authorization">
+                                <div class="status-code">S30</div>
+                                <div class="status-name">Consent Given</div>
+                            </div>
+                            <span style="font-size: 1.5rem; color: #999;">→</span>
+                            <div class="status-box authorization">
+                                <div class="status-code">S31</div>
+                                <div class="status-name">PIN Entry</div>
+                            </div>
+                            <span style="font-size: 1.5rem; color: #999;">→</span>
+                            <div class="status-box authorization">
+                                <div class="status-code">S32</div>
+                                <div class="status-name">PIN Wrong</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="phase-row">
+                        <div class="phase-label" style="background: #607d8b;">Terminal</div>
+                        <div class="status-boxes">
+                            <div class="status-box terminal-success">
+                                <div class="status-code">S40</div>
+                                <div class="status-name">SUCCESS</div>
+                            </div>
+                            <div class="status-box terminal-failure">
+                                <div class="status-code">S41</div>
+                                <div class="status-name">Timeout</div>
+                            </div>
+                            <div class="status-box terminal-failure">
+                                <div class="status-code">S42</div>
+                                <div class="status-name">Abandoned</div>
+                            </div>
+                            <div class="status-box terminal-failure">
+                                <div class="status-code">S43</div>
+                                <div class="status-name">Declined</div>
+                            </div>
+                            <div class="status-box terminal-failure">
+                                <div class="status-code">S44</div>
+                                <div class="status-name">Docs N/A</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- DATA STRUCTURE SECTION -->
+        <div id="data-structure" class="section">
+            <div class="card">
+                <h2>Transaction Record Schema</h2>
+                <p>Each sharing request generates multiple status records as it progresses through the flow. Here's the data structure:</p>
+
+                <div class="schema-box">
+<span class="comment">// Sharing Transaction Record</span>
+{
+    <span class="field">"request_id"</span>: <span class="type">STRING</span>,      <span class="comment">// Unique request identifier (e.g., "REQ000001")</span>
+    <span class="field">"sp_id"</span>: <span class="type">STRING</span>,           <span class="comment">// Service Provider name</span>
+    <span class="field">"channel"</span>: <span class="type">ENUM</span>,          <span class="comment">// "notification" | "qr" | "redirect"</span>
+    <span class="field">"platform"</span>: <span class="type">ENUM</span>,         <span class="comment">// "ios" | "android"</span>
+    <span class="field">"app_version"</span>: <span class="type">STRING</span>,     <span class="comment">// UAE PASS app version</span>
+    <span class="field">"required_docs"</span>: <span class="type">ARRAY</span>,    <span class="comment">// List of requested document types</span>
+    <span class="field">"required_count"</span>: <span class="type">INTEGER</span>, <span class="comment">// Number of documents requested</span>
+    <span class="field">"status_code"</span>: <span class="type">ENUM</span>,      <span class="comment">// Current status (S00-S44)</span>
+    <span class="field">"previous_status"</span>: <span class="type">ENUM</span>,  <span class="comment">// Previous status code</span>
+    <span class="field">"status_ts"</span>: <span class="type">TIMESTAMP</span>,   <span class="comment">// When this status was recorded</span>
+    <span class="field">"step_latency_ms"</span>: <span class="type">INTEGER</span>,<span class="comment">// Time since previous status (ms)</span>
+    <span class="field">"missing_count"</span>: <span class="type">INTEGER</span>,  <span class="comment">// Number of missing documents</span>
+    <span class="field">"error_code"</span>: <span class="type">STRING</span>,     <span class="comment">// Error code if applicable</span>
+    <span class="field">"error_source"</span>: <span class="type">STRING</span>,   <span class="comment">// Error origin (user, issuer, system)</span>
+    <span class="field">"status_history"</span>: <span class="type">ARRAY</span>   <span class="comment">// Ordered list of all statuses</span>
+}
+                </div>
+
+                <h3>Example Transaction Flow</h3>
+                <div class="schema-box" style="font-size: 0.85rem;">
+<span class="comment">// Successful sharing via notification channel</span>
+<span class="string">"REQ000002"</span> Status History:
+  S00 → S01 → S02 → S03 → S08 → S10 → S20 → S21 → <span style="color: #ff9800;">S22</span> → S30 → S31 → <span style="color: #4caf50; font-weight: bold;">S40</span>
+
+<span class="comment">// Failed - user declined consent</span>
+<span class="string">"REQ000006"</span> Status History:
+  S00 → S01 → S02 → S03 → S08 → S10 → S20 → S21 → S30 → S32 → <span style="color: #f44336; font-weight: bold;">S43</span>
+
+<span class="comment">// Failed - documents not available</span>
+<span class="string">"REQ000004"</span> Status History:
+  S00 → S01 → S02 → S03 → S08 → S11 → S12 → S15 → <span style="color: #f44336; font-weight: bold;">S44</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Key Data Fields Explained</h2>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Field</th>
+                            <th>Purpose</th>
+                            <th>Analytics Use</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>channel</code></td>
+                            <td>How the user was reached</td>
+                            <td>Compare conversion rates across notification, QR, redirect</td>
+                        </tr>
+                        <tr>
+                            <td><code>platform</code></td>
+                            <td>User's device OS</td>
+                            <td>Identify iOS vs Android performance gaps</td>
+                        </tr>
+                        <tr>
+                            <td><code>step_latency_ms</code></td>
+                            <td>Time between status changes</td>
+                            <td>Identify slow steps, timeout risks</td>
+                        </tr>
+                        <tr>
+                            <td><code>missing_count</code></td>
+                            <td>Documents user doesn't have</td>
+                            <td>Predict failure likelihood, document availability analysis</td>
+                        </tr>
+                        <tr>
+                            <td><code>error_code</code></td>
+                            <td>Specific failure reason</td>
+                            <td>Root cause analysis for failures</td>
+                        </tr>
+                        <tr>
+                            <td><code>status_history</code></td>
+                            <td>Complete journey record</td>
+                            <td>Path analysis, drop-off identification</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card">
+                <h2>Sample Data Distribution</h2>
+                <div class="chart-row">
+                    <div>
+                        <h3>By Channel</h3>
+                        <table class="data-table">
+                            <tr><td>Notification</td><td>288 (57.6%)</td></tr>
+                            <tr><td>QR Scan</td><td>112 (22.4%)</td></tr>
+                            <tr><td>Redirect</td><td>100 (20.0%)</td></tr>
+                        </table>
+                    </div>
+                    <div>
+                        <h3>By Platform</h3>
+                        <table class="data-table">
+                            <tr><td>iOS</td><td>249 (49.8%)</td></tr>
+                            <tr><td>Android</td><td>251 (50.2%)</td></tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FUNNEL SECTION -->
+        <div id="funnel" class="section">
+            <div class="card">
+                <h2>Conversion Funnel Analysis</h2>
+                <p>Track how requests progress through each stage of the sharing flow. Drop-off percentages show where users exit the funnel.</p>
+
+                <div class="chart-container" style="height: 500px;">
+                    <canvas id="funnelChart"></canvas>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Stage-by-Stage Breakdown</h2>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Stage</th>
+                            <th>Status</th>
+                            <th>Reached</th>
+                            <th>% of Total</th>
+                            <th>Drop-off</th>
+                            <th>Conversion Bar</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Request Created</td>
+                            <td><code>S00</code></td>
+                            <td>500</td>
+                            <td>100.0%</td>
+                            <td>-</td>
+                            <td><div class="progress-bar"><div class="progress-fill high" style="width: 100%;">100%</div></div></td>
+                        </tr>
+                        <tr>
+                            <td>App Opened</td>
+                            <td><code>S08</code></td>
+                            <td>478</td>
+                            <td>95.6%</td>
+                            <td style="color: #dc3545;">-4.4%</td>
+                            <td><div class="progress-bar"><div class="progress-fill high" style="width: 95.6%;">95.6%</div></div></td>
+                        </tr>
+                        <tr>
+                            <td>Consent Screen</td>
+                            <td><code>S20</code></td>
+                            <td>435</td>
+                            <td>87.0%</td>
+                            <td style="color: #dc3545;">-8.6%</td>
+                            <td><div class="progress-bar"><div class="progress-fill high" style="width: 87%;">87%</div></div></td>
+                        </tr>
+                        <tr>
+                            <td>Reviewing Consent</td>
+                            <td><code>S21</code></td>
+                            <td>405</td>
+                            <td>81.0%</td>
+                            <td style="color: #dc3545;">-6.0%</td>
+                            <td><div class="progress-bar"><div class="progress-fill high" style="width: 81%;">81%</div></div></td>
+                        </tr>
+                        <tr style="background: #fff8e1;">
+                            <td><strong>Send Button Pressed</strong></td>
+                            <td><code style="color: #ff9800; font-weight: bold;">S22</code></td>
+                            <td colspan="4" style="color: #ff9800; font-style: italic;">New tracking point - enables measurement of button click intent</td>
+                        </tr>
+                        <tr>
+                            <td>Consent Given</td>
+                            <td><code>S30</code></td>
+                            <td>368</td>
+                            <td>73.6%</td>
+                            <td style="color: #dc3545;">-7.4%</td>
+                            <td><div class="progress-bar"><div class="progress-fill medium" style="width: 73.6%;">73.6%</div></div></td>
+                        </tr>
+                        <tr>
+                            <td>PIN Entry</td>
+                            <td><code>S31</code></td>
+                            <td>352</td>
+                            <td>70.4%</td>
+                            <td style="color: #dc3545;">-3.2%</td>
+                            <td><div class="progress-bar"><div class="progress-fill medium" style="width: 70.4%;">70.4%</div></div></td>
+                        </tr>
+                        <tr style="background: #e8f5e9;">
+                            <td><strong>SUCCESS</strong></td>
+                            <td><code>S40</code></td>
+                            <td><strong>328</strong></td>
+                            <td><strong>65.6%</strong></td>
+                            <td style="color: #dc3545;">-4.8%</td>
+                            <td><div class="progress-bar"><div class="progress-fill high" style="width: 65.6%;">65.6%</div></div></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card">
+                <h2>Channel-Specific Funnels</h2>
+                <div class="chart-container" style="height: 350px;">
+                    <canvas id="channelFunnelChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- SP PERFORMANCE SECTION -->
+        <div id="sp-performance" class="section">
+            <div class="card">
+                <h2>Service Provider Performance</h2>
+                <p>Compare conversion rates across different Service Providers to identify best practices and improvement opportunities.</p>
+
+                <div class="chart-container" style="height: 500px;">
+                    <canvas id="spChart"></canvas>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>SP Detailed Metrics</h2>
+                <table class="data-table" id="spTable">
+                    <thead>
+                        <tr>
+                            <th>Service Provider</th>
+                            <th>Total Requests</th>
+                            <th>Successful</th>
+                            <th>Success Rate</th>
+                            <th>Performance</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
+            <div class="card">
+                <h2>SP Category Analysis</h2>
+                <div class="stats-grid">
+                    <div class="stat-card success">
+                        <div class="stat-value">5</div>
+                        <div class="stat-label">High Performers (&gt;80%)</div>
+                    </div>
+                    <div class="stat-card info">
+                        <div class="stat-value">9</div>
+                        <div class="stat-label">Average (60-80%)</div>
+                    </div>
+                    <div class="stat-card warning">
+                        <div class="stat-value">6</div>
+                        <div class="stat-label">Below Average (40-60%)</div>
+                    </div>
+                    <div class="stat-card danger">
+                        <div class="stat-value">2</div>
+                        <div class="stat-label">Needs Attention (&lt;40%)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- BOTTLENECKS SECTION -->
+        <div id="bottlenecks" class="section">
+            <div class="card">
+                <h2>Identified Bottlenecks</h2>
+                <p>Analysis of where users drop off in the sharing flow and potential causes.</p>
+
+                <div class="bottleneck">
+                    <div class="bottleneck-title">1. Consent Screen Drop-off (S20 → S21)</div>
+                    <div class="bottleneck-impact">
+                        <strong>Impact:</strong> 30 requests (6.0%) exit at consent screen<br>
+                        <strong>Possible Causes:</strong> Complex consent UI, unclear document list, privacy concerns<br>
+                        <strong>Recommendation:</strong> Simplify consent screen design, add trust indicators
+                    </div>
+                </div>
+
+                <div class="bottleneck">
+                    <div class="bottleneck-title">2. Document Availability (S08 → S10/S11)</div>
+                    <div class="bottleneck-impact">
+                        <strong>Impact:</strong> 135 requests (27.0%) have missing documents<br>
+                        <strong>Possible Causes:</strong> SPs requesting documents users don't have<br>
+                        <strong>Recommendation:</strong> Implement document pre-check API for SPs
+                    </div>
+                </div>
+
+                <div class="bottleneck">
+                    <div class="bottleneck-title">3. Consent to PIN (S30 → S31)</div>
+                    <div class="bottleneck-impact">
+                        <strong>Impact:</strong> 16 requests (3.2%) fail at PIN entry<br>
+                        <strong>Possible Causes:</strong> Forgotten PIN, biometric fallback issues<br>
+                        <strong>Recommendation:</strong> Improve PIN recovery flow, enhance biometric options
+                    </div>
+                </div>
+
+                <div class="bottleneck">
+                    <div class="bottleneck-title">4. Consent Declined (S43)</div>
+                    <div class="bottleneck-impact">
+                        <strong>Impact:</strong> 89 requests (17.8%) explicitly declined<br>
+                        <strong>Possible Causes:</strong> Users not understanding why SP needs documents<br>
+                        <strong>Recommendation:</strong> Require SPs to provide clear purpose explanation
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Failure Distribution</h2>
+                <div class="chart-container" style="height: 300px;">
+                    <canvas id="failureChart"></canvas>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Priority Recommendations</h2>
+
+                <div class="recommendation">
+                    <div class="recommendation-number">1</div>
+                    <div class="recommendation-content">
+                        <h4>Implement Document Pre-Check API</h4>
+                        <p>Allow SPs to verify document availability before creating sharing requests. This could eliminate ~27% of futile requests where users don't have required documents.</p>
+                    </div>
+                </div>
+
+                <div class="recommendation">
+                    <div class="recommendation-number">2</div>
+                    <div class="recommendation-content">
+                        <h4>Redesign Consent Screen UX</h4>
+                        <p>Simplify the consent interface with clearer document listings and SP purpose explanations. Target: reduce consent decline rate from 17.8% to under 10%.</p>
+                    </div>
+                </div>
+
+                <div class="recommendation">
+                    <div class="recommendation-number">3</div>
+                    <div class="recommendation-content">
+                        <h4>Android Performance Sprint</h4>
+                        <p>iOS shows 68.3% vs Android 62.9% success rate. Investigate Android-specific UX issues and optimize accordingly.</p>
+                    </div>
+                </div>
+
+                <div class="recommendation">
+                    <div class="recommendation-number">4</div>
+                    <div class="recommendation-content">
+                        <h4>Notification Channel Optimization</h4>
+                        <p>Notification channel has lowest success rate (59.7%) vs Redirect (83.0%). Improve notification content and timing to increase engagement.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TRANSITIONS SECTION -->
+        <div id="transitions" class="section">
+            <div class="card">
+                <h2>Valid Status Transitions</h2>
+                <p>This matrix shows which status transitions are valid in the system. Green cells indicate valid transitions.</p>
+
+                <div style="overflow-x: auto;">
+                    <table class="data-table" style="font-size: 0.75rem;">
+                        <thead>
+                            <tr>
+                                <th>From \ To</th>
+                                <th>S01</th>
+                                <th>S04</th>
+                                <th>S06</th>
+                                <th>S08</th>
+                                <th>S10</th>
+                                <th>S11</th>
+                                <th>S20</th>
+                                <th>S22</th>
+                                <th>S30</th>
+                                <th>S40</th>
+                                <th>S41-44</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>S00</strong></td>
+                                <td style="background: #c8e6c9;">Yes</td>
+                                <td style="background: #c8e6c9;">Yes</td>
+                                <td style="background: #c8e6c9;">Yes</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td style="background: #ffcdd2;">Exp</td>
+                            </tr>
+                            <tr>
+                                <td><strong>S03/S05/S07</strong></td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td style="background: #c8e6c9;">Yes</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td style="background: #ffcdd2;">Exp</td>
+                            </tr>
+                            <tr>
+                                <td><strong>S08</strong></td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td style="background: #c8e6c9;">Yes</td>
+                                <td style="background: #c8e6c9;">Yes</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td style="background: #ffcdd2;">Exp</td>
+                            </tr>
+                            <tr>
+                                <td><strong>S10/S13</strong></td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td style="background: #c8e6c9;">Yes</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td style="background: #ffcdd2;">Exp</td>
+                            </tr>
+                            <tr>
+                                <td><strong>S11</strong></td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td style="background: #ffcdd2;">S44</td>
+                            </tr>
+                            <tr>
+                                <td><strong>S21</strong></td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td style="background: #fff3e0; font-weight: bold;">S22</td>
+                                <td style="background: #c8e6c9;">Yes</td>
+                                <td>-</td>
+                                <td style="background: #ffcdd2;">S42/43</td>
+                            </tr>
+                            <tr style="background: #fff8e1;">
+                                <td><strong>S22 (NEW)</strong></td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td style="background: #c8e6c9;">Yes</td>
+                                <td>-</td>
+                                <td style="background: #ffcdd2;">Exp</td>
+                            </tr>
+                            <tr>
+                                <td><strong>S31</strong></td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td style="background: #c8e6c9;">Yes</td>
+                                <td style="background: #ffcdd2;">S32/41</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="legend" style="margin-top: 1rem;">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #c8e6c9; border-color: #4caf50;"></div>
+                        <span>Valid transition</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #fff3e0; border-color: #ff9800;"></div>
+                        <span>New S22 transition</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #ffcdd2; border-color: #f44336;"></div>
+                        <span>Failure/Expiry exit</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Complete Flow Paths</h2>
+                <h3>Happy Path (Success)</h3>
+                <div style="background: #e8f5e9; padding: 1rem; border-radius: 8px; font-family: monospace; margin-bottom: 1rem;">
+                    S00 → [S01→S02→S03 | S04→S05 | S06→S07] → S08 → S10 → S20 → S21 → <span style="color: #ff9800; font-weight: bold;">S22</span> → S30 → S31 → <span style="color: #4caf50; font-weight: bold;">S40</span>
+                </div>
+
+                <h3>Document Acquisition Path</h3>
+                <div style="background: #f3e5f5; padding: 1rem; border-radius: 8px; font-family: monospace; margin-bottom: 1rem;">
+                    ... → S08 → S11 → S12 → [S13 → S20... | S14 → S20... | S15 → <span style="color: #f44336;">S44</span>]
+                </div>
+
+                <h3>Failure Paths</h3>
+                <div style="background: #ffebee; padding: 1rem; border-radius: 8px; font-family: monospace;">
+                    Consent Declined: ... → S21 → <span style="color: #f44336; font-weight: bold;">S43</span><br>
+                    Abandoned: ... → S21 → <span style="color: #f44336; font-weight: bold;">S42</span> (timeout)<br>
+                    PIN Failed: ... → S31 → S32 → <span style="color: #f44336; font-weight: bold;">S43</span><br>
+                    Timeout: Any state → <span style="color: #f44336; font-weight: bold;">S41</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Navigation
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // SP Data
+        const spData = [
+            { name: 'DU', total: 19, success: 17, rate: 89.5 },
+            { name: 'ENBD Tablet Banking', total: 22, success: 19, rate: 86.4 },
+            { name: 'Du Esim', total: 21, success: 18, rate: 85.7 },
+            { name: 'FAB Retail Banking', total: 24, success: 20, rate: 83.3 },
+            { name: 'ADNIC', total: 26, success: 20, rate: 76.9 },
+            { name: 'Lulu', total: 24, success: 18, rate: 75.0 },
+            { name: 'Noor Capital', total: 22, success: 16, rate: 72.7 },
+            { name: 'Botim', total: 30, success: 21, rate: 70.0 },
+            { name: 'Emirates Islamic', total: 20, success: 14, rate: 70.0 },
+            { name: 'Commercial Bank of Dubai', total: 21, success: 14, rate: 66.7 },
+            { name: 'Etisalat Retail', total: 29, success: 19, rate: 65.5 },
+            { name: 'AAE', total: 20, success: 13, rate: 65.0 },
+            { name: 'GIG', total: 19, success: 12, rate: 63.2 },
+            { name: 'Etisalat Business', total: 13, success: 8, rate: 61.5 },
+            { name: 'Arab Bank', total: 23, success: 14, rate: 60.9 },
+            { name: 'ADCB', total: 25, success: 15, rate: 60.0 },
+            { name: 'Beyon Money', total: 24, success: 14, rate: 58.3 },
+            { name: 'Baraka', total: 23, success: 13, rate: 56.5 },
+            { name: 'National Bank of Fujairah', total: 22, success: 12, rate: 54.5 },
+            { name: 'National Bonds Corp', total: 26, success: 14, rate: 53.8 },
+            { name: 'ADIB', total: 19, success: 7, rate: 36.8 },
+            { name: 'InsureOne', total: 28, success: 10, rate: 35.7 }
+        ];
+
+        // Populate SP table
+        const spTableBody = document.querySelector('#spTable tbody');
+        spData.forEach(sp => {
+            const row = document.createElement('tr');
+            const rateClass = sp.rate >= 80 ? 'high' : sp.rate >= 60 ? 'medium' : 'low';
+            row.innerHTML = `
+                <td>${sp.name}</td>
+                <td>${sp.total}</td>
+                <td>${sp.success}</td>
+                <td>${sp.rate.toFixed(1)}%</td>
+                <td><div class="progress-bar"><div class="progress-fill ${rateClass}" style="width: ${sp.rate}%;">${sp.rate.toFixed(0)}%</div></div></td>
+            `;
+            spTableBody.appendChild(row);
+        });
+
+        // Charts
+        Chart.defaults.font.family = "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif";
+
+        // Outcome Chart
+        new Chart(document.getElementById('outcomeChart'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Success (S40)', 'Consent Declined (S43)', 'Abandoned (S42)', 'Timeout (S41)', 'Docs N/A (S44)'],
+                datasets: [{
+                    data: [328, 89, 47, 24, 12],
+                    backgroundColor: ['#4caf50', '#f44336', '#ff9800', '#9c27b0', '#607d8b'],
+                    borderWidth: 2,
+                    borderColor: '#fff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'right' }
+                }
+            }
+        });
+
+        // Channel Chart
+        new Chart(document.getElementById('channelChart'), {
+            type: 'bar',
+            data: {
+                labels: ['Redirect', 'QR Scan', 'Notification'],
+                datasets: [
+                    {
+                        label: 'Success',
+                        data: [83, 73, 172],
+                        backgroundColor: '#4caf50'
+                    },
+                    {
+                        label: 'Failed',
+                        data: [17, 39, 116],
+                        backgroundColor: '#f44336'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: { stacked: true },
+                    y: { stacked: true }
+                },
+                plugins: {
+                    legend: { position: 'top' }
+                }
+            }
+        });
+
+        // Platform Chart
+        new Chart(document.getElementById('platformChart'), {
+            type: 'bar',
+            data: {
+                labels: ['iOS', 'Android'],
+                datasets: [
+                    {
+                        label: 'Success Rate',
+                        data: [68.3, 62.9],
+                        backgroundColor: ['#2196f3', '#4caf50'],
+                        barThickness: 60
+                    }
+                ]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: { max: 100, title: { display: true, text: 'Success Rate (%)' } }
+                },
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+
+        // Funnel Chart
+        new Chart(document.getElementById('funnelChart'), {
+            type: 'bar',
+            data: {
+                labels: ['Request Created', 'App Opened', 'Consent Screen', 'Reviewing', 'Consent Given', 'PIN Entry', 'SUCCESS'],
+                datasets: [{
+                    label: 'Requests',
+                    data: [500, 478, 435, 405, 368, 352, 328],
+                    backgroundColor: [
+                        '#2196f3', '#03a9f4', '#00bcd4', '#009688', '#4caf50', '#8bc34a', '#cddc39'
+                    ],
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: { title: { display: true, text: 'Number of Requests' } }
+                },
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+
+        // Channel Funnel Chart
+        new Chart(document.getElementById('channelFunnelChart'), {
+            type: 'bar',
+            data: {
+                labels: ['Notification', 'QR Scan', 'Redirect'],
+                datasets: [
+                    {
+                        label: 'Total Requests',
+                        data: [288, 112, 100],
+                        backgroundColor: '#e3f2fd'
+                    },
+                    {
+                        label: 'Reached Consent',
+                        data: [240, 95, 100],
+                        backgroundColor: '#90caf9'
+                    },
+                    {
+                        label: 'Success',
+                        data: [172, 73, 83],
+                        backgroundColor: '#4caf50'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: { title: { display: true, text: 'Number of Requests' } }
+                },
+                plugins: {
+                    legend: { position: 'top' }
+                }
+            }
+        });
+
+        // SP Performance Chart
+        new Chart(document.getElementById('spChart'), {
+            type: 'bar',
+            data: {
+                labels: spData.map(sp => sp.name.length > 15 ? sp.name.substring(0, 15) + '...' : sp.name),
+                datasets: [{
+                    label: 'Success Rate (%)',
+                    data: spData.map(sp => sp.rate),
+                    backgroundColor: spData.map(sp => sp.rate >= 80 ? '#4caf50' : sp.rate >= 60 ? '#ff9800' : '#f44336'),
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: { max: 100, title: { display: true, text: 'Success Rate (%)' } }
+                },
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+
+        // Failure Distribution Chart
+        new Chart(document.getElementById('failureChart'), {
+            type: 'pie',
+            data: {
+                labels: ['Consent Declined', 'Abandoned', 'Timeout', 'Docs N/A'],
+                datasets: [{
+                    data: [89, 47, 24, 12],
+                    backgroundColor: ['#f44336', '#ff9800', '#9c27b0', '#607d8b']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'right' }
+                }
+            }
+        });
+    </script>
+
+    <footer style="text-align: center; padding: 2rem; background: #f8f9fa; margin-top: 2rem; color: #666;">
+        <p>UAE PASS Document Sharing - Status Model Dashboard</p>
+        <p style="font-size: 0.85rem;">Generated: January 2026 | Data Sample: 500 Requests | Version 2.0</p>
+    </footer>
+</body>
+</html>

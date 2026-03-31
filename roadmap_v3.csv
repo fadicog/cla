@@ -1,0 +1,56 @@
+2,Category,Feature_Name,Summary,To be picked up
+1,Product,Status-Based Reporting Implementation,"Deploy 23-status-code tracking system to enable accurate measurement of all sharing requests. Foundation for all optimization. Database schema enhancement to track status transition history (previous_status, timestamps) for journey analysis.",Yes
+2,Technical,Document Pre-Check API,API endpoint for SPs to verify document availability before creating share requests. Prevents futile requests.,
+3,Product,Issuer Retry Logic,Implement intelligent retry with exponential backoff and circuit breaker for issuer document retrieval failures.,
+4,Product,Android Optimization Sprint,"Dedicated investigation and fix sprint for Android platform covering notifications, UX friction, crashes, and performance.",
+5,Product,User Behavior Analytics Tool Selection,"Select and integrate analytics tool (UXCam/Firebase Analytics) to enable data-driven optimization, session replay, and Real User Monitoring (RUM) for user behavior patterns.",
+6,Product,Smart Pending Request Auto-Redirect & Reminder System,Two-part system: (1) Auto-redirect users to pending sharing request on app open; (2) Push notification reminders before expiry. Reduces navigation friction and recaptures distracted users.,Yes
+8,UX,UX Enhancements Bundle,Placeholder for UI/UX enhancements.,
+9,Technical,Error-to-Status Code Linking System,Structured error taxonomy mapped to status codes for automated troubleshooting and support ticket reduction.,Yes
+10,Product,Dual Citizenship GA,Complete Primary/Secondary EID handling with final EN/AR copy approval and edge case handling.,Yes
+11,Product,Auto-Add Documents Launch / One-Time Consent,One-time consent for DV to periodically check and auto-add new/updated documents from issuers.,Yes
+12,Product,Customer Feedback Mechanism,In-app feedback tool and banner for user research recruitment to enable continuous discovery and UX validation.,
+13,Product,SP Quality Scoring Program,"Dashboard showing SP conversion metrics, quality scorecard, best practices guidance, and quarterly reviews.",
+14,Product,QR Verification Phase 1 MVP,"Secure QR verification with masked references, time-limited codes, anti-replay protection for in-person use cases.",Yes
+15,Product,AI Chatbot / AI Agent for Uploaded Documents,"Advanced chatbot for document search, request assistance, language translation, and summarization. User-facing scope; see Rank 53 for multi-stakeholder extension.",
+16,Product,Selective Disclosure (Attribute-Level),Critical industry standard allowing users to share only necessary attributes rather than entire documents. Enhances user control and privacy.,
+17,Design,Design System Update,Update and maintain the DV design system for consistency across platforms.,Yes
+18,UX,Home Page Revamp,Redesign the DV home page for improved user experience and engagement.,Yes
+19,UX,UX/UI Enhancements Bundle 2,Second bundle of UI/UX improvements based on user feedback and analytics.,Yes
+20,UX,Form Filler,Auto-fill forms using stored document data to streamline user workflows.,Yes
+21,Product,Consent Sharing (Third Party Data),Sharing third party data via providing consent mechanism.,
+22,Product,UAE Pass for Business (Study),Research and feasibility study for UAE Pass business use cases.,Yes
+23,Product,Innovation Track,Exploratory initiatives and innovation projects for future capabilities.,
+24,Product,Extend UAE PASS App Services,Extend the functionalities of UAE PASS to allow users to utilize services directly from the app.,
+25,Technical,Current Issues Solutions,Resolution of known technical issues and bugs.,Yes
+26,Technical,Unify Verification Methods (eSeal / UAE Verify),Consolidate and unify eSeal and UAE Verify verification methods.,
+27,Technical,License QR Code Display Fix,Fix License Name and Number not showing when customer scans QR code from UAE Verify portal.,
+28,Technical,eSeal & DV QR Code Study,Study QR code implementations for eSeal and DV similar to European implementations.,
+29,Technical,Infinite Loaders Detection and Resolution,Detect and resolve infinite loading states across the application.,Yes
+30,Technical,Firebase Configuration & Optimization,"Firebase Remote Config and push notification optimization, monitoring, and maintenance.",
+31,Technical,eSeal Transition Support,Support ICP transition from DDA eSeal service to self-signing (own HSM). Ensure validation compatibility.,
+32,Technical,Performance Enhancement ,Application performance improvements including load times and responsiveness.,
+33,Technical,Automated Testing,"Implement automated testing framework for regression and quality assurance, including UI test automation and tool fitment analysis.",Yes
+34,Marketing,Service Provider Communication,SP communication strategy including onboarding materials and integration documentation.,
+35,Design,Design Library Update,Maintain and update component library for design consistency.,Yes
+36,Design,Design Audit,Comprehensive audit of current design patterns and identify improvement areas.,Yes
+37,Design,Accessibility Enhancement,Improve accessibility compliance (WCAG) across the application.,Yes
+38,UX,Enhancement/Revamp Document Request,Redesign the document request flow for improved user experience.,
+39,UX,Revamp Document Sharing,Redesign document sharing flow to reduce consent screen drop-off (currently 16.9% abandonment).,
+40,UX,Document Availability,Improve document availability visibility,
+41,Product,Download All,Enable downloading all issued documents in DV,
+42,Product,One-Time Consent,Streamlined one-time consent mechanism for document auto-add (linked to Auto-Add Documents feature).,
+43,Product,Physical Document Sharing,Enable sharing of physical document representations or verified copies.,Yes
+44,Product,Service Enabler / Data,Description required ,
+45,Technical Team Suggestions,DR Automation (Disaster Recovery),Automate disaster recovery processes including failover testing and recovery procedures. Reduces RTO/RPO and operational risk.,
+46,Technical Team Suggestions,Blockchain Upgrade,Upgrade blockchain infrastructure for improved performance and capabilities.,
+47,Technical Team Suggestions,CI/CD Pipeline Automation,Comprehensive CI/CD automation including code quality gates coverage thresholds and automated UI deployment pipelines.,
+48,Technical Team Suggestions,AI Strategy & Initiative Analysis,Q1 analysis phase for AI initiatives targeting user experience optimization and operational efficiency followed by Q2-Q4 implementation.,
+49,Technical Team Suggestions,ELK Stack AI Upgrade,Upgrade Elasticsearch Logstash Kibana stack to leverage AI capabilities for enhanced log analysis and anomaly detection.,
+50,Technical Team Suggestions,Automated RCA & Incident Reporting,Automate Root Cause Analysis and incident report generation to reduce mean time to resolution and improve post-incident documentation.,
+51,Technical Team Suggestions,SP/Issuer Onboarding Optimization,Technical and operational optimization of Service Provider and Issuer onboarding mechanism to reduce integration time and friction.,
+52,Technical Team Suggestions,SP Integration Test Suite,Dedicated test suite for Service Providers to validate integrations including sandbox environment and automated validation tools.,
+53,Technical Team Suggestions,Multi-Stakeholder Chatbot Extension,Extend AI Chatbot capabilities to Service Providers Issuers and Operations Team (beyond user-facing implementation in Rank 15).,
+54,UX,Technical Support Card on Failure,Display technical support card with issue submission capability when a sharing request or transaction fails. Improves support experience.,
+55,Product,Rejection Reason Capture,Prompt users for reason when rejecting a document sharing request. Enables governance insights and product improvement.,
+56,Technical ,SP Integraion through SDK ,Build an SDK to streamline the onboarding process,

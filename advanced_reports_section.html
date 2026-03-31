@@ -1,0 +1,307 @@
+        <!-- ADVANCED REPORTS SECTION -->
+        <div id="advanced-reports" class="section">
+            <div class="card">
+                <h2>Advanced Reports - Interactive Analytics</h2>
+                <p>These reports provide deeper insights from the <code>sharing_transactions_new_sample.csv</code> data file (500 unique requests, 5,068 records).</p>
+
+                <div class="info-box">
+                    <strong>Data Source:</strong> <code>sharing_transactions_new_sample.csv</code><br>
+                    <strong>Analysis Period:</strong> Sample dataset with 500 unique requests<br>
+                    <strong>Overall Success Rate:</strong> 65.6% (328 successful out of 500)<br>
+                    <strong>Platforms:</strong> iOS (249 requests, 68.3% success) | Android (251 requests, 62.9% success)<br>
+                    <strong>Channels:</strong> Notification (288) | QR (112) | Redirect (100)
+                </div>
+            </div>
+
+            <!-- 1. FLOW SANKEY DIAGRAM -->
+            <div class="card">
+                <h2>1. Request Flow Analysis - Sankey Diagram</h2>
+                <p>Visualizes how requests flow through different status transitions from initiation to terminal outcomes.</p>
+                <canvas id="flowSankeyChart" style="max-height: 400px;"></canvas>
+            </div>
+
+            <!-- 2. SP x CHANNEL HEATMAP -->
+            <div class="card">
+                <h2>2. SP Performance Heatmap - Success Rate by Channel</h2>
+                <p>Shows success rates for each Service Provider across different channels. Darker green indicates higher success rates.</p>
+                <canvas id="spChannelHeatmap" style="max-height: 500px;"></canvas>
+            </div>
+
+            <!-- 3. ERROR DISTRIBUTION -->
+            <div class="card">
+                <h2>3. Error Distribution Analysis</h2>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                    <div>
+                        <h3>Error Frequency</h3>
+                        <canvas id="errorPieChart"></canvas>
+                    </div>
+                    <div>
+                        <h3>Top Errors by Count</h3>
+                        <canvas id="errorBarChart"></canvas>
+                    </div>
+                </div>
+                <div class="metric-grid" style="margin-top: 1rem;">
+                    <div class="metric-card">
+                        <div class="metric-value">24</div>
+                        <div class="metric-label">issuer_not_found</div>
+                        <div style="font-size: 0.75rem; color: #666;">Most common error (34%)</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">12</div>
+                        <div class="metric-label">pin_incorrect</div>
+                        <div style="font-size: 0.75rem; color: #666;">User authentication issues</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">11</div>
+                        <div class="metric-label">dv_5xx</div>
+                        <div style="font-size: 0.75rem; color: #666;">DV service errors</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">70</div>
+                        <div class="metric-label">Total Errors</div>
+                        <div style="font-size: 0.75rem; color: #666;">Across 9 error types</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. TIME ANALYSIS -->
+            <div class="card">
+                <h2>4. Step Latency Analysis</h2>
+                <p>Average time spent at each key status transition. Identifies potential performance bottlenecks.</p>
+                <canvas id="latencyBarChart" style="max-height: 400px;"></canvas>
+                <div class="info-box" style="margin-top: 1rem;">
+                    <strong>Key Insights:</strong><br>
+                    • S20 (Consent Display) takes longest: 16.7s average - users reviewing document details<br>
+                    • S21 (User Decision): 7.9s - user making consent decision<br>
+                    • S08 (Doc Check): 6.3s - system checking document availability<br>
+                    • S31 (Signing): 6.9s - cryptographic signing process
+                </div>
+            </div>
+
+            <!-- 5. PLATFORM COMPARISON -->
+            <div class="card">
+                <h2>5. iOS vs Android Platform Comparison</h2>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+                    <div>
+                        <h3>Success Rate Comparison</h3>
+                        <canvas id="platformSuccessChart"></canvas>
+                    </div>
+                    <div>
+                        <h3>Outcome Distribution</h3>
+                        <canvas id="platformOutcomesChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="metric-grid">
+                    <div class="metric-card">
+                        <div class="metric-value">68.3%</div>
+                        <div class="metric-label">iOS Success Rate</div>
+                        <div style="font-size: 0.75rem; color: #666;">170 successful / 249 total</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">62.9%</div>
+                        <div class="metric-label">Android Success Rate</div>
+                        <div style="font-size: 0.75rem; color: #666;">158 successful / 251 total</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">+5.4pp</div>
+                        <div class="metric-label">iOS Advantage</div>
+                        <div style="font-size: 0.75rem; color: #666;">Percentage point difference</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">62.3s</div>
+                        <div class="metric-label">iOS Avg Time</div>
+                        <div style="font-size: 0.75rem; color: #666;">64.9s for Android</div>
+                    </div>
+                </div>
+
+                <div class="info-box" style="margin-top: 1rem;">
+                    <strong>Platform Insights:</strong><br>
+                    • iOS outperforms Android by 5.4 percentage points<br>
+                    • Android has 2x higher technical error rate (S41): 6.4% vs 3.2%<br>
+                    • iOS completes slightly faster: 62.3s vs 64.9s average<br>
+                    • Abort rates similar: 15.7% (iOS) vs 19.9% (Android)<br>
+                    <strong>Recommendation:</strong> Investigate Android-specific technical errors for optimization
+                </div>
+            </div>
+
+            <!-- 6. DOCUMENT ANALYSIS -->
+            <div class="card">
+                <h2>6. Document Analysis</h2>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                    <div>
+                        <h3>Success Rate by Document Count</h3>
+                        <canvas id="docCountSuccessChart"></canvas>
+                        <div style="margin-top: 1rem; font-size: 0.85rem;">
+                            <strong>Key Finding:</strong> 2-document requests have highest success rate (71.6%). Single-doc and 3-doc requests both around 59-60%.
+                        </div>
+                    </div>
+                    <div>
+                        <h3>Document Type Request Frequency</h3>
+                        <canvas id="docTypeFrequencyChart"></canvas>
+                        <div style="margin-top: 1rem; font-size: 0.85rem;">
+                            <strong>Most Requested:</strong> Emirates ID Card (383), followed by Residence Visa (177) and Passport (177).
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 7. WEEKLY TREND -->
+            <div class="card">
+                <h2>7. Success Rate Trend Analysis</h2>
+                <p>Weekly success rate trend shows overall performance stability with minor variations.</p>
+                <canvas id="weeklyTrendChart" style="max-height: 350px;"></canvas>
+                <div class="info-box" style="margin-top: 1rem;">
+                    <strong>Trend Summary:</strong><br>
+                    • Week 2 showed peak performance: 67.6% success rate (+2.0pp from baseline)<br>
+                    • Week 3 slight dip: 64.6% (-1.0pp)<br>
+                    • Week 4 recovery: 68.6% (+3.0pp, highest in period)<br>
+                    • Overall trend: Stable with minor week-to-week variations (±2-3pp)
+                </div>
+            </div>
+
+            <!-- 8. PATH ANALYSIS -->
+            <div class="card">
+                <h2>8. Common Status Paths Analysis</h2>
+                <p>Top 5 most frequent status paths showing final outcomes and success rates.</p>
+                <canvas id="pathAnalysisChart" style="max-height: 350px;"></canvas>
+
+                <div style="margin-top: 1.5rem;">
+                    <h3>Path Details</h3>
+                    <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem;">
+                        <thead>
+                            <tr style="background: #f8f9fa; border-bottom: 2px solid #dee2e6;">
+                                <th style="padding: 0.75rem; text-align: left; width: 50%;">Path (Last 5 Steps)</th>
+                                <th style="padding: 0.75rem; text-align: center;">Requests</th>
+                                <th style="padding: 0.75rem; text-align: center;">Success Count</th>
+                                <th style="padding: 0.75rem; text-align: center;">Success Rate</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="border-bottom: 1px solid #e9ecef;">
+                                <td style="padding: 0.75rem;">S08 → S10 → S20 → S21 → S30 → S31 → S40</td>
+                                <td style="padding: 0.75rem; text-align: center;">121</td>
+                                <td style="padding: 0.75rem; text-align: center; color: #28a745;">121</td>
+                                <td style="padding: 0.75rem; text-align: center;"><span style="background: #d4edda; padding: 0.25rem 0.5rem; border-radius: 4px; font-weight: 600;">100.0%</span></td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #e9ecef;">
+                                <td style="padding: 0.75rem;">S11 → S12 → S13 → S20 → S21 → S30 → S31 → S40</td>
+                                <td style="padding: 0.75rem; text-align: center;">51</td>
+                                <td style="padding: 0.75rem; text-align: center; color: #28a745;">51</td>
+                                <td style="padding: 0.75rem; text-align: center;"><span style="background: #d4edda; padding: 0.25rem 0.5rem; border-radius: 4px; font-weight: 600;">100.0%</span></td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #e9ecef;">
+                                <td style="padding: 0.75rem;">S08 → S10 → S20 → S21 → S30 → S31 → S40</td>
+                                <td style="padding: 0.75rem; text-align: center;">49</td>
+                                <td style="padding: 0.75rem; text-align: center; color: #28a745;">49</td>
+                                <td style="padding: 0.75rem; text-align: center;"><span style="background: #d4edda; padding: 0.25rem 0.5rem; border-radius: 4px; font-weight: 600;">100.0%</span></td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #e9ecef;">
+                                <td style="padding: 0.75rem;">S08 → S10 → S20 → S21 → S30 → S31 → S40</td>
+                                <td style="padding: 0.75rem; text-align: center;">41</td>
+                                <td style="padding: 0.75rem; text-align: center; color: #28a745;">41</td>
+                                <td style="padding: 0.75rem; text-align: center;"><span style="background: #d4edda; padding: 0.25rem 0.5rem; border-radius: 4px; font-weight: 600;">100.0%</span></td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #e9ecef; background: #fff3cd;">
+                                <td style="padding: 0.75rem;"><strong>S08 → S10 → S20 → S21 → S43 (Aborted)</strong></td>
+                                <td style="padding: 0.75rem; text-align: center;">37</td>
+                                <td style="padding: 0.75rem; text-align: center; color: #dc3545;">0</td>
+                                <td style="padding: 0.75rem; text-align: center;"><span style="background: #f8d7da; padding: 0.25rem 0.5rem; border-radius: 4px; font-weight: 600;">0.0%</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="info-box" style="margin-top: 1rem;">
+                    <strong>Path Insights:</strong><br>
+                    • Top 4 successful paths account for 262 requests (52.4% of all requests)<br>
+                    • All successful paths end at S40 (Success) with 100% completion rate<br>
+                    • 37 requests (7.4%) followed abort path: reached consent but user cancelled<br>
+                    • Paths with document acquisition (S11→S12→S13) still achieve 100% success when completed<br>
+                    <strong>Recommendation:</strong> Focus on reducing aborts at S21 (post-consent review)
+                </div>
+            </div>
+
+            <!-- TERMINAL OUTCOMES SUMMARY -->
+            <div class="card">
+                <h2>Terminal Outcomes Distribution</h2>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+                    <div style="background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%); padding: 1.5rem; border-radius: 8px; border-left: 4px solid #28a745;">
+                        <div style="font-size: 2rem; font-weight: 700; color: #155724;">328</div>
+                        <div style="font-weight: 600; color: #155724; margin-bottom: 0.25rem;">S40 - Success</div>
+                        <div style="font-size: 0.85rem; color: #155724;">65.6% of all requests</div>
+                    </div>
+                    <div style="background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%); padding: 1.5rem; border-radius: 8px; border-left: 4px solid #ffc107;">
+                        <div style="font-size: 2rem; font-weight: 700; color: #856404;">89</div>
+                        <div style="font-weight: 600; color: #856404; margin-bottom: 0.25rem;">S43 - Aborted</div>
+                        <div style="font-size: 0.85rem; color: #856404;">17.8% user cancellation</div>
+                    </div>
+                    <div style="background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%); padding: 1.5rem; border-radius: 8px; border-left: 4px solid #dc3545;">
+                        <div style="font-size: 2rem; font-weight: 700; color: #721c24;">47</div>
+                        <div style="font-weight: 600; color: #721c24; margin-bottom: 0.25rem;">S42 - Expired</div>
+                        <div style="font-size: 0.85rem; color: #721c24;">9.4% timeout</div>
+                    </div>
+                    <div style="background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%); padding: 1.5rem; border-radius: 8px; border-left: 4px solid #dc3545;">
+                        <div style="font-size: 2rem; font-weight: 700; color: #721c24;">24</div>
+                        <div style="font-weight: 600; color: #721c24; margin-bottom: 0.25rem;">S41 - Tech Error</div>
+                        <div style="font-size: 0.85rem; color: #721c24;">4.8% system failure</div>
+                    </div>
+                    <div style="background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%); padding: 1.5rem; border-radius: 8px; border-left: 4px solid #17a2b8;">
+                        <div style="font-size: 2rem; font-weight: 700; color: #0c5460;">12</div>
+                        <div style="font-weight: 600; color: #0c5460; margin-bottom: 0.25rem;">S44 - Not Eligible</div>
+                        <div style="font-size: 0.85rem; color: #0c5460;">2.4% doc not found</div>
+                    </div>
+                </div>
+
+                <canvas id="terminalOutcomesChart" style="max-height: 300px;"></canvas>
+            </div>
+
+            <!-- SQL EXAMPLES (kept for reference) -->
+            <div class="card">
+                <h2>Report Generation SQL Examples</h2>
+                <p>Sample queries for generating key reports from the data.</p>
+
+                <h3>Funnel by Channel</h3>
+                <div style="background: #1e1e1e; color: #d4d4d4; padding: 1rem; border-radius: 8px; font-family: 'Consolas', monospace; font-size: 0.8rem; overflow-x: auto;">
+<span style="color: #569cd6;">SELECT</span>
+    channel,
+    <span style="color: #569cd6;">COUNT</span>(<span style="color: #569cd6;">DISTINCT</span> <span style="color: #569cd6;">CASE WHEN</span> status_code = <span style="color: #ce9178;">'S00'</span> <span style="color: #569cd6;">THEN</span> request_id <span style="color: #569cd6;">END</span>) <span style="color: #569cd6;">AS</span> created,
+    <span style="color: #569cd6;">COUNT</span>(<span style="color: #569cd6;">DISTINCT</span> <span style="color: #569cd6;">CASE WHEN</span> status_code = <span style="color: #ce9178;">'S08'</span> <span style="color: #569cd6;">THEN</span> request_id <span style="color: #569cd6;">END</span>) <span style="color: #569cd6;">AS</span> viewed,
+    <span style="color: #569cd6;">COUNT</span>(<span style="color: #569cd6;">DISTINCT</span> <span style="color: #569cd6;">CASE WHEN</span> status_code = <span style="color: #ce9178;">'S21'</span> <span style="color: #569cd6;">THEN</span> request_id <span style="color: #569cd6;">END</span>) <span style="color: #569cd6;">AS</span> consent,
+    <span style="color: #569cd6;">COUNT</span>(<span style="color: #569cd6;">DISTINCT</span> <span style="color: #569cd6;">CASE WHEN</span> status_code = <span style="color: #ce9178;">'S40'</span> <span style="color: #569cd6;">THEN</span> request_id <span style="color: #569cd6;">END</span>) <span style="color: #569cd6;">AS</span> success
+<span style="color: #569cd6;">FROM</span> sharing_status_history
+<span style="color: #569cd6;">GROUP BY</span> channel;
+                </div>
+
+                <h3>SP Performance Scorecard</h3>
+                <div style="background: #1e1e1e; color: #d4d4d4; padding: 1rem; border-radius: 8px; font-family: 'Consolas', monospace; font-size: 0.8rem; overflow-x: auto; margin-top: 1rem;">
+<span style="color: #569cd6;">WITH</span> request_outcomes <span style="color: #569cd6;">AS</span> (
+    <span style="color: #569cd6;">SELECT</span> request_id, sp_id,
+           <span style="color: #569cd6;">MAX</span>(<span style="color: #569cd6;">CASE WHEN</span> status_code = <span style="color: #ce9178;">'S40'</span> <span style="color: #569cd6;">THEN</span> <span style="color: #b5cea8;">1</span> <span style="color: #569cd6;">ELSE</span> <span style="color: #b5cea8;">0</span> <span style="color: #569cd6;">END</span>) <span style="color: #569cd6;">AS</span> is_success
+    <span style="color: #569cd6;">FROM</span> sharing_status_history
+    <span style="color: #569cd6;">GROUP BY</span> request_id, sp_id
+)
+<span style="color: #569cd6;">SELECT</span>
+    sp_id,
+    <span style="color: #569cd6;">COUNT</span>(*) <span style="color: #569cd6;">AS</span> total_requests,
+    <span style="color: #569cd6;">SUM</span>(is_success) <span style="color: #569cd6;">AS</span> successful,
+    <span style="color: #569cd6;">ROUND</span>(<span style="color: #569cd6;">AVG</span>(is_success) * <span style="color: #b5cea8;">100</span>, <span style="color: #b5cea8;">1</span>) <span style="color: #569cd6;">AS</span> success_rate_pct
+<span style="color: #569cd6;">FROM</span> request_outcomes
+<span style="color: #569cd6;">GROUP BY</span> sp_id
+<span style="color: #569cd6;">ORDER BY</span> success_rate_pct <span style="color: #569cd6;">DESC</span>;
+                </div>
+
+                <h3>Step Latency Analysis</h3>
+                <div style="background: #1e1e1e; color: #d4d4d4; padding: 1rem; border-radius: 8px; font-family: 'Consolas', monospace; font-size: 0.8rem; overflow-x: auto; margin-top: 1rem;">
+<span style="color: #569cd6;">SELECT</span>
+    previous_status || <span style="color: #ce9178;">' → '</span> || status_code <span style="color: #569cd6;">AS</span> transition,
+    <span style="color: #569cd6;">COUNT</span>(*) <span style="color: #569cd6;">AS</span> occurrences,
+    <span style="color: #569cd6;">ROUND</span>(<span style="color: #569cd6;">AVG</span>(step_latency_ms)/<span style="color: #b5cea8;">1000</span>, <span style="color: #b5cea8;">2</span>) <span style="color: #569cd6;">AS</span> avg_sec,
+    <span style="color: #569cd6;">ROUND</span>(<span style="color: #569cd6;">PERCENTILE_CONT</span>(<span style="color: #b5cea8;">0.9</span>) <span style="color: #569cd6;">WITHIN GROUP</span> (<span style="color: #569cd6;">ORDER BY</span> step_latency_ms)/<span style="color: #b5cea8;">1000</span>, <span style="color: #b5cea8;">2</span>) <span style="color: #569cd6;">AS</span> p90_sec
+<span style="color: #569cd6;">FROM</span> sharing_status_history
+<span style="color: #569cd6;">WHERE</span> previous_status <span style="color: #569cd6;">IS NOT NULL</span>
+<span style="color: #569cd6;">GROUP BY</span> transition
+<span style="color: #569cd6;">ORDER BY</span> avg_sec <span style="color: #569cd6;">DESC</span>;
+                </div>
+            </div>
+        </div>

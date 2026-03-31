@@ -1,0 +1,288 @@
+================================================================================
+UAE PASS DIGITAL DOCUMENTS SHARING - KEY METRICS SUMMARY
+================================================================================
+Analysis Date: 2025-11-28
+Dataset: 300 requests, 2,995 status events (Nov 1-28, 2025)
+
+================================================================================
+OVERALL PERFORMANCE
+================================================================================
+Overall Success Rate:          70.0% (210/300)
+Median Journey Time:           33 seconds
+P90 Journey Time:              41 seconds
+Fastest Journey:               20 seconds
+Slowest Journey:               52 seconds
+
+Target Success Rate:           75-80%
+Status vs Target:              BELOW TARGET (-5 to -10pp)
+
+================================================================================
+CHANNEL BREAKDOWN
+================================================================================
+                    Requests  Success  Rate    Key Issue
+Notification         156       118     75.6%   Consent abandon (13.3%)
+QR                    68        43     63.2%   Scan abandon (25.0%)
+Redirect              76        49     64.5%   View->Consent drop (35.5%)
+
+Best Performer:      Notification (75.6%)
+Worst Performer:     QR (63.2%)
+Biggest Opportunity: Redirect (35.5% drop at one stage)
+
+================================================================================
+FUNNEL METRICS
+================================================================================
+NOTIFICATION CHANNEL:
+  S00 Request Created:        156 (100.0%)
+  S02 Delivered:              150 ( 96.2%)  [-6]
+  S03 Opened:                 150 (100.0%)  [Perfect]
+  S08 Viewed:                 150 (100.0%)  [Perfect]
+  S20 Consent Screen:         150 (100.0%)  [Perfect]
+  S21 Consent Given:          130 ( 86.7%)  [-20] DROP-OFF POINT
+  S31 PIN Verified:           118 ( 90.8%)  [-12] DROP-OFF POINT
+  S40 Success:                118 (100.0%)  [Perfect]
+
+QR CHANNEL:
+  S00 Request Created:         68 (100.0%)
+  S06 QR Rendered:             68 (100.0%)  [Perfect]
+  S07 QR Scanned:              51 ( 75.0%)  [-17] CRITICAL DROP-OFF
+  S08 Viewed:                  51 (100.0%)  [Perfect after scan]
+  S21 Consent Given:           51 (100.0%)  [Perfect]
+  S31 PIN Verified:            51 (100.0%)  [Perfect]
+  S40 Success:                 43 ( 84.3%)  [-8] Tech errors post-PIN
+
+REDIRECT CHANNEL:
+  S00 Request Created:         76 (100.0%)
+  S05 Redirect Landed:         76 (100.0%)  [Perfect]
+  S08 Viewed:                  76 (100.0%)  [Perfect]
+  S20 Consent Screen:          49 ( 64.5%)  [-27] MASSIVE DROP-OFF
+  S21 Consent Given:           49 (100.0%)  [Perfect after reaching consent]
+  S31 PIN Verified:            49 (100.0%)  [Perfect]
+  S40 Success:                 49 (100.0%)  [Perfect]
+
+================================================================================
+DOCUMENT READINESS
+================================================================================
+Docs Ready at Open (S10):      190 (68.6%)
+Docs Missing at Open (S11):     87 (31.4%)
+
+Success Rate - Docs Ready:     78.9% (150/190)
+Success Rate - Docs Missing:   69.0% (60/87)
+Impact:                        10.0 percentage points
+
+Missing Doc Request Flow:
+  Initiated (S12):             87 (100.0% of S11) [Excellent UX]
+  Successful Fetch (S13):      60 ( 69.0%)
+  Technical Error (S14):       15 ( 17.2%)
+  Not Found (S15):             12 ( 13.8%)
+  Failure Rate:                31.0%
+
+================================================================================
+USER BEHAVIOR
+================================================================================
+Consent Step:
+  Reached Consent (S20):       250
+  Gave Consent (S21):          230
+  Abandonment:                  20 (8.0%)
+  Conversion Rate:             92.0% [EXCELLENT - Exceeds 90% target]
+
+PIN Step:
+  PIN Requested (S30):         230
+  PIN Verified (S31):          218
+  PIN Failed (S32):             12
+  Success Rate:                94.8% [STRONG - Meets 95% target]
+  Failure Rate:                 5.2%
+
+================================================================================
+TERMINAL STATUS DISTRIBUTION
+================================================================================
+S40 (Success):                 210 (70.0%)
+S43 (User Aborted):             47 (15.7%) [#1 FAILURE MODE]
+S42 (Expired):                  23 ( 7.7%)
+S44 (Not Eligible):             12 ( 4.0%)
+S41 (Technical Error):           8 ( 2.7%)
+
+Failure Breakdown:
+  User-Driven (S43, S44):       59 (65.6% of failures)
+  Technical (S41, S42):         31 (34.4% of failures)
+
+Key Insight: User abandonment is 5.7x more common than technical errors
+
+================================================================================
+PLATFORM COMPARISON
+================================================================================
+                    Requests  Success  Rate    Tech Errors  Aborted  Avg Time
+iOS                  152       106     69.7%        4          26       32.0s
+Android              148       104     70.3%        4          21       30.0s
+Difference:           -         +2     +0.6pp       0         -5       -2.0s
+
+Status: PLATFORM PARITY ACHIEVED (no action required)
+
+================================================================================
+SERVICE PROVIDER PERFORMANCE
+================================================================================
+Rank  SP              Total  Success  Rate    Aborted  Status
+ 1    Etisalat         38      30    78.9%       2     TOP PERFORMER
+ 2    DubaiFAB         40      31    77.5%       5     EXCELLENT
+ 3    MashreqBank      38      29    76.3%       4     EXCELLENT
+ 4    ADIB             42      30    71.4%       3     AVERAGE
+ 5    DubaiPolice      38      26    68.4%       7     AVERAGE
+ 6    DEWA             30      20    66.7%       6     BELOW AVG
+ 7    EmiratesNBD      34      21    61.8%       8     BELOW AVG
+ 8    ADNOC            40      23    57.5%      12     CRITICAL OUTLIER
+
+Performance Spread: 21.4 percentage points (78.9% - 57.5%)
+
+ADNOC Alert: 12 aborted (30% of requests) vs 2-8 for others (400% higher!)
+
+================================================================================
+ERROR ANALYSIS
+================================================================================
+Total Error Events:            47 (1.6% of all status events)
+
+Top Error Codes:
+  issuer_not_found:            12 (25.5%) - User doesn't have doc
+  pin_incorrect:                6 (12.8%) - Wrong PIN
+  pin_dismissed:                6 (12.8%) - User canceled
+  network_error:                4 ( 8.5%) - Connectivity
+  issuer_5xx/timeout:          10 (21.3%) - Issuer backend issues
+  dv_5xx/timeout:               7 (14.9%) - DV backend issues
+
+Error Categories:
+  Issuer Errors:               20 (42.6%)
+  User Errors:                 12 (25.6%)
+  Network/Infrastructure:      15 (31.9%)
+
+================================================================================
+TIME-BASED METRICS
+================================================================================
+Slowest Steps (Median Latency):
+  S20 Awaiting Consent:        17.0 seconds [User reviewing docs]
+  S15 Not Found at Issuer:     12.0 seconds [Issuer API call]
+  S13 Doc Fetch Success:       10.5 seconds [Issuer API call]
+  S12 Doc Request Initiated:    9.0 seconds [Issuer API call]
+  S31 PIN Verified:             7.0 seconds [User typing PIN]
+
+Journey Time by Channel (Successful flows):
+  QR:                          30.0 seconds [FASTEST]
+  Redirect:                    31.0 seconds [Second]
+  Notification:                36.0 seconds [Slowest - has extra steps]
+
+Journey Time by Document Count:
+  1 Document:                  33.0 seconds median
+  2 Documents:                 32.0 seconds median
+  (No significant difference)
+
+================================================================================
+DATA QUALITY
+================================================================================
+Completeness:
+  Requests with terminal status:        300/300 (100.0%) [PERFECT]
+  Requests reaching S00:                300/300 (100.0%) [PERFECT]
+  Requests reaching S40 (success):      210/300 (70.0%)  [Matches rate]
+
+Issues Identified:
+  Timestamp ordering:          Negative durations detected (S20->S21, S31->S40)
+  Missing context:             23 requests reach S08 but not S20 (redirect)
+
+Status: EXCELLENT data integrity despite minor timestamp issues
+
+================================================================================
+TOP 3 CRITICAL ISSUES
+================================================================================
+
+1. REDIRECT CHANNEL: 35.5% Drop Between View and Consent
+   Impact:        27 lost shares per 76 requests
+   Priority:      URGENT
+   Expected Fix:  +20-25 shares (+8-10% overall)
+
+2. QR CHANNEL: 25% Abandon at Scan Stage
+   Impact:        17 lost shares per 68 requests
+   Priority:      HIGH
+   Expected Fix:  +12-15 shares (+4-5% overall)
+
+3. ADNOC: 400% Higher Abandonment (30% vs 7.5% average)
+   Impact:        12 aborted vs 2-8 for other SPs
+   Priority:      HIGH
+   Expected Fix:  +5-10 shares (+2-3% overall)
+
+Combined Potential: +37-50 shares (+12-17% overall improvement)
+
+================================================================================
+TOP 5 RECOMMENDATIONS (PRIORITIZED)
+================================================================================
+
+PRIORITY 1 (Next Sprint - 1-2 weeks):
+  1. Fix redirect channel S08->S20 drop-off
+     Effort: MEDIUM | Impact: HIGH (+8-10%)
+
+  2. Investigate ADNOC high abandonment
+     Effort: LOW | Impact: HIGH (+2-3%)
+
+  3. Improve QR scan UX (larger QR, better instructions)
+     Effort: LOW | Impact: MEDIUM (+4-5%)
+
+PRIORITY 2 (Next 2-3 Sprints):
+  4. Build document pre-check API for SPs
+     Effort: HIGH | Impact: VERY HIGH (+7-10%)
+
+  5. Implement issuer retry logic (3 retries w/ backoff)
+     Effort: MEDIUM | Impact: MEDIUM (+2-3%)
+
+PRIORITY 3 (Backlog):
+  6. Add "Forgot PIN?" recovery flow
+  7. Optimize consent screen copy
+  8. Extend TTL from 15min to 30min
+  9. Fix event logging timestamps
+
+================================================================================
+PROJECTED IMPACT
+================================================================================
+Current Success Rate:          70.0% (210/300)
+
+After Priority 1 (3 quick wins):
+  Expected:                    85.0% (255/300)  [+15pp]
+  Timeline:                    1-2 weeks
+
+After Priority 1 + Priority 2:
+  Expected:                    95%+ (285/300)   [+25pp]
+  Timeline:                    6 months
+
+Realistic 6-Month Target:      85-90%
+Stretch 12-Month Target:       95%+
+
+================================================================================
+COMPARISON TO NOVEMBER 2025 ANALYSIS (350K requests)
+================================================================================
+Metric                    Nov 2025    Current     Variance
+Overall Success           67.4%       70.0%       +2.6pp
+Doc Ready Success         84.9%       78.9%       -6.0pp
+Doc Missing Success        0.0%       69.0%      +69.0pp (!!!)
+Consent Abandonment       16.9%        8.0%       -8.9pp
+
+Major Discrepancy: Missing-doc success rate (0% vs 69%)
+  Possible explanations:
+    - Missing-doc request flow recently implemented
+    - Sample not representative
+    - Different definition used in November
+
+Recommendation: Validate with larger dataset
+
+================================================================================
+CONCLUSION
+================================================================================
+Status:       SOLID BUT NEEDS IMPROVEMENT (70% vs 75-80% target)
+Key Driver:   USER EXPERIENCE, not infrastructure
+Main Issue:   User abandonment (15.7%) >> Technical errors (2.7%)
+Strategy:     Fix 3 critical UX issues → 85% success in 6 months
+
+Next Steps:
+  1. Redirect channel investigation (URGENT)
+  2. ADNOC user research (HIGH)
+  3. QR scan improvements (HIGH)
+  4. Document pre-check API planning (HIGH VALUE)
+
+Expected Outcome: 85% success rate by Q2 2026
+
+================================================================================
+END OF SUMMARY
+================================================================================

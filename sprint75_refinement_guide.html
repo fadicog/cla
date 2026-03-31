@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sprint 75 Refinement Guide — Feb 26, 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --uae-green: #007A4C;
+    --uae-gold: #F5A623;
+    --bg: #f7f8fa;
+    --card-bg: #ffffff;
+    --text: #1a1a1a;
+    --text-muted: #5f6368;
+    --border: #e2e5e9;
+    --team-be: #3b82f6;
+    --team-ios: #8b5cf6;
+    --team-android: #22c55e;
+    --team-cross: #14b8a6;
+    --effort-xs: #e0f2fe;
+    --effort-xs-text: #0369a1;
+    --effort-s: #fef3c7;
+    --effort-s-text: #92400e;
+    --discuss-bg: #fffbeb;
+    --discuss-border: #f59e0b;
+    --assign-bg: #f0fdf4;
+    --assign-border: #22c55e;
+  }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .page-wrapper {
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: 24px 28px 48px;
+  }
+
+  /* ---- HEADER ---- */
+  .header {
+    background: var(--uae-green);
+    color: #fff;
+    border-radius: 12px;
+    padding: 28px 32px 24px;
+    margin-bottom: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .header-left h1 {
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: -0.3px;
+    margin-bottom: 4px;
+  }
+  .header-left .subtitle {
+    font-size: 14px;
+    opacity: 0.85;
+    font-weight: 400;
+  }
+  .header-right {
+    text-align: right;
+  }
+  .header-right .date {
+    font-size: 15px;
+    font-weight: 600;
+  }
+  .header-right .sprint-label {
+    font-size: 13px;
+    opacity: 0.8;
+  }
+
+  /* ---- CAPACITY STRIP ---- */
+  .capacity-strip {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 24px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    flex-wrap: wrap;
+  }
+  .capacity-strip .strip-title {
+    font-weight: 700;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--uae-green);
+    white-space: nowrap;
+  }
+  .capacity-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+  }
+  .capacity-item .label {
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+  .capacity-item .value {
+    font-weight: 700;
+    color: var(--text);
+  }
+  .capacity-divider {
+    width: 1px;
+    height: 24px;
+    background: var(--border);
+  }
+
+  /* ---- LEGEND ---- */
+  .legend-strip {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 24px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+    font-size: 13px;
+  }
+  .legend-strip .legend-title {
+    font-weight: 700;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+    margin-right: 4px;
+  }
+  .legend-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .legend-group + .legend-group { border-left: 1px solid var(--border); padding-left: 20px; }
+  .legend-swatch {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .swatch-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+    flex-shrink: 0;
+  }
+  .chip-demo {
+    display: inline-block;
+    padding: 1px 8px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 11px;
+  }
+
+  /* ---- TWO-COLUMN LAYOUT ---- */
+  .columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 32px;
+  }
+
+  .column-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--border);
+  }
+  .column-header .icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    flex-shrink: 0;
+  }
+  .column-header.discuss .icon { background: var(--discuss-bg); border: 1px solid var(--discuss-border); }
+  .column-header.assign .icon { background: var(--assign-bg); border: 1px solid var(--assign-border); }
+  .column-header h2 {
+    font-size: 16px;
+    font-weight: 700;
+  }
+  .column-header .count {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-muted);
+    background: var(--bg);
+    padding: 2px 8px;
+    border-radius: 10px;
+  }
+
+  /* ---- CARDS ---- */
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 20px;
+    margin-bottom: 14px;
+    transition: box-shadow 0.15s;
+    position: relative;
+  }
+  .card:hover { box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+  .card.discuss { border-left: 3px solid var(--discuss-border); }
+  .card.assign { border-left: 3px solid var(--assign-border); }
+
+  .card-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+  .card-number {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-muted);
+    min-width: 18px;
+  }
+  .card-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+    flex: 1;
+  }
+  .card-badges {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .badge-team {
+    display: inline-block;
+    padding: 2px 9px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #fff;
+    white-space: nowrap;
+  }
+  .badge-team.be { background: var(--team-be); }
+  .badge-team.ios { background: var(--team-ios); }
+  .badge-team.android { background: var(--team-android); }
+  .badge-team.cross { background: var(--team-cross); }
+
+  .badge-effort {
+    display: inline-block;
+    padding: 2px 9px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .badge-effort.xs { background: var(--effort-xs); color: var(--effort-xs-text); }
+  .badge-effort.s { background: var(--effort-s); color: var(--effort-s-text); }
+
+  .bundle-tag {
+    display: inline-block;
+    padding: 1px 7px;
+    border-radius: 5px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+  }
+  .bundle-tag.core { background: #dbeafe; color: #1e40af; }
+  .bundle-tag.stretch { background: #f3e8ff; color: #6b21a8; }
+
+  .card-impact {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin: 8px 0;
+    padding-left: 0;
+  }
+  .card-impact strong {
+    color: var(--uae-green);
+    font-weight: 700;
+  }
+
+  .discussion-points {
+    background: #fffdf5;
+    border: 1px solid #fde68a;
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-top: 10px;
+  }
+  .discussion-points .dp-title {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: var(--discuss-border);
+    margin-bottom: 6px;
+  }
+  .discussion-points ul {
+    list-style: none;
+    padding: 0;
+  }
+  .discussion-points li {
+    font-size: 13px;
+    color: var(--text);
+    padding: 3px 0 3px 16px;
+    position: relative;
+    line-height: 1.45;
+  }
+  .discussion-points li::before {
+    content: "?";
+    position: absolute;
+    left: 0;
+    font-weight: 700;
+    color: var(--discuss-border);
+  }
+
+  /* ---- REFINEMENT ORDER ---- */
+  .refinement-order {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px 28px;
+  }
+  .refinement-order h3 {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    color: var(--uae-green);
+  }
+  .refinement-order .ro-subtitle {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 18px;
+  }
+
+  .order-timeline {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    position: relative;
+  }
+  .order-step {
+    flex: 1;
+    text-align: center;
+    position: relative;
+    padding: 0 8px;
+  }
+  .order-step .step-num {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--uae-green);
+    color: #fff;
+    font-weight: 700;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 8px;
+    position: relative;
+    z-index: 1;
+  }
+  .order-step .step-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 2px;
+  }
+  .order-step .step-time {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+  .order-step .step-reason {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 4px;
+    font-style: italic;
+  }
+  /* Connector line */
+  .order-step:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    top: 16px;
+    left: calc(50% + 16px);
+    right: calc(-50% + 16px);
+    height: 2px;
+    background: var(--uae-green);
+    opacity: 0.3;
+    z-index: 0;
+  }
+  .order-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--uae-green);
+    font-size: 18px;
+    opacity: 0.4;
+    padding: 0 2px;
+    margin-top: -16px;
+  }
+
+  .footer-note {
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+  }
+
+  /* ---- PRINT ---- */
+  @media print {
+    body { background: #fff; }
+    .page-wrapper { padding: 12px; max-width: 100%; }
+    .card:hover { box-shadow: none; }
+    .header { border-radius: 0; }
+    .columns { gap: 16px; }
+  }
+
+  /* ---- RESPONSIVE ---- */
+  @media (max-width: 900px) {
+    .columns { grid-template-columns: 1fr; }
+    .order-timeline { flex-direction: column; gap: 12px; }
+    .order-step:not(:last-child)::after { display: none; }
+    .order-arrow { transform: rotate(90deg); }
+  }
+</style>
+</head>
+<body>
+<div class="page-wrapper">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-left">
+      <h1>Sprint 75 Refinement Guide</h1>
+      <div class="subtitle">UAE PASS Digital Documents -- Quick-Win Items by Refinement Effort</div>
+    </div>
+    <div class="header-right">
+      <div class="date">February 26, 2026</div>
+      <div class="sprint-label">Sprint 75 Kickoff</div>
+    </div>
+  </div>
+
+  <!-- CAPACITY STRIP -->
+  <div class="capacity-strip">
+    <div class="strip-title">Sprint Capacity</div>
+    <div class="capacity-item">
+      <span class="label">Core Bundle</span>
+      <span class="value">10 -- 14 dev-days</span>
+    </div>
+    <div class="capacity-divider"></div>
+    <div class="capacity-item">
+      <span class="label">Stretch Bundle</span>
+      <span class="value">6 -- 10 dev-days</span>
+    </div>
+    <div class="capacity-divider"></div>
+    <div class="capacity-item">
+      <span class="label">Total</span>
+      <span class="value" style="color: var(--uae-green);">16 -- 24 dev-days</span>
+    </div>
+    <div class="capacity-divider"></div>
+    <div class="capacity-item">
+      <span class="label">Items</span>
+      <span class="value">9 total (5 core + 4 stretch)</span>
+    </div>
+  </div>
+
+  <!-- LEGEND -->
+  <div class="legend-strip">
+    <span class="legend-title">Legend</span>
+    <div class="legend-group">
+      <span class="legend-swatch"><span class="swatch-dot" style="background:var(--team-be)"></span> BE</span>
+      <span class="legend-swatch"><span class="swatch-dot" style="background:var(--team-ios)"></span> FE iOS</span>
+      <span class="legend-swatch"><span class="swatch-dot" style="background:var(--team-android)"></span> FE Android</span>
+      <span class="legend-swatch"><span class="swatch-dot" style="background:var(--team-cross)"></span> FE Cross-platform</span>
+    </div>
+    <div class="legend-group">
+      <span class="chip-demo xs" style="background:var(--effort-xs);color:var(--effort-xs-text);">XS</span> 1-2 days
+      <span class="chip-demo s" style="background:var(--effort-s);color:var(--effort-s-text); margin-left:8px;">S</span> 3-4 days
+    </div>
+  </div>
+
+  <!-- TWO COLUMNS -->
+  <div class="columns">
+
+    <!-- LEFT: DISCUSSION NEEDED -->
+    <div class="column">
+      <div class="column-header discuss">
+        <div class="icon">&#9993;</div>
+        <h2>Needs Refinement Discussion</h2>
+        <span class="count">4 items</span>
+      </div>
+
+      <!-- Card 1 -->
+      <div class="card discuss">
+        <div class="card-top">
+          <span class="card-number">#1</span>
+          <span class="card-title">Issuer Retry Logic</span>
+          <div class="card-badges">
+            <span class="badge-team be">BE</span>
+            <span class="badge-effort s">S 3-4d</span>
+            <span class="bundle-tag core">Core</span>
+          </div>
+        </div>
+        <div class="card-impact"><strong>~2,000 shares/week recovered</strong> -- reduces 26% of technical failures from issuer timeouts</div>
+        <div class="discussion-points">
+          <div class="dp-title">Discussion Points</div>
+          <ul>
+            <li>What retry parameters should we use? (count, backoff interval, max wait)</li>
+            <li>Do we need a circuit breaker pattern per issuer endpoint?</li>
+            <li>How do we expose the kill-switch config -- Remote Config or admin panel?</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="card discuss">
+        <div class="card-top">
+          <span class="card-number">#2</span>
+          <span class="card-title">Signing Progress Indicator + Timeout Message</span>
+          <div class="card-badges">
+            <span class="badge-team cross">FE iOS+Android</span>
+            <span class="badge-effort s">S 3-4d</span>
+            <span class="bundle-tag core">Core</span>
+          </div>
+        </div>
+        <div class="card-impact"><strong>~700 -- 1,000 shares/week saved</strong> -- prevents users from abandoning during signing wait</div>
+        <div class="discussion-points">
+          <div class="dp-title">Discussion Points</div>
+          <ul>
+            <li>Timeout thresholds: should spinner show at 10s and timeout message at 30s?</li>
+            <li>Timeout copy needs EN/AR approval -- who sends to DDA?</li>
+            <li>How do we ensure cross-platform parity between iOS and Android implementations?</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Card 7 -->
+      <div class="card discuss">
+        <div class="card-top">
+          <span class="card-number">#7</span>
+          <span class="card-title">PIN Failure Inline Hint (Arabic Pluralization)</span>
+          <div class="card-badges">
+            <span class="badge-team cross">FE iOS+Android</span>
+            <span class="badge-effort xs">XS 1-2d</span>
+            <span class="bundle-tag stretch">Stretch</span>
+          </div>
+        </div>
+        <div class="card-impact">Better error UX for PIN failures with correct Arabic attempt-count plurals</div>
+        <div class="discussion-points">
+          <div class="dp-title">Discussion Points</div>
+          <ul>
+            <li>Arabic plural forms for attempt count: 1 (singular), 2 (dual), 3-10, 11+ -- are all four forms needed?</li>
+            <li>What is the max retry count -- do we show "X attempts remaining" or "attempt Y of N"?</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Card 8 -->
+      <div class="card discuss">
+        <div class="card-top">
+          <span class="card-number">#8</span>
+          <span class="card-title">Stage-Level Timestamps on Sharing Requests</span>
+          <div class="card-badges">
+            <span class="badge-team be">BE</span>
+            <span class="badge-effort s">S 3-4d</span>
+            <span class="bundle-tag stretch">Stretch</span>
+          </div>
+        </div>
+        <div class="card-impact"><strong>Unblocks reporting epic</strong> -- enables funnel analysis across all 23 status codes</div>
+        <div class="discussion-points">
+          <div class="dp-title">Discussion Points</div>
+          <ul>
+            <li>Schema design: new table vs additional columns on existing sharing_requests?</li>
+            <li>Which of the 23 status codes get timestamps -- all of them or a prioritized subset?</li>
+            <li>Backfill strategy for historical data -- is it feasible or do we start fresh?</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: ASSIGN DIRECTLY -->
+    <div class="column">
+      <div class="column-header assign">
+        <div class="icon">&#10003;</div>
+        <h2>Assign Directly -- No Discussion Needed</h2>
+        <span class="count">5 items</span>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="card assign">
+        <div class="card-top">
+          <span class="card-number">#3</span>
+          <span class="card-title">Android Dialog Transparency Fix</span>
+          <div class="card-badges">
+            <span class="badge-team android">FE Android</span>
+            <span class="badge-effort xs">XS 1-2d</span>
+            <span class="bundle-tag core">Core</span>
+          </div>
+        </div>
+        <div class="card-impact">Android gap closure -- bug fix, clear reproduction steps available</div>
+      </div>
+
+      <!-- Card 4 -->
+      <div class="card assign">
+        <div class="card-top">
+          <span class="card-number">#4</span>
+          <span class="card-title">iOS Collapsing Header Parity</span>
+          <div class="card-badges">
+            <span class="badge-team ios">FE iOS</span>
+            <span class="badge-effort xs">XS 1-2d</span>
+            <span class="bundle-tag core">Core</span>
+          </div>
+        </div>
+        <div class="card-impact">iOS polish -- parity fix matching existing Android behavior</div>
+      </div>
+
+      <!-- Card 5 -->
+      <div class="card assign">
+        <div class="card-top">
+          <span class="card-number">#5</span>
+          <span class="card-title">Upload Error Copy EN/AR</span>
+          <div class="card-badges">
+            <span class="badge-team cross">FE iOS+Android</span>
+            <span class="badge-effort xs">XS 1-2d</span>
+            <span class="bundle-tag core">Core</span>
+          </div>
+        </div>
+        <div class="card-impact">Support ticket reduction -- strings-only change, copy already approved</div>
+      </div>
+
+      <!-- Card 6 -->
+      <div class="card assign">
+        <div class="card-top">
+          <span class="card-number">#6</span>
+          <span class="card-title">Guided Journey Copy Refresh EN/AR</span>
+          <div class="card-badges">
+            <span class="badge-team cross">FE iOS+Android</span>
+            <span class="badge-effort xs">XS 1-2d</span>
+            <span class="bundle-tag stretch">Stretch</span>
+          </div>
+        </div>
+        <div class="card-impact">Updated onboarding copy -- strings-only, no logic changes</div>
+      </div>
+
+      <!-- Card 9 -->
+      <div class="card assign">
+        <div class="card-top">
+          <span class="card-number">#9</span>
+          <span class="card-title">Vault Terminology Sweep</span>
+          <div class="card-badges">
+            <span class="badge-team cross">FE iOS+Android</span>
+            <span class="badge-effort xs">XS 1-2d</span>
+            <span class="bundle-tag stretch">Stretch</span>
+          </div>
+        </div>
+        <div class="card-impact">Brand consistency -- replace all "Vault" references with "Documents" / <span dir="rtl">&#171;&#1575;&#1604;&#1605;&#1587;&#1578;&#1606;&#1583;&#1575;&#1578;&#187;</span></div>
+      </div>
+
+      <!-- Tip box -->
+      <div style="background:#f0fdf4; border:1px dashed #86efac; border-radius:10px; padding:14px 18px; margin-top:8px;">
+        <div style="font-size:12px; font-weight:700; color:#15803d; text-transform:uppercase; letter-spacing:0.4px; margin-bottom:4px;">Refinement Tip</div>
+        <div style="font-size:13px; color:#1a1a1a;">These 5 items can be assigned directly in Jira during the session without team discussion. Estimated total: <strong>5 -- 9 dev-days</strong>. Assign them first, then use remaining refinement time for the 4 discussion items.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RECOMMENDED REFINEMENT ORDER -->
+  <div class="refinement-order">
+    <h3>Recommended Refinement Order</h3>
+    <div class="ro-subtitle">Tackle discussion items in this sequence -- highest impact and most dependencies first</div>
+
+    <div class="order-timeline">
+      <div class="order-step">
+        <div class="step-num">1</div>
+        <div class="step-title">Issuer Retry Logic</div>
+        <div class="step-time">~15 min discussion</div>
+        <div class="step-reason">Highest impact (2K shares/week), needs BE architecture decisions</div>
+      </div>
+      <div class="order-arrow">&rarr;</div>
+      <div class="order-step">
+        <div class="step-num">2</div>
+        <div class="step-title">Signing Progress Indicator</div>
+        <div class="step-time">~10 min discussion</div>
+        <div class="step-reason">Cross-platform coordination needed, DDA copy approval dependency</div>
+      </div>
+      <div class="order-arrow">&rarr;</div>
+      <div class="order-step">
+        <div class="step-num">3</div>
+        <div class="step-title">Stage-Level Timestamps</div>
+        <div class="step-time">~15 min discussion</div>
+        <div class="step-reason">Schema design decision, unblocks reporting epic (stretch -- discuss if time allows)</div>
+      </div>
+      <div class="order-arrow">&rarr;</div>
+      <div class="order-step">
+        <div class="step-num">4</div>
+        <div class="step-title">PIN Hint Arabic Plurals</div>
+        <div class="step-time">~5 min discussion</div>
+        <div class="step-reason">Quick clarification on plural forms, smallest scope of discussion items</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-note">
+    UAE PASS Digital Documents -- Sprint 75 Refinement Session Guide -- Generated 2026-02-26
+  </div>
+
+</div>
+</body>
+</html>

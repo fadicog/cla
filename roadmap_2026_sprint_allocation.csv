@@ -1,0 +1,43 @@
+Sprint,Start_Date,End_Date,Item_Number,Feature_Name,Score,Effort,Status,Notes
+COMPLETED (Pre-Sprint 72)
+69-71,2025,2025,9,Dual Citizenship GA,2.40,3,COMPLETED,Done before Sprint 72
+
+2026 PLAN
+72,2026-01-15,2026-01-28,1,Status-Based Reporting Implementation,3.00,1,PLANNED,Foundation - enables items 3 4 5
+73,2026-01-29,2026-02-11,28,Infinite Loaders Detection,3.00,1,PLANNED,Quick win - moved up
+74,2026-02-12,2026-02-25,40,Enable Download All Documents,3.00,1,PLANNED,User-requested feature
+75,2026-02-26,2026-03-11,10,Auto-Add Documents Launch,3.00,1,PLANNED,Pending legal approval
+76,2026-03-12,2026-03-25,19,Form Filler,3.00,1,PLANNED,SP track quick win
+77,2026-03-26,2026-04-08,6,Smart Pending Request Auto-Redirect,2.40,1,PLANNED,50% capacity - Eid holiday
+78,2026-04-09,2026-04-22,46,AI Strategy Study,3.00,1,PLANNED,Analysis phase for AI initiatives
+79,2026-04-23,2026-05-06,26,License QR Code Display Fix,2.40,1,PLANNED,Quick fix - moved up
+80,2026-05-07,2026-05-20,8,Error-Status Code Linking (Part 1),2.40,2,PLANNED,Builds on status reporting
+81,2026-05-21,2026-06-03,8,Error-Status Code Linking (Part 2),2.40,-,PLANNED,
+82,2026-06-04,2026-06-17,18,UX Enhancements Bundle 2 (Part 1),2.40,2,PLANNED,50% capacity - Eid holiday
+83,2026-06-18,2026-07-01,18,UX Enhancements Bundle 2 (Part 2),2.40,-,PLANNED,
+84,2026-07-02,2026-07-15,3,Deadend/Failures Analysis (Part 1),1.80,3,PLANNED,Enabled by item 1
+85,2026-07-16,2026-07-29,3,Deadend/Failures Analysis (Part 2),1.80,-,PLANNED,
+86,2026-07-30,2026-08-12,3,Deadend/Failures Analysis (Part 3),1.80,-,PLANNED,
+87,2026-08-13,2026-08-26,14,AI Chatbot (Part 1),1.80,3,PLANNED,DDA Item - user-facing
+88,2026-08-27,2026-09-09,14,AI Chatbot (Part 2),1.80,-,PLANNED,
+89,2026-09-10,2026-09-23,14,AI Chatbot (Part 3),1.80,-,PLANNED,
+90,2026-09-24,2026-10-07,32,Automated Testing (Part 1),1.80,3,PLANNED,ADDED - was deferred
+91,2026-10-08,2026-10-21,32,Automated Testing (Part 2),1.80,-,PLANNED,
+92,2026-10-22,2026-11-04,32,Automated Testing (Part 3),1.80,-,PLANNED,
+93,2026-11-05,2026-11-18,41,Physical Document Sharing (Part 1),1.80,3,PLANNED,Q4 DEADLINE - Start
+94,2026-11-19,2026-12-02,41,Physical Document Sharing (Part 2),1.80,-,PLANNED,75% capacity - National Day
+95,2026-12-03,2026-12-16,41,Physical Document Sharing (Part 3),1.80,-,PLANNED,Q4 DEADLINE - Complete
+96,2026-12-17,2026-12-30,CLOSE,Year-end / 2027 Planning,0,0,REDUCED,50% capacity - holidays
+
+DEFERRED TO 2027
+,,,20,Consent Sharing (Third Party Data),1.80,3,DEFERRED,High complexity - new capability
+,,,36,Accessibility Enhancement,1.80,3,DEFERRED,DDA Item - WCAG compliance
+
+SUMMARY
+Dual Citizenship,COMPLETED,Sprints 69-71
+Total Items Planned 2026,16
+Total Sprint Effort,23
+Available Capacity,24 (buffer removed)
+Utilization,96%
+Items Deferred,2
+Deferred Effort,6 sprints

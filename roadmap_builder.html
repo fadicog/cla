@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UAE PASS DV - Roadmap Builder</title>
+    <style>
+        :root {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-card: #334155;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --border-color: #475569;
+            --priority-high: #ef4444;
+            --priority-medium: #f59e0b;
+            --priority-low: #22c55e;
+            --category-product: #8b5cf6;
+            --category-technical: #06b6d4;
+            --category-ux: #ec4899;
+            --category-design: #f97316;
+            --category-sp: #10b981;
+            --accent-blue: #3b82f6;
+            --on-hold-bg: #78716c;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .stats-bar {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--accent-blue);
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .panel {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .panel-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .panel-count {
+            background: var(--accent-blue);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .category-group {
+            margin-bottom: 25px;
+        }
+
+        .category-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+            padding: 8px 12px;
+            background: var(--bg-primary);
+            border-radius: 8px;
+        }
+
+        .category-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .category-dot.product { background: var(--category-product); }
+        .category-dot.technical { background: var(--category-technical); }
+        .category-dot.ux { background: var(--category-ux); }
+        .category-dot.design { background: var(--category-design); }
+        .category-dot.sp { background: var(--category-sp); }
+
+        .category-name {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .category-count {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            margin-left: auto;
+        }
+
+        .item-card {
+            background: var(--bg-card);
+            border-radius: 8px;
+            padding: 14px;
+            margin-bottom: 10px;
+            border-left: 4px solid transparent;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .item-card:hover {
+            transform: translateX(4px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .item-card.priority-high { border-left-color: var(--priority-high); }
+        .item-card.priority-medium { border-left-color: var(--priority-medium); }
+        .item-card.priority-low { border-left-color: var(--priority-low); }
+
+        .item-card.on-hold {
+            opacity: 0.6;
+            border-left-color: var(--on-hold-bg);
+            background: #292524;
+        }
+
+        .item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+
+        .item-number {
+            background: var(--bg-primary);
+            color: var(--text-secondary);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .item-score {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--accent-blue);
+        }
+
+        .item-name {
+            font-size: 0.95rem;
+            font-weight: 500;
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+
+        .item-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .priority-badge {
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+
+        .priority-badge.high {
+            background: rgba(239, 68, 68, 0.2);
+            color: #fca5a5;
+        }
+
+        .priority-badge.medium {
+            background: rgba(245, 158, 11, 0.2);
+            color: #fcd34d;
+        }
+
+        .priority-badge.low {
+            background: rgba(34, 197, 94, 0.2);
+            color: #86efac;
+        }
+
+        .complexity-badge {
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-secondary);
+        }
+
+        .tag-badge {
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            background: rgba(59, 130, 246, 0.2);
+            color: #93c5fd;
+        }
+
+        .sprint-badge {
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            background: rgba(139, 92, 246, 0.3);
+            color: #c4b5fd;
+        }
+
+        .on-hold-badge {
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            background: rgba(120, 113, 108, 0.3);
+            color: #a8a29e;
+        }
+
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 30px;
+            padding: 15px;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            flex-wrap: wrap;
+        }
+
+        .legend-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .legend-title {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .legend-items {
+            display: flex;
+            gap: 12px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.8rem;
+        }
+
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+        }
+
+        .on-hold-section {
+            margin-top: 30px;
+        }
+
+        .on-hold-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            padding: 10px 15px;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .on-hold-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .on-hold-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 15px;
+        }
+
+        @media (max-width: 1200px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .stats-bar {
+                gap: 20px;
+            }
+
+            .on-hold-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>UAE PASS DV - Roadmap Builder</h1>
+        <p>Digital Documents Component - Sprint Planning View</p>
+        <div class="stats-bar">
+            <div class="stat-item">
+                <div class="stat-value" id="backlog-count">23</div>
+                <div class="stat-label">Backlog Items</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="sprint-count">3</div>
+                <div class="stat-label">In Sprint</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="on-hold-count">3</div>
+                <div class="stat-label">On Hold</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="total-score">298</div>
+                <div class="stat-label">Total Score</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- LEFT PANEL: Backlog / To Pick Up -->
+        <div class="panel">
+            <div class="panel-header">
+                <h2 class="panel-title">Backlog - To Pick Up</h2>
+                <span class="panel-count">23 items</span>
+            </div>
+            <div id="backlog-content"></div>
+        </div>
+
+        <!-- RIGHT PANEL: Already Picked Up / In Sprint -->
+        <div class="panel">
+            <div class="panel-header">
+                <h2 class="panel-title">In Sprint - Already Picked Up</h2>
+                <span class="panel-count">3 items</span>
+            </div>
+            <div id="sprint-content"></div>
+        </div>
+    </div>
+
+    <!-- ON HOLD Section -->
+    <div class="on-hold-section">
+        <div class="on-hold-header">
+            <span class="on-hold-title">On Hold</span>
+            <span class="panel-count" style="background: var(--on-hold-bg);">3 items</span>
+        </div>
+        <div class="on-hold-grid" id="on-hold-content"></div>
+    </div>
+
+    <!-- Legend -->
+    <div class="legend">
+        <div class="legend-section">
+            <span class="legend-title">Priority:</span>
+            <div class="legend-items">
+                <div class="legend-item">
+                    <div class="legend-color" style="background: var(--priority-high);"></div>
+                    <span>High</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: var(--priority-medium);"></div>
+                    <span>Medium</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: var(--priority-low);"></div>
+                    <span>Low</span>
+                </div>
+            </div>
+        </div>
+        <div class="legend-section">
+            <span class="legend-title">Category:</span>
+            <div class="legend-items">
+                <div class="legend-item">
+                    <div class="legend-color" style="background: var(--category-product); border-radius: 50%;"></div>
+                    <span>Product</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: var(--category-technical); border-radius: 50%;"></div>
+                    <span>Technical</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: var(--category-ux); border-radius: 50%;"></div>
+                    <span>UX</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: var(--category-design); border-radius: 50%;"></div>
+                    <span>Design</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: var(--category-sp); border-radius: 50%;"></div>
+                    <span>SP</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Dataset: To Pick Up (Backlog)
+        const backlogItems = [
+            { number: 35, name: "Design Audit", category: "Design", priority: "High", complexity: "Low", score: 16, tag: null },
+            { number: 40, name: "Enable Download of All issued documents in DV", category: "Product", priority: "High", complexity: "Low", score: 16, tag: "New feature" },
+            { number: 10, name: "Auto-Add Documents Launch / One-Time Consent", category: "Product", priority: "High", complexity: "Low", score: 16, tag: "New Feature" },
+            { number: 19, name: "Form Filler", category: "SP", priority: "High", complexity: "Low", score: 16, tag: "SP track" },
+            { number: 29, name: "Firebase Configuration & Optimization", category: "Technical", priority: "High", complexity: "Low", score: 16, tag: null },
+            { number: 17, name: "Home Page Revamp", category: "UX", priority: "High", complexity: "Medium", score: 13, tag: "DDA Item" },
+            { number: 16, name: "Design System Update", category: "Design", priority: "High", complexity: "Medium", score: 13, tag: "DDA Item" },
+            { number: 5, name: "User Behavior Analytics Tool Selection", category: "Product", priority: "High", complexity: "Medium", score: 13, tag: "Reporting" },
+            { number: 7, name: "UX Enhancements Bundle - Revisit documents list view", category: "UX", priority: "High", complexity: "Medium", score: 13, tag: null },
+            { number: 8, name: "Error-to-Status Code Linking System", category: "Technical", priority: "High", complexity: "Medium", score: 13, tag: null },
+            { number: 18, name: "UX/UI Enhancements Bundle 2", category: "UX", priority: "High", complexity: "Medium", score: 13, tag: null },
+            { number: 37, name: "Enhancement/Revamp Document Request", category: "UX", priority: "High", complexity: "Medium", score: 13, tag: null },
+            { number: 38, name: "Revamp Document Sharing", category: "UX", priority: "High", complexity: "Medium", score: 13, tag: null },
+            { number: 47, name: "ELK Stack AI Upgrade", category: "Technical", priority: "High", complexity: "Medium", score: 13, tag: "Tech Suggestion" },
+            { number: 26, name: "License QR Code Display Fix", category: "Technical", priority: "Medium", complexity: "Low", score: 13, tag: null },
+            { number: 20, name: "Consent Sharing (Third Party Data)", category: "Product", priority: "High", complexity: "High", score: 11, tag: "New Feature" },
+            { number: 32, name: "Automated Testing", category: "Technical", priority: "High", complexity: "High", score: 11, tag: null },
+            { number: 36, name: "Accessibility Enhancement", category: "Design", priority: "High", complexity: "High", score: 11, tag: "DDA Item" },
+            { number: 41, name: "Physical Document Sharing", category: "Product", priority: "High", complexity: "High", score: 11, tag: "New feature" },
+            { number: 43, name: "DR Automation (Disaster Recovery)", category: "Technical", priority: "High", complexity: "High", score: 11, tag: "Tech Suggestion" },
+            { number: 44, name: "Blockchain Upgrade", category: "Technical", priority: "High", complexity: "High", score: 11, tag: "Tech Suggestion" },
+            { number: 53, name: "SP Integration through SDK", category: "Technical", priority: "High", complexity: "High", score: 11, tag: null },
+            { number: 45, name: "CI/CD Pipeline Automation", category: "Technical", priority: "Medium", complexity: "Medium", score: 10, tag: "Tech Suggestion" }
+        ];
+
+        // Dataset: Already Picked Up (In Sprint)
+        const sprintItems = [
+            { number: 1, name: "Status-Based Reporting Implementation", category: "Product", priority: "High", complexity: "Medium", score: 13, sprint: 70 },
+            { number: 28, name: "Infinite Loaders Detection and Resolution", category: "Technical", priority: "High", complexity: "Low", score: 16, sprint: 70 },
+            { number: 9, name: "Dual Citizenship GA", category: "Product", priority: "High", complexity: "Medium", score: 13, sprint: 72 }
+        ];
+
+        // Dataset: On Hold
+        const onHoldItems = [
+            { number: 6, name: "Smart Pending Request Auto-Redirect", category: "Product", priority: "Medium", complexity: "Low", score: 13 },
+            { number: 55, name: "Reminder System", category: "Product", priority: "Low", complexity: "Low", score: 11 },
+            { number: 57, name: "Introducing SP off-boarding", category: "SP", priority: "Low", complexity: "Low", score: 11 }
+        ];
+
+        // Category order for display
+        const categoryOrder = ['Product', 'Technical', 'UX', 'Design', 'SP'];
+
+        // Group items by category
+        function groupByCategory(items) {
+            const groups = {};
+            categoryOrder.forEach(cat => groups[cat] = []);
+
+            items.forEach(item => {
+                if (groups[item.category]) {
+                    groups[item.category].push(item);
+                }
+            });
+
+            return groups;
+        }
+
+        // Sort items by score (descending)
+        function sortByScore(items) {
+            return items.sort((a, b) => b.score - a.score);
+        }
+
+        // Create item card HTML
+        function createItemCard(item, showSprint = false, isOnHold = false) {
+            const priorityClass = item.priority.toLowerCase();
+            const cardClass = isOnHold ? 'item-card on-hold' : `item-card priority-${priorityClass}`;
+
+            let metaHTML = `
+                <span class="priority-badge ${priorityClass}">${item.priority}</span>
+                <span class="complexity-badge">${item.complexity}</span>
+            `;
+
+            if (showSprint && item.sprint) {
+                metaHTML += `<span class="sprint-badge">Sprint ${item.sprint}</span>`;
+            }
+
+            if (item.tag) {
+                metaHTML += `<span class="tag-badge">${item.tag}</span>`;
+            }
+
+            if (isOnHold) {
+                metaHTML += `<span class="on-hold-badge">On Hold</span>`;
+            }
+
+            return `
+                <div class="${cardClass}">
+                    <div class="item-header">
+                        <span class="item-number">#${item.number}</span>
+                        <span class="item-score">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                            </svg>
+                            ${item.score}
+                        </span>
+                    </div>
+                    <div class="item-name">${item.name}</div>
+                    <div class="item-meta">
+                        ${metaHTML}
+                    </div>
+                </div>
+            `;
+        }
+
+        // Create category group HTML
+        function createCategoryGroup(category, items, showSprint = false) {
+            if (items.length === 0) return '';
+
+            const categoryLower = category.toLowerCase();
+            const itemsHTML = items.map(item => createItemCard(item, showSprint)).join('');
+
+            return `
+                <div class="category-group">
+                    <div class="category-header">
+                        <div class="category-dot ${categoryLower}"></div>
+                        <span class="category-name">${category}</span>
+                        <span class="category-count">${items.length} items</span>
+                    </div>
+                    ${itemsHTML}
+                </div>
+            `;
+        }
+
+        // Render backlog panel
+        function renderBacklog() {
+            const sortedItems = sortByScore([...backlogItems]);
+            const grouped = groupByCategory(sortedItems);
+
+            let html = '';
+            categoryOrder.forEach(category => {
+                html += createCategoryGroup(category, grouped[category], false);
+            });
+
+            document.getElementById('backlog-content').innerHTML = html;
+        }
+
+        // Render sprint panel
+        function renderSprint() {
+            const grouped = groupByCategory(sprintItems);
+
+            let html = '';
+            categoryOrder.forEach(category => {
+                html += createCategoryGroup(category, grouped[category], true);
+            });
+
+            document.getElementById('sprint-content').innerHTML = html;
+        }
+
+        // Render on hold section
+        function renderOnHold() {
+            const html = onHoldItems.map(item => createItemCard(item, false, true)).join('');
+            document.getElementById('on-hold-content').innerHTML = html;
+        }
+
+        // Calculate and update statistics
+        function updateStats() {
+            const backlogCount = backlogItems.length;
+            const sprintCount = sprintItems.length;
+            const onHoldCount = onHoldItems.length;
+
+            const totalScore = [...backlogItems, ...sprintItems, ...onHoldItems]
+                .reduce((sum, item) => sum + item.score, 0);
+
+            document.getElementById('backlog-count').textContent = backlogCount;
+            document.getElementById('sprint-count').textContent = sprintCount;
+            document.getElementById('on-hold-count').textContent = onHoldCount;
+            document.getElementById('total-score').textContent = totalScore;
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            renderBacklog();
+            renderSprint();
+            renderOnHold();
+            updateStats();
+        });
+    </script>
+</body>
+</html>

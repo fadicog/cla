@@ -1,0 +1,3219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UAE PASS Document Sharing - Status Model & Analytics Dashboard v2</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #1a5f7a;
+            --secondary: #159895;
+            --success: #57c84d;
+            --warning: #ffc107;
+            --danger: #dc3545;
+            --info: #17a2b8;
+            --light: #f8f9fa;
+            --dark: #343a40;
+            --bg-gradient: linear-gradient(135deg, #0f4c75 0%, #1b262c 100%);
+            --phase-ingress: #2196f3;
+            --phase-document: #9c27b0;
+            --phase-consent: #4caf50;
+            --phase-auth: #ff9800;
+            --phase-terminal: #607d8b;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f2f5;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .header {
+            background: var(--bg-gradient);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .header h1 { font-size: 2.2rem; margin-bottom: 0.5rem; }
+        .header .subtitle { opacity: 0.9; font-size: 1.1rem; }
+        .header .version { font-size: 0.85rem; margin-top: 0.5rem; opacity: 0.7; }
+
+        .nav-tabs {
+            background: white;
+            padding: 1rem 2rem;
+            display: flex;
+            gap: 0.75rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-tab {
+            padding: 0.6rem 1.25rem;
+            background: var(--light);
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .nav-tab:hover { background: #e9ecef; }
+        .nav-tab.active { background: var(--primary); color: white; }
+
+        .container { max-width: 1400px; margin: 0 auto; padding: 2rem; }
+
+        .section { display: none; }
+        .section.active { display: block; }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .card h2 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #eee;
+            font-size: 1.4rem;
+        }
+
+        .card h3 {
+            color: var(--secondary);
+            margin: 1.25rem 0 0.75rem;
+            font-size: 1.1rem;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 1.25rem;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .stat-card.success { background: linear-gradient(135deg, #43a047, #66bb6a); }
+        .stat-card.warning { background: linear-gradient(135deg, #fb8c00, #ffa726); }
+        .stat-card.danger { background: linear-gradient(135deg, #e53935, #ef5350); }
+        .stat-card.info { background: linear-gradient(135deg, #1e88e5, #42a5f5); }
+
+        .stat-value { font-size: 1.8rem; font-weight: bold; margin-bottom: 0.25rem; }
+        .stat-label { font-size: 0.85rem; opacity: 0.9; }
+
+        /* Tables */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .data-table th, .data-table td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .data-table th {
+            background: var(--light);
+            font-weight: 600;
+            color: var(--primary);
+            position: sticky;
+            top: 60px;
+        }
+
+        .data-table tr:hover { background: #f8f9fa; }
+
+        .data-table code {
+            background: #e9ecef;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Consolas', monospace;
+            font-size: 0.85rem;
+        }
+
+        /* Phase badges */
+        .phase-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: white;
+        }
+
+        .phase-badge.ingress { background: var(--phase-ingress); }
+        .phase-badge.document { background: var(--phase-document); }
+        .phase-badge.consent { background: var(--phase-consent); }
+        .phase-badge.auth { background: var(--phase-auth); }
+        .phase-badge.terminal { background: var(--phase-terminal); }
+        .phase-badge.terminal-success { background: #43a047; }
+        .phase-badge.terminal-fail { background: #e53935; }
+
+        /* Flow Diagram Styles */
+        .flow-section {
+            background: #fafafa;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        .flow-title {
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .flow-title .channel-badge {
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            color: white;
+        }
+
+        .flow-title .channel-badge.notification { background: #e91e63; }
+        .flow-title .channel-badge.redirect { background: #3f51b5; }
+        .flow-title .channel-badge.qr { background: #009688; }
+        .flow-title .channel-badge.all { background: #607d8b; }
+
+        .flow-path {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.25rem;
+            font-family: 'Consolas', monospace;
+            font-size: 0.85rem;
+            padding: 0.75rem;
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid #ccc;
+        }
+
+        .flow-path.success { border-left-color: #4caf50; }
+        .flow-path.failure { border-left-color: #f44336; }
+        .flow-path.branch { border-left-color: #ff9800; }
+
+        .flow-node {
+            padding: 4px 8px;
+            border-radius: 4px;
+            background: #e3f2fd;
+            border: 1px solid #90caf9;
+        }
+
+        .flow-node.terminal { background: #c8e6c9; border-color: #81c784; font-weight: bold; }
+        .flow-node.terminal-fail { background: #ffcdd2; border-color: #ef9a9a; font-weight: bold; }
+        .flow-node.decision { background: #fff3e0; border-color: #ffcc80; }
+
+        .flow-arrow { color: #666; font-weight: bold; }
+
+        /* State Machine Diagram */
+        .state-machine {
+            overflow-x: auto;
+            padding: 1rem;
+        }
+
+        .state-machine svg {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .sm-phase {
+            margin-bottom: 2rem;
+            padding: 1rem;
+            border-radius: 12px;
+            background: white;
+        }
+
+        .sm-phase-title {
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            color: white;
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+
+        .sm-states {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+
+        .sm-state {
+            background: white;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            min-width: 140px;
+            text-align: center;
+            position: relative;
+        }
+
+        .sm-state.terminal { border-width: 3px; }
+        .sm-state.terminal-success { border-color: #4caf50; background: #e8f5e9; }
+        .sm-state.terminal-fail { border-color: #f44336; background: #ffebee; }
+
+        .sm-state-code {
+            font-family: 'Consolas', monospace;
+            font-weight: bold;
+            font-size: 0.9rem;
+            color: var(--primary);
+        }
+
+        .sm-state-name {
+            font-size: 0.75rem;
+            color: #666;
+            margin-top: 0.25rem;
+        }
+
+        .sm-connector {
+            display: flex;
+            align-items: center;
+            color: #999;
+            font-size: 1.5rem;
+        }
+
+        /* Charts */
+        .chart-container {
+            position: relative;
+            height: 350px;
+            margin: 1rem 0;
+        }
+
+        .chart-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        /* Progress bars */
+        .progress-bar {
+            width: 100%;
+            height: 22px;
+            background: #e9ecef;
+            border-radius: 11px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 11px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 0.5rem;
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 600;
+            transition: width 0.5s ease;
+        }
+
+        .progress-fill.high { background: linear-gradient(90deg, #43a047, #66bb6a); }
+        .progress-fill.medium { background: linear-gradient(90deg, #fb8c00, #ffa726); }
+        .progress-fill.low { background: linear-gradient(90deg, #e53935, #ef5350); }
+
+        /* KPI Cards */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .kpi-card {
+            background: white;
+            border-radius: 10px;
+            padding: 1rem;
+            border-left: 4px solid var(--primary);
+        }
+
+        .kpi-card h4 {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+
+        .kpi-card .value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .kpi-card .formula {
+            font-size: 0.75rem;
+            color: #999;
+            font-family: monospace;
+            margin-top: 0.25rem;
+        }
+
+        /* Transition Matrix */
+        .matrix-container {
+            overflow-x: auto;
+        }
+
+        .matrix-table {
+            border-collapse: collapse;
+            font-size: 0.75rem;
+        }
+
+        .matrix-table th, .matrix-table td {
+            padding: 0.4rem;
+            text-align: center;
+            border: 1px solid #ddd;
+            min-width: 40px;
+        }
+
+        .matrix-table th {
+            background: var(--primary);
+            color: white;
+            font-weight: 600;
+        }
+
+        .matrix-table .row-header {
+            background: var(--light);
+            font-weight: 600;
+            text-align: left;
+            padding-left: 0.5rem;
+        }
+
+        .matrix-table .valid { background: #c8e6c9; }
+        .matrix-table .terminal { background: #ffcdd2; }
+        .matrix-table .conditional { background: #fff3e0; }
+
+        /* Bottleneck cards */
+        .bottleneck-card {
+            background: #fff8e1;
+            border-left: 4px solid #ffc107;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .bottleneck-card .title {
+            font-weight: bold;
+            color: #f57c00;
+            margin-bottom: 0.5rem;
+        }
+
+        .bottleneck-card .metrics {
+            display: flex;
+            gap: 2rem;
+            margin: 0.5rem 0;
+        }
+
+        .bottleneck-card .metric {
+            font-size: 0.9rem;
+        }
+
+        .bottleneck-card .metric strong {
+            color: var(--primary);
+        }
+
+        /* Recommendations */
+        .rec-card {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem;
+            background: #e8f5e9;
+            border-radius: 8px;
+            margin: 0.75rem 0;
+        }
+
+        .rec-number {
+            width: 32px;
+            height: 32px;
+            background: #4caf50;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .rec-content h4 { color: #2e7d32; margin-bottom: 0.25rem; }
+        .rec-content p { font-size: 0.9rem; color: #555; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header h1 { font-size: 1.5rem; }
+            .container { padding: 1rem; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .chart-row { grid-template-columns: 1fr; }
+            .nav-tab { padding: 0.5rem 0.75rem; font-size: 0.8rem; }
+        }
+
+        /* Print */
+        @media print {
+            .nav-tabs { display: none; }
+            .section { display: block !important; page-break-inside: avoid; }
+        }
+
+        /* Info box */
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 1rem;
+            border-radius: 0 8px 8px 0;
+            margin: 1rem 0;
+        }
+
+        .info-box.warning {
+            background: #fff3e0;
+            border-color: #ff9800;
+        }
+
+        /* Legend */
+        .legend {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            margin: 1rem 0;
+            padding: 1rem;
+            background: var(--light);
+            border-radius: 8px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+        }
+
+        .legend-color {
+            width: 18px;
+            height: 18px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>UAE PASS Document Sharing</h1>
+        <div class="subtitle">Status Model & Analytics Dashboard</div>
+        <div class="version">Version 2.0 | Based on Status Model Requirements Document | January 2026</div>
+    </div>
+
+    <div class="nav-tabs">
+        <button class="nav-tab active" onclick="showSection('overview')">Overview</button>
+        <button class="nav-tab" onclick="showSection('status-model')">Status Dictionary</button>
+        <button class="nav-tab" onclick="showSection('status-flow')">Status Flow</button>
+        <button class="nav-tab" onclick="showSection('transitions')">Transitions Matrix</button>
+        <button class="nav-tab" onclick="showSection('data-model')">Data Model</button>
+        <button class="nav-tab" onclick="showSection('funnel')">Funnel Analysis</button>
+        <button class="nav-tab" onclick="showSection('sp-reports')">SP Reports</button>
+        <button class="nav-tab" onclick="showSection('bottlenecks')">Bottlenecks</button>
+        <button class="nav-tab" onclick="showSection('kpis')">KPIs & Metrics</button>
+        <button class="nav-tab" onclick="showSection('advanced-reports')">Advanced Reports</button>
+    </div>
+
+    <div class="container">
+        <!-- OVERVIEW SECTION -->
+        <div id="overview" class="section active">
+            <div class="stats-grid">
+                <div class="stat-card info">
+                    <div class="stat-value">26</div>
+                    <div class="stat-label">Status Codes</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">5</div>
+                    <div class="stat-label">Lifecycle Phases</div>
+                </div>
+                <div class="stat-card warning">
+                    <div class="stat-value">3</div>
+                    <div class="stat-label">Entry Channels</div>
+                </div>
+                <div class="stat-card danger">
+                    <div class="stat-value">5</div>
+                    <div class="stat-label">Terminal States</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Executive Summary</h2>
+                <p>This dashboard documents the <strong>unified status tracking model</strong> for UAE PASS document sharing transactions. The model provides lifecycle-based visibility into every sharing request, replacing flat transaction counts with a detailed status timeline and clear funnel metrics per channel.</p>
+
+                <div class="info-box">
+                    <strong>Purpose:</strong> Track where users progress or drop off in the sharing flow. Enable precise identification of bottlenecks and optimization opportunities across Notification, Redirect, and QR channels.
+                </div>
+
+                <h3>Channels Supported</h3>
+                <div class="stats-grid" style="margin-top: 0.5rem;">
+                    <div class="stat-card" style="background: linear-gradient(135deg, #e91e63, #f06292);">
+                        <div class="stat-value" style="font-size: 1.2rem;">Notification</div>
+                        <div class="stat-label">Push notification flow</div>
+                    </div>
+                    <div class="stat-card" style="background: linear-gradient(135deg, #3f51b5, #7986cb);">
+                        <div class="stat-value" style="font-size: 1.2rem;">Redirect</div>
+                        <div class="stat-label">App/Web-to-app redirect</div>
+                    </div>
+                    <div class="stat-card" style="background: linear-gradient(135deg, #009688, #4db6ac);">
+                        <div class="stat-value" style="font-size: 1.2rem;">QR</div>
+                        <div class="stat-label">Web QR scan flow</div>
+                    </div>
+                </div>
+
+                <h3>Lifecycle Phases</h3>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Phase</th>
+                            <th>Status Range</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="phase-badge ingress">Ingress</span></td>
+                            <td>S00 - S08</td>
+                            <td>Request creation through user landing in UAE PASS app</td>
+                        </tr>
+                        <tr>
+                            <td><span class="phase-badge document">Document</span></td>
+                            <td>S10 - S15</td>
+                            <td>Document availability check and missing doc handling</td>
+                        </tr>
+                        <tr>
+                            <td><span class="phase-badge consent">Consent</span></td>
+                            <td>S20 - S22</td>
+                            <td>User consent and share button interaction</td>
+                        </tr>
+                        <tr>
+                            <td><span class="phase-badge auth">Authentication</span></td>
+                            <td>S30 - S32</td>
+                            <td>PIN entry and verification</td>
+                        </tr>
+                        <tr>
+                            <td><span class="phase-badge terminal">Terminal</span></td>
+                            <td>S40 - S44</td>
+                            <td>Final outcomes (success or failure)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="chart-row">
+                <div class="card">
+                    <h2>Sample Data: Outcome Distribution</h2>
+                    <div class="chart-container" style="height: 280px;">
+                        <canvas id="outcomeChart"></canvas>
+                    </div>
+                </div>
+                <div class="card">
+                    <h2>Sample Data: Channel Performance</h2>
+                    <div class="chart-container" style="height: 280px;">
+                        <canvas id="channelChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- STATUS MODEL SECTION -->
+        <div id="status-model" class="section">
+            <div class="card">
+                <h2>Unified Status Dictionary</h2>
+                <p>Complete reference of all status codes. Terminal statuses are marked <span class="phase-badge terminal">[T]</span>. Channel-specific statuses noted where applicable.</p>
+
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: var(--phase-ingress);"></div>
+                        <span>Ingress (S00-S08)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: var(--phase-document);"></div>
+                        <span>Document (S10-S15)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: var(--phase-consent);"></div>
+                        <span>Consent (S20-S22)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: var(--phase-auth);"></div>
+                        <span>Auth (S30-S32)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #43a047;"></div>
+                        <span>Success [T]</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #e53935;"></div>
+                        <span>Failure [T]</span>
+                    </div>
+                </div>
+
+                <table class="data-table" id="statusTable">
+                    <thead>
+                        <tr>
+                            <th style="width: 80px;">Code</th>
+                            <th style="width: 200px;">Status Name</th>
+                            <th>Description</th>
+                            <th style="width: 100px;">Channel</th>
+                            <th style="width: 90px;">Phase</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Ingress -->
+                        <tr>
+                            <td><code>S00</code></td>
+                            <td>REQUEST_CREATED</td>
+                            <td>Sharing request registered in DV system</td>
+                            <td>All</td>
+                            <td><span class="phase-badge ingress">Ingress</span></td>
+                        </tr>
+                        <tr style="background: #fce4ec;">
+                            <td><code>S01</code></td>
+                            <td>NOTIF_SENT</td>
+                            <td>Push notification sent to user device</td>
+                            <td>Notification</td>
+                            <td><span class="phase-badge ingress">Ingress</span></td>
+                        </tr>
+                        <tr style="background: #fce4ec;">
+                            <td><code>S02</code></td>
+                            <td>NOTIF_DELIVERED</td>
+                            <td>Push delivered by OS (confirmed)</td>
+                            <td>Notification</td>
+                            <td><span class="phase-badge ingress">Ingress</span></td>
+                        </tr>
+                        <tr style="background: #fce4ec;">
+                            <td><code>S03</code></td>
+                            <td>NOTIF_OPENED</td>
+                            <td>User opened push notification</td>
+                            <td>Notification</td>
+                            <td><span class="phase-badge ingress">Ingress</span></td>
+                        </tr>
+                        <tr style="background: #e8eaf6;">
+                            <td><code>S04</code></td>
+                            <td>REDIRECT_LAUNCHED</td>
+                            <td>SP triggered app/web-to-app redirect</td>
+                            <td>Redirect</td>
+                            <td><span class="phase-badge ingress">Ingress</span></td>
+                        </tr>
+                        <tr style="background: #e8eaf6;">
+                            <td><code>S05</code></td>
+                            <td>REDIRECT_LANDED</td>
+                            <td>User landed on request via redirect</td>
+                            <td>Redirect</td>
+                            <td><span class="phase-badge ingress">Ingress</span></td>
+                        </tr>
+                        <tr style="background: #e0f2f1;">
+                            <td><code>S06</code></td>
+                            <td>QR_RENDERED</td>
+                            <td>QR code shown on SP web page</td>
+                            <td>QR</td>
+                            <td><span class="phase-badge ingress">Ingress</span></td>
+                        </tr>
+                        <tr style="background: #e0f2f1;">
+                            <td><code>S07</code></td>
+                            <td>QR_SCANNED</td>
+                            <td>User scanned QR, landed on request</td>
+                            <td>QR</td>
+                            <td><span class="phase-badge ingress">Ingress</span></td>
+                        </tr>
+                        <tr>
+                            <td><code>S08</code></td>
+                            <td>REQUEST_VIEWED</td>
+                            <td>Request screen viewed in UAE PASS (stable "landed" state)</td>
+                            <td>All</td>
+                            <td><span class="phase-badge ingress">Ingress</span></td>
+                        </tr>
+                        <!-- Document -->
+                        <tr>
+                            <td><code>S10</code></td>
+                            <td>DOCS_READY_AT_OPEN</td>
+                            <td>All mandatory documents present at first view</td>
+                            <td>All</td>
+                            <td><span class="phase-badge document">Document</span></td>
+                        </tr>
+                        <tr>
+                            <td><code>S11</code></td>
+                            <td>DOCS_MISSING_AT_OPEN</td>
+                            <td>Mandatory documents missing at first view</td>
+                            <td>All</td>
+                            <td><span class="phase-badge document">Document</span></td>
+                        </tr>
+                        <tr>
+                            <td><code>S12</code></td>
+                            <td>MISSING_DOC_REQUEST_INITIATED</td>
+                            <td>User tapped "Request" for a required document</td>
+                            <td>All</td>
+                            <td><span class="phase-badge document">Document</span></td>
+                        </tr>
+                        <tr>
+                            <td><code>S13</code></td>
+                            <td>MISSING_DOC_REQUEST_SUCCESS</td>
+                            <td>Required document retrieved and added to vault</td>
+                            <td>All</td>
+                            <td><span class="phase-badge document">Document</span></td>
+                        </tr>
+                        <tr>
+                            <td><code>S14</code></td>
+                            <td>MISSING_DOC_REQUEST_ERROR</td>
+                            <td>Technical error from issuer/DV during fetch</td>
+                            <td>All</td>
+                            <td><span class="phase-badge document">Document</span></td>
+                        </tr>
+                        <tr>
+                            <td><code>S15</code></td>
+                            <td>MISSING_DOC_NOT_FOUND_AT_ISSUER</td>
+                            <td>Issuer reports document does not exist for user</td>
+                            <td>All</td>
+                            <td><span class="phase-badge document">Document</span></td>
+                        </tr>
+                        <!-- Consent -->
+                        <tr>
+                            <td><code>S20</code></td>
+                            <td>AWAITING_CONSENT</td>
+                            <td>Documents ready, consent checkbox not yet checked</td>
+                            <td>All</td>
+                            <td><span class="phase-badge consent">Consent</span></td>
+                        </tr>
+                        <tr>
+                            <td><code>S21</code></td>
+                            <td>CONSENT_GIVEN</td>
+                            <td>User checked consent checkbox, "Share" button enabled</td>
+                            <td>All</td>
+                            <td><span class="phase-badge consent">Consent</span></td>
+                        </tr>
+                        <tr>
+                            <td><code>S22</code></td>
+                            <td>SEND_DOCUMENTS_PRESSED</td>
+                            <td>User pressed "Send Documents" / "Share" button</td>
+                            <td>All</td>
+                            <td><span class="phase-badge consent">Consent</span></td>
+                        </tr>
+                        <!-- Auth -->
+                        <tr>
+                            <td><code>S30</code></td>
+                            <td>PIN_REQUESTED</td>
+                            <td>App prompted user for PIN entry</td>
+                            <td>All</td>
+                            <td><span class="phase-badge auth">Auth</span></td>
+                        </tr>
+                        <tr>
+                            <td><code>S31</code></td>
+                            <td>PIN_VERIFIED</td>
+                            <td>PIN entered correctly</td>
+                            <td>All</td>
+                            <td><span class="phase-badge auth">Auth</span></td>
+                        </tr>
+                        <tr>
+                            <td><code>S32</code></td>
+                            <td>PIN_FAILED</td>
+                            <td>PIN incorrect or user aborted PIN screen</td>
+                            <td>All</td>
+                            <td><span class="phase-badge auth">Auth</span></td>
+                        </tr>
+                        <!-- Terminal -->
+                        <tr style="background: #e8f5e9;">
+                            <td><code>S40</code></td>
+                            <td>SHARE_SUCCESS <span class="phase-badge terminal-success">[T]</span></td>
+                            <td>Documents shared successfully to SP</td>
+                            <td>All</td>
+                            <td><span class="phase-badge terminal-success">Terminal</span></td>
+                        </tr>
+                        <tr style="background: #ffebee;">
+                            <td><code>S41</code></td>
+                            <td>SHARE_TECH_ERROR <span class="phase-badge terminal-fail">[T]</span></td>
+                            <td>Technical failure after PIN (timeouts, 5xx errors)</td>
+                            <td>All</td>
+                            <td><span class="phase-badge terminal-fail">Terminal</span></td>
+                        </tr>
+                        <tr style="background: #ffebee;">
+                            <td><code>S42</code></td>
+                            <td>EXPIRED <span class="phase-badge terminal-fail">[T]</span></td>
+                            <td>Request expired (TTL reached without completion)</td>
+                            <td>All</td>
+                            <td><span class="phase-badge terminal-fail">Terminal</span></td>
+                        </tr>
+                        <tr style="background: #ffebee;">
+                            <td><code>S43</code></td>
+                            <td>USER_ABORTED <span class="phase-badge terminal-fail">[T]</span></td>
+                            <td>User backed out / closed without completing</td>
+                            <td>All</td>
+                            <td><span class="phase-badge terminal-fail">Terminal</span></td>
+                        </tr>
+                        <tr style="background: #ffebee;">
+                            <td><code>S44</code></td>
+                            <td>NOT_ELIGIBLE <span class="phase-badge terminal-fail">[T]</span></td>
+                            <td>Cannot satisfy requirements (doc not available at issuer)</td>
+                            <td>All</td>
+                            <td><span class="phase-badge terminal-fail">Terminal</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- STATUS FLOW SECTION -->
+        <div id="status-flow" class="section">
+            <div class="card">
+                <h2>Status Flow Diagrams</h2>
+                <p>Visual representation of how statuses transition from request creation to terminal outcomes.</p>
+
+                <h3>Channel-Specific Ingress Flows</h3>
+
+                <div class="flow-section">
+                    <div class="flow-title">
+                        <span class="channel-badge notification">Notification</span>
+                        Push Notification Flow
+                    </div>
+                    <div class="flow-path">
+                        <span class="flow-node">S00</span>
+                        <span class="flow-arrow">→</span>
+                        <span class="flow-node">S01</span>
+                        <span class="flow-arrow">→</span>
+                        <span class="flow-node">S02</span>
+                        <span class="flow-arrow">→</span>
+                        <span class="flow-node">S03</span>
+                        <span class="flow-arrow">→</span>
+                        <span class="flow-node">S08</span>
+                    </div>
+                    <div style="font-size: 0.8rem; color: #666; margin-top: 0.5rem;">
+                        Request Created → Notification Sent → Delivered → Opened → Request Viewed
+                    </div>
+                </div>
+
+                <div class="flow-section">
+                    <div class="flow-title">
+                        <span class="channel-badge redirect">Redirect</span>
+                        App/Web Redirect Flow
+                    </div>
+                    <div class="flow-path">
+                        <span class="flow-node">S00</span>
+                        <span class="flow-arrow">→</span>
+                        <span class="flow-node">S04</span>
+                        <span class="flow-arrow">→</span>
+                        <span class="flow-node">S05</span>
+                        <span class="flow-arrow">→</span>
+                        <span class="flow-node">S08</span>
+                    </div>
+                    <div style="font-size: 0.8rem; color: #666; margin-top: 0.5rem;">
+                        Request Created → Redirect Launched → Landed → Request Viewed
+                    </div>
+                </div>
+
+                <div class="flow-section">
+                    <div class="flow-title">
+                        <span class="channel-badge qr">QR</span>
+                        QR Code Scan Flow
+                    </div>
+                    <div class="flow-path">
+                        <span class="flow-node">S00</span>
+                        <span class="flow-arrow">→</span>
+                        <span class="flow-node">S06</span>
+                        <span class="flow-arrow">→</span>
+                        <span class="flow-node">S07</span>
+                        <span class="flow-arrow">→</span>
+                        <span class="flow-node">S08</span>
+                    </div>
+                    <div style="font-size: 0.8rem; color: #666; margin-top: 0.5rem;">
+                        Request Created → QR Rendered → Scanned → Request Viewed
+                    </div>
+                </div>
+
+                <h3>Document Readiness Flow (from S08)</h3>
+
+                <div class="flow-section">
+                    <div class="flow-title">
+                        <span class="channel-badge all">All Channels</span>
+                        Document Check Branch
+                    </div>
+                    <div class="flow-path success" style="margin-bottom: 0.5rem;">
+                        <span class="flow-node">S08</span>
+                        <span class="flow-arrow">→</span>
+                        <span class="flow-node" style="background: #c8e6c9;">S10 (docs ready)</span>
+                        <span class="flow-arrow">→</span>
+                        <span class="flow-node">S20</span>
+                        <span style="color: #4caf50; font-size: 0.8rem; margin-left: 0.5rem;">Happy path</span>
+                    </div>
+                    <div class="flow-path branch">
+                        <span class="flow-node">S08</span>
+                        <span class="flow-arrow">→</span>
+                        <span class="flow-node decision">S11 (docs missing)</span>
+                        <span class="flow-arrow">→</span>
+                        <span class="flow-node">S12</span>
+                        <span class="flow-arrow">→</span>
+                        <span style="display: flex; flex-direction: column; gap: 0.25rem;">
+                            <span class="flow-node" style="background: #c8e6c9;">S13 → S20</span>
+                            <span class="flow-node" style="background: #fff3e0;">S14 → retry</span>
+                            <span class="flow-node terminal-fail">S15 → S44 [T]</span>
+                        </span>
+                    </div>
+                </div>
+
+                <h3>Consent & Authentication Flow</h3>
+
+                <div class="flow-section">
+                    <div class="flow-title">
+                        <span class="channel-badge all">All Channels</span>
+                        Consent to Completion
+                    </div>
+                    <div class="flow-path success">
+                        <span class="flow-node">S20</span>
+                        <span class="flow-arrow">→</span>
+                        <span class="flow-node">S21</span>
+                        <span class="flow-arrow">→</span>
+                        <span class="flow-node">S22</span>
+                        <span class="flow-arrow">→</span>
+                        <span class="flow-node">S30</span>
+                        <span class="flow-arrow">→</span>
+                        <span class="flow-node">S31</span>
+                        <span class="flow-arrow">→</span>
+                        <span class="flow-node terminal">S40 [T]</span>
+                    </div>
+                    <div style="font-size: 0.8rem; color: #666; margin-top: 0.5rem;">
+                        Awaiting Consent → Consent Given → Send Pressed → PIN Requested → PIN Verified → Success
+                    </div>
+                </div>
+
+                <h3>Complete Flow Examples</h3>
+
+                <div class="flow-section">
+                    <div class="flow-title">Example 1: Notification - Successful Share</div>
+                    <div class="flow-path success">
+                        <span class="flow-node">S00</span><span class="flow-arrow">→</span>
+                        <span class="flow-node">S01</span><span class="flow-arrow">→</span>
+                        <span class="flow-node">S02</span><span class="flow-arrow">→</span>
+                        <span class="flow-node">S03</span><span class="flow-arrow">→</span>
+                        <span class="flow-node">S08</span><span class="flow-arrow">→</span>
+                        <span class="flow-node">S10</span><span class="flow-arrow">→</span>
+                        <span class="flow-node">S20</span><span class="flow-arrow">→</span>
+                        <span class="flow-node">S21</span><span class="flow-arrow">→</span>
+                        <span class="flow-node">S22</span><span class="flow-arrow">→</span>
+                        <span class="flow-node">S30</span><span class="flow-arrow">→</span>
+                        <span class="flow-node">S31</span><span class="flow-arrow">→</span>
+                        <span class="flow-node terminal">S40</span>
+                    </div>
+                </div>
+
+                <div class="flow-section">
+                    <div class="flow-title">Example 2: Redirect - Missing Doc Then Success</div>
+                    <div class="flow-path success">
+                        <span class="flow-node">S00</span><span class="flow-arrow">→</span>
+                        <span class="flow-node">S04</span><span class="flow-arrow">→</span>
+                        <span class="flow-node">S05</span><span class="flow-arrow">→</span>
+                        <span class="flow-node">S08</span><span class="flow-arrow">→</span>
+                        <span class="flow-node decision">S11</span><span class="flow-arrow">→</span>
+                        <span class="flow-node">S12</span><span class="flow-arrow">→</span>
+                        <span class="flow-node">S13</span><span class="flow-arrow">→</span>
+                        <span class="flow-node">S20</span><span class="flow-arrow">→</span>
+                        <span class="flow-node">S21</span><span class="flow-arrow">→</span>
+                        <span class="flow-node">S22</span><span class="flow-arrow">→</span>
+                        <span class="flow-node">S30</span><span class="flow-arrow">→</span>
+                        <span class="flow-node">S31</span><span class="flow-arrow">→</span>
+                        <span class="flow-node terminal">S40</span>
+                    </div>
+                </div>
+
+                <div class="flow-section">
+                    <div class="flow-title">Example 3: QR - Doc Request Error Then Abort</div>
+                    <div class="flow-path failure">
+                        <span class="flow-node">S00</span><span class="flow-arrow">→</span>
+                        <span class="flow-node">S06</span><span class="flow-arrow">→</span>
+                        <span class="flow-node">S07</span><span class="flow-arrow">→</span>
+                        <span class="flow-node">S08</span><span class="flow-arrow">→</span>
+                        <span class="flow-node decision">S11</span><span class="flow-arrow">→</span>
+                        <span class="flow-node">S12</span><span class="flow-arrow">→</span>
+                        <span class="flow-node decision">S14</span><span class="flow-arrow">→</span>
+                        <span class="flow-node terminal-fail">S43</span>
+                    </div>
+                </div>
+
+                <div class="flow-section">
+                    <div class="flow-title">Example 4: Notification - Doc Not Found at Issuer</div>
+                    <div class="flow-path failure">
+                        <span class="flow-node">S00</span><span class="flow-arrow">→</span>
+                        <span class="flow-node">S01</span><span class="flow-arrow">→</span>
+                        <span class="flow-node">S02</span><span class="flow-arrow">→</span>
+                        <span class="flow-node">S03</span><span class="flow-arrow">→</span>
+                        <span class="flow-node">S08</span><span class="flow-arrow">→</span>
+                        <span class="flow-node decision">S11</span><span class="flow-arrow">→</span>
+                        <span class="flow-node">S12</span><span class="flow-arrow">→</span>
+                        <span class="flow-node decision">S15</span><span class="flow-arrow">→</span>
+                        <span class="flow-node terminal-fail">S44</span>
+                    </div>
+                </div>
+
+                <div class="info-box warning">
+                    <strong>Note:</strong> Any non-terminal status may transition to <code>S42_EXPIRED</code> when the request TTL is reached.
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Visual State Machine</h2>
+
+                <div class="sm-phase" style="background: #e3f2fd;">
+                    <div class="sm-phase-title" style="background: var(--phase-ingress);">Phase 1: Ingress</div>
+                    <div class="sm-states">
+                        <div class="sm-state">
+                            <div class="sm-state-code">S00</div>
+                            <div class="sm-state-name">Request Created</div>
+                        </div>
+                        <div class="sm-connector">→</div>
+                        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                <div class="sm-state" style="background: #fce4ec; border-color: #e91e63;">
+                                    <div class="sm-state-code">S01→S02→S03</div>
+                                    <div class="sm-state-name">Notification Path</div>
+                                </div>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                <div class="sm-state" style="background: #e8eaf6; border-color: #3f51b5;">
+                                    <div class="sm-state-code">S04→S05</div>
+                                    <div class="sm-state-name">Redirect Path</div>
+                                </div>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                <div class="sm-state" style="background: #e0f2f1; border-color: #009688;">
+                                    <div class="sm-state-code">S06→S07</div>
+                                    <div class="sm-state-name">QR Path</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="sm-connector">→</div>
+                        <div class="sm-state" style="border-color: var(--primary); border-width: 3px;">
+                            <div class="sm-state-code">S08</div>
+                            <div class="sm-state-name">Request Viewed</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sm-phase" style="background: #f3e5f5;">
+                    <div class="sm-phase-title" style="background: var(--phase-document);">Phase 2: Document Check</div>
+                    <div class="sm-states">
+                        <div class="sm-state" style="background: #c8e6c9; border-color: #4caf50;">
+                            <div class="sm-state-code">S10</div>
+                            <div class="sm-state-name">Docs Ready</div>
+                        </div>
+                        <div style="margin: 0 1rem; color: #666;">or</div>
+                        <div class="sm-state" style="background: #fff3e0; border-color: #ff9800;">
+                            <div class="sm-state-code">S11</div>
+                            <div class="sm-state-name">Docs Missing</div>
+                        </div>
+                        <div class="sm-connector">→</div>
+                        <div class="sm-state">
+                            <div class="sm-state-code">S12</div>
+                            <div class="sm-state-name">Request Initiated</div>
+                        </div>
+                        <div class="sm-connector">→</div>
+                        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                            <div class="sm-state" style="background: #c8e6c9; border-color: #4caf50;">
+                                <div class="sm-state-code">S13</div>
+                                <div class="sm-state-name">Success</div>
+                            </div>
+                            <div class="sm-state" style="background: #fff3e0; border-color: #ff9800;">
+                                <div class="sm-state-code">S14</div>
+                                <div class="sm-state-name">Tech Error</div>
+                            </div>
+                            <div class="sm-state" style="background: #ffcdd2; border-color: #f44336;">
+                                <div class="sm-state-code">S15</div>
+                                <div class="sm-state-name">Not Found</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sm-phase" style="background: #e8f5e9;">
+                    <div class="sm-phase-title" style="background: var(--phase-consent);">Phase 3: Consent</div>
+                    <div class="sm-states">
+                        <div class="sm-state">
+                            <div class="sm-state-code">S20</div>
+                            <div class="sm-state-name">Awaiting Consent</div>
+                        </div>
+                        <div class="sm-connector">→</div>
+                        <div class="sm-state">
+                            <div class="sm-state-code">S21</div>
+                            <div class="sm-state-name">Consent Given</div>
+                        </div>
+                        <div class="sm-connector">→</div>
+                        <div class="sm-state" style="border-color: var(--phase-consent); border-width: 3px;">
+                            <div class="sm-state-code">S22</div>
+                            <div class="sm-state-name">Send Pressed</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sm-phase" style="background: #fff3e0;">
+                    <div class="sm-phase-title" style="background: var(--phase-auth);">Phase 4: Authentication</div>
+                    <div class="sm-states">
+                        <div class="sm-state">
+                            <div class="sm-state-code">S30</div>
+                            <div class="sm-state-name">PIN Requested</div>
+                        </div>
+                        <div class="sm-connector">→</div>
+                        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                            <div class="sm-state" style="background: #c8e6c9; border-color: #4caf50;">
+                                <div class="sm-state-code">S31</div>
+                                <div class="sm-state-name">PIN Verified</div>
+                            </div>
+                            <div class="sm-state" style="background: #ffcdd2; border-color: #f44336;">
+                                <div class="sm-state-code">S32</div>
+                                <div class="sm-state-name">PIN Failed</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sm-phase" style="background: #eceff1;">
+                    <div class="sm-phase-title" style="background: var(--phase-terminal);">Phase 5: Terminal States</div>
+                    <div class="sm-states">
+                        <div class="sm-state terminal-success">
+                            <div class="sm-state-code">S40</div>
+                            <div class="sm-state-name">Share Success</div>
+                        </div>
+                        <div class="sm-state terminal-fail">
+                            <div class="sm-state-code">S41</div>
+                            <div class="sm-state-name">Tech Error</div>
+                        </div>
+                        <div class="sm-state terminal-fail">
+                            <div class="sm-state-code">S42</div>
+                            <div class="sm-state-name">Expired</div>
+                        </div>
+                        <div class="sm-state terminal-fail">
+                            <div class="sm-state-code">S43</div>
+                            <div class="sm-state-name">User Aborted</div>
+                        </div>
+                        <div class="sm-state terminal-fail">
+                            <div class="sm-state-code">S44</div>
+                            <div class="sm-state-name">Not Eligible</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TRANSITIONS MATRIX SECTION -->
+        <div id="transitions" class="section">
+            <div class="card">
+                <h2>Status Transition Matrix</h2>
+                <p>This matrix shows all valid status transitions. Green cells indicate valid transitions, yellow for conditional, red for terminal exits.</p>
+
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #c8e6c9;"></div>
+                        <span>Valid transition</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #fff3e0;"></div>
+                        <span>Conditional / Branch</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #ffcdd2;"></div>
+                        <span>Terminal exit</span>
+                    </div>
+                </div>
+
+                <div class="matrix-container">
+                    <table class="matrix-table">
+                        <thead>
+                            <tr>
+                                <th>From ↓ / To →</th>
+                                <th>S01</th>
+                                <th>S02</th>
+                                <th>S03</th>
+                                <th>S04</th>
+                                <th>S05</th>
+                                <th>S06</th>
+                                <th>S07</th>
+                                <th>S08</th>
+                                <th>S10</th>
+                                <th>S11</th>
+                                <th>S12</th>
+                                <th>S13</th>
+                                <th>S14</th>
+                                <th>S15</th>
+                                <th>S20</th>
+                                <th>S21</th>
+                                <th>S22</th>
+                                <th>S30</th>
+                                <th>S31</th>
+                                <th>S32</th>
+                                <th>S40</th>
+                                <th>S41</th>
+                                <th>S42</th>
+                                <th>S43</th>
+                                <th>S44</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="row-header">S00</td>
+                                <td class="valid">✓</td><td></td><td></td>
+                                <td class="valid">✓</td><td></td>
+                                <td class="valid">✓</td><td></td>
+                                <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+                                <td class="terminal">✓</td><td></td><td></td>
+                            </tr>
+                            <tr>
+                                <td class="row-header">S01</td>
+                                <td></td><td class="valid">✓</td><td></td>
+                                <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+                                <td class="terminal">✓</td><td></td><td></td>
+                            </tr>
+                            <tr>
+                                <td class="row-header">S02</td>
+                                <td></td><td></td><td class="valid">✓</td>
+                                <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+                                <td class="terminal">✓</td><td></td><td></td>
+                            </tr>
+                            <tr>
+                                <td class="row-header">S03</td>
+                                <td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+                                <td class="valid">✓</td>
+                                <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+                                <td class="terminal">✓</td><td></td><td></td>
+                            </tr>
+                            <tr>
+                                <td class="row-header">S04</td>
+                                <td></td><td></td><td></td><td></td><td class="valid">✓</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+                                <td class="terminal">✓</td><td></td><td></td>
+                            </tr>
+                            <tr>
+                                <td class="row-header">S05</td>
+                                <td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+                                <td class="valid">✓</td>
+                                <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+                                <td class="terminal">✓</td><td></td><td></td>
+                            </tr>
+                            <tr>
+                                <td class="row-header">S06</td>
+                                <td></td><td></td><td></td><td></td><td></td><td></td><td class="valid">✓</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+                                <td class="terminal">✓</td><td></td><td></td>
+                            </tr>
+                            <tr>
+                                <td class="row-header">S07</td>
+                                <td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+                                <td class="valid">✓</td>
+                                <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+                                <td class="terminal">✓</td><td></td><td></td>
+                            </tr>
+                            <tr>
+                                <td class="row-header">S08</td>
+                                <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+                                <td class="conditional">✓</td><td class="conditional">✓</td>
+                                <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+                                <td class="terminal">✓</td><td class="terminal">✓</td><td></td>
+                            </tr>
+                            <tr>
+                                <td class="row-header">S10</td>
+                                <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+                                <td class="valid">✓</td>
+                                <td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+                                <td class="terminal">✓</td><td class="terminal">✓</td><td></td>
+                            </tr>
+                            <tr>
+                                <td class="row-header">S11</td>
+                                <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+                                <td class="valid">✓</td>
+                                <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+                                <td class="terminal">✓</td><td class="terminal">✓</td><td></td>
+                            </tr>
+                            <tr>
+                                <td class="row-header">S12</td>
+                                <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+                                <td class="conditional">✓</td><td class="conditional">✓</td><td class="conditional">✓</td>
+                                <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+                                <td class="terminal">✓</td><td class="terminal">✓</td><td></td>
+                            </tr>
+                            <tr>
+                                <td class="row-header">S13</td>
+                                <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+                                <td class="valid">✓</td>
+                                <td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+                                <td class="terminal">✓</td><td class="terminal">✓</td><td></td>
+                            </tr>
+                            <tr>
+                                <td class="row-header">S14</td>
+                                <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+                                <td class="conditional">✓</td>
+                                <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+                                <td class="terminal">✓</td><td class="terminal">✓</td><td></td>
+                            </tr>
+                            <tr>
+                                <td class="row-header">S15</td>
+                                <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+                                <td class="terminal">✓</td>
+                            </tr>
+                            <tr>
+                                <td class="row-header">S20</td>
+                                <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+                                <td class="valid">✓</td>
+                                <td></td><td></td><td></td><td></td><td></td><td></td>
+                                <td class="terminal">✓</td><td class="terminal">✓</td><td></td>
+                            </tr>
+                            <tr>
+                                <td class="row-header">S21</td>
+                                <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+                                <td class="valid">✓</td>
+                                <td></td><td></td><td></td><td></td><td></td>
+                                <td class="terminal">✓</td><td class="terminal">✓</td><td></td>
+                            </tr>
+                            <tr>
+                                <td class="row-header">S22</td>
+                                <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+                                <td class="valid">✓</td>
+                                <td></td><td></td><td></td><td></td>
+                                <td class="terminal">✓</td><td class="terminal">✓</td><td></td>
+                            </tr>
+                            <tr>
+                                <td class="row-header">S30</td>
+                                <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+                                <td class="conditional">✓</td><td class="conditional">✓</td>
+                                <td></td><td></td>
+                                <td class="terminal">✓</td><td class="terminal">✓</td><td></td>
+                            </tr>
+                            <tr>
+                                <td class="row-header">S31</td>
+                                <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+                                <td class="valid">✓</td><td class="terminal">✓</td>
+                                <td class="terminal">✓</td><td></td><td></td>
+                            </tr>
+                            <tr>
+                                <td class="row-header">S32</td>
+                                <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+                                <td class="terminal">✓</td><td></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Transition Rules Summary</h3>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Rule</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Channel-specific ingress</strong></td>
+                            <td>S01-S03 for Notification only; S04-S05 for Redirect only; S06-S07 for QR only</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Convergence at S08</strong></td>
+                            <td>All channels must pass through S08 (REQUEST_VIEWED) before document check</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Document branch</strong></td>
+                            <td>S08 → S10 (docs ready) OR S08 → S11 (docs missing)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Missing doc outcomes</strong></td>
+                            <td>S12 → S13 (success) | S14 (error, retry) | S15 (not found → S44)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Consent flow</strong></td>
+                            <td>S20 → S21 → S22 → S30 (linear progression)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>PIN outcomes</strong></td>
+                            <td>S30 → S31 (verified) | S32 (failed → S43)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Expiry</strong></td>
+                            <td>Any non-terminal → S42 when TTL reached</td>
+                        </tr>
+                        <tr>
+                            <td><strong>User abort</strong></td>
+                            <td>Most states → S43 if user backs out</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Single terminal</strong></td>
+                            <td>Each request ends with exactly one terminal status (S40-S44)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- DATA MODEL SECTION -->
+        <div id="data-model" class="section">
+            <div class="card">
+                <h2>Data Model & Schema</h2>
+                <p>The status tracking system uses an event-sourced architecture with append-only status history.</p>
+
+                <h3>Core Entities</h3>
+                <div style="background: #1e1e1e; color: #d4d4d4; padding: 1.5rem; border-radius: 8px; font-family: 'Consolas', monospace; font-size: 0.85rem; overflow-x: auto;">
+<span style="color: #6a9955;">-- sharing_requests (one row per request)</span>
+<span style="color: #569cd6;">CREATE TABLE</span> sharing_requests (
+    request_id      <span style="color: #4ec9b0;">VARCHAR(64)</span> <span style="color: #569cd6;">PRIMARY KEY</span>,  <span style="color: #6a9955;">-- Correlation ID</span>
+    sp_id           <span style="color: #4ec9b0;">VARCHAR(128)</span>,               <span style="color: #6a9955;">-- Service Provider</span>
+    channel         <span style="color: #4ec9b0;">ENUM</span>('notification','redirect','qr'),
+    platform        <span style="color: #4ec9b0;">ENUM</span>('ios','android'),
+    app_version     <span style="color: #4ec9b0;">VARCHAR(16)</span>,
+    required_docs   <span style="color: #4ec9b0;">JSONB</span>,                     <span style="color: #6a9955;">-- Array of doc types</span>
+    created_ts      <span style="color: #4ec9b0;">TIMESTAMP</span>
+);
+
+<span style="color: #6a9955;">-- sharing_status_history (1..n rows per request)</span>
+<span style="color: #569cd6;">CREATE TABLE</span> sharing_status_history (
+    request_id      <span style="color: #4ec9b0;">VARCHAR(64)</span>,
+    status_code     <span style="color: #4ec9b0;">VARCHAR(8)</span>,                 <span style="color: #6a9955;">-- S00, S01, ... S44</span>
+    status_ts       <span style="color: #4ec9b0;">TIMESTAMP</span>,
+    step_latency_ms <span style="color: #4ec9b0;">INT</span>,                       <span style="color: #6a9955;">-- Since previous status</span>
+    total_age_ms    <span style="color: #4ec9b0;">INT</span>,                       <span style="color: #6a9955;">-- Since S00</span>
+    meta            <span style="color: #4ec9b0;">JSONB</span>,                     <span style="color: #6a9955;">-- doc_context, channel data</span>
+    error_code      <span style="color: #4ec9b0;">VARCHAR(64)</span>,
+    error_source    <span style="color: #4ec9b0;">VARCHAR(32)</span>,               <span style="color: #6a9955;">-- issuer, dv, network, user</span>
+    <span style="color: #569cd6;">UNIQUE</span>(request_id, status_code, status_ts)
+);
+
+<span style="color: #6a9955;">-- v_sharing_latest_status (view)</span>
+<span style="color: #569cd6;">CREATE VIEW</span> v_sharing_latest_status <span style="color: #569cd6;">AS</span>
+<span style="color: #569cd6;">SELECT DISTINCT ON</span> (request_id)
+    request_id,
+    status_code <span style="color: #569cd6;">AS</span> latest_status,
+    status_ts   <span style="color: #569cd6;">AS</span> latest_ts
+<span style="color: #569cd6;">FROM</span> sharing_status_history
+<span style="color: #569cd6;">ORDER BY</span> request_id, status_ts <span style="color: #569cd6;">DESC</span>;
+                </div>
+
+                <h3>Event Schema (Analytics Logging)</h3>
+                <div style="background: #1e1e1e; color: #d4d4d4; padding: 1.5rem; border-radius: 8px; font-family: 'Consolas', monospace; font-size: 0.85rem; overflow-x: auto;">
+{
+    <span style="color: #9cdcfe;">"event_name"</span>: <span style="color: #ce9178;">"sharing_status_changed"</span>,
+    <span style="color: #9cdcfe;">"request_id"</span>: <span style="color: #ce9178;">"REQ-ABC123"</span>,
+    <span style="color: #9cdcfe;">"sp_id"</span>: <span style="color: #ce9178;">"Botim"</span>,
+    <span style="color: #9cdcfe;">"channel"</span>: <span style="color: #ce9178;">"notification"</span>,
+    <span style="color: #9cdcfe;">"platform"</span>: <span style="color: #ce9178;">"ios"</span>,
+    <span style="color: #9cdcfe;">"app_version"</span>: <span style="color: #ce9178;">"6.4.1"</span>,
+    <span style="color: #9cdcfe;">"from_status_code"</span>: <span style="color: #ce9178;">"S21"</span>,
+    <span style="color: #9cdcfe;">"to_status_code"</span>: <span style="color: #ce9178;">"S22"</span>,
+    <span style="color: #9cdcfe;">"doc_context"</span>: {
+        <span style="color: #9cdcfe;">"required_count"</span>: <span style="color: #b5cea8;">2</span>,
+        <span style="color: #9cdcfe;">"missing_count"</span>: <span style="color: #b5cea8;">0</span>,
+        <span style="color: #9cdcfe;">"missing_types"</span>: []
+    },
+    <span style="color: #9cdcfe;">"error"</span>: <span style="color: #569cd6;">null</span>,
+    <span style="color: #9cdcfe;">"timing"</span>: {
+        <span style="color: #9cdcfe;">"event_ts"</span>: <span style="color: #ce9178;">"2026-01-28T10:15:30Z"</span>,
+        <span style="color: #9cdcfe;">"step_latency_ms"</span>: <span style="color: #b5cea8;">2500</span>,
+        <span style="color: #9cdcfe;">"total_age_ms"</span>: <span style="color: #b5cea8;">45000</span>
+    }
+}
+                </div>
+
+                <h3>Channel-Specific Properties</h3>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Channel</th>
+                            <th>Additional Properties</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="phase-badge" style="background: #e91e63;">Notification</span></td>
+                            <td><code>push_provider_status</code> (sent/delivered), <code>os_open_result</code></td>
+                        </tr>
+                        <tr>
+                            <td><span class="phase-badge" style="background: #3f51b5;">Redirect</span></td>
+                            <td><code>source</code> (app/web), <code>deep_link_ok</code> (bool)</td>
+                        </tr>
+                        <tr>
+                            <td><span class="phase-badge" style="background: #009688;">QR</span></td>
+                            <td><code>qr_age_sec</code> at scan, <code>qr_expired</code> (bool)</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>Error Codes</h3>
+                <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem;">
+                    <code style="background: #ffebee; padding: 4px 8px; border-radius: 4px;">issuer_timeout</code>
+                    <code style="background: #ffebee; padding: 4px 8px; border-radius: 4px;">issuer_5xx</code>
+                    <code style="background: #ffebee; padding: 4px 8px; border-radius: 4px;">issuer_not_found</code>
+                    <code style="background: #fff3e0; padding: 4px 8px; border-radius: 4px;">dv_timeout</code>
+                    <code style="background: #fff3e0; padding: 4px 8px; border-radius: 4px;">dv_5xx</code>
+                    <code style="background: #e3f2fd; padding: 4px 8px; border-radius: 4px;">network_error</code>
+                    <code style="background: #f3e5f5; padding: 4px 8px; border-radius: 4px;">user_cancel</code>
+                    <code style="background: #f3e5f5; padding: 4px 8px; border-radius: 4px;">pin_incorrect</code>
+                    <code style="background: #f3e5f5; padding: 4px 8px; border-radius: 4px;">pin_dismissed</code>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Sample Data Preview</h2>
+                <p>Sample records from <code>sharing_transactions_new_sample.csv</code> showing the event-sourced data structure. Each row represents a status transition for a request.</p>
+
+                <div style="overflow-x: auto; margin-top: 1rem;">
+                    <table class="data-table" style="font-size: 0.8rem; white-space: nowrap;">
+                        <thead>
+                            <tr>
+                                <th>request_id</th>
+                                <th>sp_id</th>
+                                <th>channel</th>
+                                <th>platform</th>
+                                <th>app_version</th>
+                                <th>required_docs</th>
+                                <th>status_code</th>
+                                <th>previous_status</th>
+                                <th>status_ts</th>
+                                <th>step_latency_ms</th>
+                                <th>missing_count</th>
+                                <th>error_code</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>REQ000001</code></td>
+                                <td>GIG</td>
+                                <td><span class="phase-badge" style="background: #e91e63;">notification</span></td>
+                                <td>ios</td>
+                                <td>6.1.3</td>
+                                <td>Emirates ID, Vehicle Reg</td>
+                                <td><code>S00</code></td>
+                                <td>-</td>
+                                <td>2025-11-23 04:09:00</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>-</td>
+                            </tr>
+                            <tr>
+                                <td><code>REQ000001</code></td>
+                                <td>GIG</td>
+                                <td><span class="phase-badge" style="background: #e91e63;">notification</span></td>
+                                <td>ios</td>
+                                <td>6.1.3</td>
+                                <td>Emirates ID, Vehicle Reg</td>
+                                <td><code>S01</code></td>
+                                <td>S00</td>
+                                <td>2025-11-23 04:09:03</td>
+                                <td>3000</td>
+                                <td>0</td>
+                                <td>-</td>
+                            </tr>
+                            <tr>
+                                <td><code>REQ000001</code></td>
+                                <td>GIG</td>
+                                <td><span class="phase-badge" style="background: #e91e63;">notification</span></td>
+                                <td>ios</td>
+                                <td>6.1.3</td>
+                                <td>Emirates ID, Vehicle Reg</td>
+                                <td><code>S08</code></td>
+                                <td>S03</td>
+                                <td>2025-11-23 04:09:19</td>
+                                <td>7000</td>
+                                <td>0</td>
+                                <td>-</td>
+                            </tr>
+                            <tr style="background: #e8f5e9;">
+                                <td><code>REQ000002</code></td>
+                                <td>Beyon Money</td>
+                                <td><span class="phase-badge" style="background: #e91e63;">notification</span></td>
+                                <td>ios</td>
+                                <td>5.10.1</td>
+                                <td>Emirates ID, Residence Visa</td>
+                                <td><code>S40</code></td>
+                                <td>S31</td>
+                                <td>2025-11-25 05:24:59</td>
+                                <td>3000</td>
+                                <td>0</td>
+                                <td>-</td>
+                            </tr>
+                            <tr>
+                                <td><code>REQ000004</code></td>
+                                <td>Botim</td>
+                                <td><span class="phase-badge" style="background: #e91e63;">notification</span></td>
+                                <td>ios</td>
+                                <td>6.1.3</td>
+                                <td>Emirates ID, Passport, Visa</td>
+                                <td><code>S11</code></td>
+                                <td>S08</td>
+                                <td>2025-11-24 15:43:21</td>
+                                <td>2000</td>
+                                <td>1</td>
+                                <td>-</td>
+                            </tr>
+                            <tr style="background: #ffebee;">
+                                <td><code>REQ000004</code></td>
+                                <td>Botim</td>
+                                <td><span class="phase-badge" style="background: #e91e63;">notification</span></td>
+                                <td>ios</td>
+                                <td>6.1.3</td>
+                                <td>Emirates ID, Passport, Visa</td>
+                                <td><code>S44</code></td>
+                                <td>S15</td>
+                                <td>2025-11-24 15:43:48</td>
+                                <td>5000</td>
+                                <td>0</td>
+                                <td>issuer_not_found</td>
+                            </tr>
+                            <tr>
+                                <td><code>REQ000005</code></td>
+                                <td>Lulu</td>
+                                <td><span class="phase-badge" style="background: #009688;">qr</span></td>
+                                <td>android</td>
+                                <td>5.10.1</td>
+                                <td>Emirates ID, Residence Visa</td>
+                                <td><code>S06</code></td>
+                                <td>S00</td>
+                                <td>2025-11-18 08:25:02</td>
+                                <td>2000</td>
+                                <td>0</td>
+                                <td>-</td>
+                            </tr>
+                            <tr>
+                                <td><code>REQ000007</code></td>
+                                <td>Botim</td>
+                                <td><span class="phase-badge" style="background: #3f51b5;">redirect</span></td>
+                                <td>ios</td>
+                                <td>6.2.1</td>
+                                <td>Emirates ID</td>
+                                <td><code>S04</code></td>
+                                <td>S00</td>
+                                <td>2025-11-05 03:41:02</td>
+                                <td>2000</td>
+                                <td>0</td>
+                                <td>-</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Data File Structure</h3>
+                <table class="data-table" style="margin-top: 0.5rem;">
+                    <thead>
+                        <tr>
+                            <th>Column</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                            <th>Example</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><code>request_id</code></td><td>STRING</td><td>Unique request identifier</td><td>REQ000001</td></tr>
+                        <tr><td><code>sp_id</code></td><td>STRING</td><td>Service Provider name</td><td>Botim, Lulu, ADCB</td></tr>
+                        <tr><td><code>channel</code></td><td>ENUM</td><td>Entry channel type</td><td>notification, qr, redirect</td></tr>
+                        <tr><td><code>platform</code></td><td>ENUM</td><td>User device platform</td><td>ios, android</td></tr>
+                        <tr><td><code>app_version</code></td><td>STRING</td><td>UAE PASS app version</td><td>6.4.1</td></tr>
+                        <tr><td><code>required_docs</code></td><td>ARRAY</td><td>Documents requested by SP</td><td>["Emirates ID", "Visa"]</td></tr>
+                        <tr><td><code>required_count</code></td><td>INT</td><td>Number of required documents</td><td>2</td></tr>
+                        <tr><td><code>status_code</code></td><td>STRING</td><td>Current status (S00-S44)</td><td>S21</td></tr>
+                        <tr><td><code>previous_status</code></td><td>STRING</td><td>Prior status code</td><td>S20</td></tr>
+                        <tr><td><code>status_ts</code></td><td>TIMESTAMP</td><td>When status was recorded</td><td>2025-11-23 04:09:00</td></tr>
+                        <tr><td><code>step_latency_ms</code></td><td>INT</td><td>Time since previous status (ms)</td><td>3000</td></tr>
+                        <tr><td><code>missing_count</code></td><td>INT</td><td>Documents missing at this step</td><td>0, 1, 2</td></tr>
+                        <tr><td><code>error_code</code></td><td>STRING</td><td>Error if applicable</td><td>issuer_not_found</td></tr>
+                        <tr><td><code>error_source</code></td><td>STRING</td><td>Error origin</td><td>issuer, dv, network</td></tr>
+                        <tr><td><code>status_history</code></td><td>ARRAY</td><td>Complete journey record</td><td>["S00","S01","S08"]</td></tr>
+                    </tbody>
+                </table>
+
+                <div class="info-box" style="margin-top: 1rem;">
+                    <strong>Sample File:</strong> <code>sharing_transactions_new_sample.csv</code><br>
+                    <strong>Records:</strong> 5,068 status events | <strong>Unique Requests:</strong> 500 | <strong>Service Providers:</strong> 22
+                </div>
+            </div>
+        </div>
+
+        <!-- FUNNEL SECTION -->
+        <div id="funnel" class="section">
+            <div class="card">
+                <h2>Conversion Funnel Analysis</h2>
+                <p>Track user progression through each stage. Based on sample data of 500 sharing requests.</p>
+
+                <div class="chart-container" style="height: 450px;">
+                    <canvas id="funnelChart"></canvas>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Stage-by-Stage Breakdown</h2>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Stage</th>
+                            <th>Status</th>
+                            <th>Reached</th>
+                            <th>% of Total</th>
+                            <th>Stage Conversion</th>
+                            <th>Progress</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Request Created</td>
+                            <td><code>S00</code></td>
+                            <td>500</td>
+                            <td>100.0%</td>
+                            <td>-</td>
+                            <td><div class="progress-bar"><div class="progress-fill high" style="width: 100%;">100%</div></div></td>
+                        </tr>
+                        <tr>
+                            <td>Request Viewed</td>
+                            <td><code>S08</code></td>
+                            <td>478</td>
+                            <td>95.6%</td>
+                            <td>95.6%</td>
+                            <td><div class="progress-bar"><div class="progress-fill high" style="width: 95.6%;">95.6%</div></div></td>
+                        </tr>
+                        <tr>
+                            <td>Docs Ready / Acquired</td>
+                            <td><code>S10/S13</code></td>
+                            <td>460</td>
+                            <td>92.0%</td>
+                            <td>96.2%</td>
+                            <td><div class="progress-bar"><div class="progress-fill high" style="width: 92%;">92%</div></div></td>
+                        </tr>
+                        <tr>
+                            <td>Awaiting Consent</td>
+                            <td><code>S20</code></td>
+                            <td>435</td>
+                            <td>87.0%</td>
+                            <td>94.6%</td>
+                            <td><div class="progress-bar"><div class="progress-fill high" style="width: 87%;">87%</div></div></td>
+                        </tr>
+                        <tr>
+                            <td>Consent Given</td>
+                            <td><code>S21</code></td>
+                            <td>405</td>
+                            <td>81.0%</td>
+                            <td>93.1%</td>
+                            <td><div class="progress-bar"><div class="progress-fill high" style="width: 81%;">81%</div></div></td>
+                        </tr>
+                        <tr>
+                            <td>Send Pressed</td>
+                            <td><code>S22</code></td>
+                            <td>380</td>
+                            <td>76.0%</td>
+                            <td>93.8%</td>
+                            <td><div class="progress-bar"><div class="progress-fill medium" style="width: 76%;">76%</div></div></td>
+                        </tr>
+                        <tr>
+                            <td>PIN Requested</td>
+                            <td><code>S30</code></td>
+                            <td>368</td>
+                            <td>73.6%</td>
+                            <td>96.8%</td>
+                            <td><div class="progress-bar"><div class="progress-fill medium" style="width: 73.6%;">73.6%</div></div></td>
+                        </tr>
+                        <tr>
+                            <td>PIN Verified</td>
+                            <td><code>S31</code></td>
+                            <td>352</td>
+                            <td>70.4%</td>
+                            <td>95.7%</td>
+                            <td><div class="progress-bar"><div class="progress-fill medium" style="width: 70.4%;">70.4%</div></div></td>
+                        </tr>
+                        <tr style="background: #e8f5e9;">
+                            <td><strong>Share Success</strong></td>
+                            <td><code>S40</code></td>
+                            <td><strong>328</strong></td>
+                            <td><strong>65.6%</strong></td>
+                            <td>93.2%</td>
+                            <td><div class="progress-bar"><div class="progress-fill high" style="width: 65.6%;">65.6%</div></div></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card">
+                <h2>Channel-Specific Funnels</h2>
+                <div class="chart-container" style="height: 350px;">
+                    <canvas id="channelFunnelChart"></canvas>
+                </div>
+
+                <table class="data-table" style="margin-top: 1rem;">
+                    <thead>
+                        <tr>
+                            <th>Channel</th>
+                            <th>Total</th>
+                            <th>Landed (S08)</th>
+                            <th>Consent (S21)</th>
+                            <th>Success (S40)</th>
+                            <th>Success Rate</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="phase-badge" style="background: #e91e63;">Notification</span></td>
+                            <td>288</td>
+                            <td>275 (95.5%)</td>
+                            <td>228 (79.2%)</td>
+                            <td>172</td>
+                            <td><strong>59.7%</strong></td>
+                        </tr>
+                        <tr>
+                            <td><span class="phase-badge" style="background: #3f51b5;">Redirect</span></td>
+                            <td>100</td>
+                            <td>100 (100%)</td>
+                            <td>92 (92.0%)</td>
+                            <td>83</td>
+                            <td><strong>83.0%</strong></td>
+                        </tr>
+                        <tr>
+                            <td><span class="phase-badge" style="background: #009688;">QR</span></td>
+                            <td>112</td>
+                            <td>103 (92.0%)</td>
+                            <td>85 (75.9%)</td>
+                            <td>73</td>
+                            <td><strong>65.2%</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- SP REPORTS SECTION -->
+        <div id="sp-reports" class="section">
+            <div class="card">
+                <h2>Service Provider Performance</h2>
+                <p>Comparison of conversion rates across Service Providers. Data from 500 sample requests.</p>
+
+                <div class="chart-container" style="height: 500px;">
+                    <canvas id="spChart"></canvas>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>SP Detailed Metrics</h2>
+                <table class="data-table" id="spTable">
+                    <thead>
+                        <tr>
+                            <th>Service Provider</th>
+                            <th>Requests</th>
+                            <th>Success</th>
+                            <th>Rate</th>
+                            <th>Performance</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
+            <div class="card">
+                <h2>SP Performance Categories</h2>
+                <div class="stats-grid">
+                    <div class="stat-card success">
+                        <div class="stat-value">5</div>
+                        <div class="stat-label">High Performers (>80%)</div>
+                    </div>
+                    <div class="stat-card info">
+                        <div class="stat-value">9</div>
+                        <div class="stat-label">Average (60-80%)</div>
+                    </div>
+                    <div class="stat-card warning">
+                        <div class="stat-value">6</div>
+                        <div class="stat-label">Below Average (40-60%)</div>
+                    </div>
+                    <div class="stat-card danger">
+                        <div class="stat-value">2</div>
+                        <div class="stat-label">Needs Attention (<40%)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- BOTTLENECKS SECTION -->
+        <div id="bottlenecks" class="section">
+            <div class="card">
+                <h2>Identified Bottlenecks</h2>
+                <p>Key drop-off points in the sharing flow based on sample data analysis.</p>
+
+                <div class="bottleneck-card">
+                    <div class="title">1. Document Availability (S08 → S10/S11)</div>
+                    <div class="metrics">
+                        <div class="metric"><strong>27%</strong> have missing docs at first view</div>
+                        <div class="metric"><strong>135</strong> requests affected</div>
+                    </div>
+                    <p style="font-size: 0.9rem; margin-top: 0.5rem;">SPs requesting documents users don't have. Consider implementing document pre-check API.</p>
+                </div>
+
+                <div class="bottleneck-card">
+                    <div class="title">2. User Abort at Consent (S20 → S43)</div>
+                    <div class="metrics">
+                        <div class="metric"><strong>17.8%</strong> of all requests</div>
+                        <div class="metric"><strong>89</strong> users backed out</div>
+                    </div>
+                    <p style="font-size: 0.9rem; margin-top: 0.5rem;">Users leaving at consent screen. Review UX clarity and SP purpose explanations.</p>
+                </div>
+
+                <div class="bottleneck-card">
+                    <div class="title">3. Notification Channel Performance</div>
+                    <div class="metrics">
+                        <div class="metric"><strong>59.7%</strong> success rate</div>
+                        <div class="metric"><strong>23%</strong> below Redirect channel</div>
+                    </div>
+                    <p style="font-size: 0.9rem; margin-top: 0.5rem;">Notification channel underperforms compared to Redirect (83%). Optimize notification timing and content.</p>
+                </div>
+
+                <div class="bottleneck-card">
+                    <div class="title">4. Platform Gap (iOS vs Android)</div>
+                    <div class="metrics">
+                        <div class="metric"><strong>68.3%</strong> iOS success</div>
+                        <div class="metric"><strong>62.9%</strong> Android success</div>
+                    </div>
+                    <p style="font-size: 0.9rem; margin-top: 0.5rem;">5.4 percentage point gap. Investigate Android-specific UX issues.</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Failure Distribution</h2>
+                <div class="chart-container" style="height: 300px;">
+                    <canvas id="failureChart"></canvas>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Recommendations</h2>
+
+                <div class="rec-card">
+                    <div class="rec-number">1</div>
+                    <div class="rec-content">
+                        <h4>Implement Document Pre-Check API</h4>
+                        <p>Allow SPs to verify document availability before creating requests. Could eliminate ~27% of futile requests.</p>
+                    </div>
+                </div>
+
+                <div class="rec-card">
+                    <div class="rec-number">2</div>
+                    <div class="rec-content">
+                        <h4>Improve Consent Screen UX</h4>
+                        <p>Clarify document list, add SP purpose explanations, reduce cognitive load. Target: reduce abort rate from 17.8% to <10%.</p>
+                    </div>
+                </div>
+
+                <div class="rec-card">
+                    <div class="rec-number">3</div>
+                    <div class="rec-content">
+                        <h4>Notification Channel Optimization</h4>
+                        <p>Review notification content, timing, and engagement patterns. Benchmark against Redirect channel best practices.</p>
+                    </div>
+                </div>
+
+                <div class="rec-card">
+                    <div class="rec-number">4</div>
+                    <div class="rec-content">
+                        <h4>Android Performance Sprint</h4>
+                        <p>Dedicated investigation of Android-specific drop-offs. Close the 5.4% platform gap.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- KPIS SECTION -->
+        <div id="kpis" class="section">
+            <div class="card">
+                <h2>Key Performance Indicators</h2>
+                <p>Standard KPIs defined for the status tracking system, segmentable by SP, channel, platform, and time period.</p>
+
+                <h3>Channel-Specific KPIs</h3>
+                <div class="kpi-grid">
+                    <div class="kpi-card" style="border-left-color: #e91e63;">
+                        <h4>Notification: Delivery Rate</h4>
+                        <div class="value">S02 / S01</div>
+                        <div class="formula">Delivered ÷ Sent</div>
+                    </div>
+                    <div class="kpi-card" style="border-left-color: #e91e63;">
+                        <h4>Notification: Open Rate</h4>
+                        <div class="value">S03 / S02</div>
+                        <div class="formula">Opened ÷ Delivered</div>
+                    </div>
+                    <div class="kpi-card" style="border-left-color: #3f51b5;">
+                        <h4>Redirect: Land Rate</h4>
+                        <div class="value">S05 / S04</div>
+                        <div class="formula">Landed ÷ Launched</div>
+                    </div>
+                    <div class="kpi-card" style="border-left-color: #009688;">
+                        <h4>QR: Scan Rate</h4>
+                        <div class="value">S07 / S06</div>
+                        <div class="formula">Scanned ÷ Rendered</div>
+                    </div>
+                </div>
+
+                <h3>Document Readiness KPIs</h3>
+                <div class="kpi-grid">
+                    <div class="kpi-card" style="border-left-color: var(--phase-document);">
+                        <h4>Docs Ready at Open</h4>
+                        <div class="value">S10 / S08</div>
+                        <div class="formula">Ready ÷ Viewed</div>
+                    </div>
+                    <div class="kpi-card" style="border-left-color: var(--phase-document);">
+                        <h4>Missing Doc Request Initiation</h4>
+                        <div class="value">S12 / S11</div>
+                        <div class="formula">Initiated ÷ Missing</div>
+                    </div>
+                    <div class="kpi-card" style="border-left-color: var(--phase-document);">
+                        <h4>Doc Fetch Success Rate</h4>
+                        <div class="value">S13 / S12</div>
+                        <div class="formula">Success ÷ Initiated</div>
+                    </div>
+                    <div class="kpi-card" style="border-left-color: #f44336;">
+                        <h4>Not Found Rate</h4>
+                        <div class="value">S15 / S12</div>
+                        <div class="formula">Not Found ÷ Initiated</div>
+                    </div>
+                </div>
+
+                <h3>Consent & Auth KPIs</h3>
+                <div class="kpi-grid">
+                    <div class="kpi-card" style="border-left-color: var(--phase-consent);">
+                        <h4>Consent Rate</h4>
+                        <div class="value">S21 / (S10+S13)</div>
+                        <div class="formula">Consent ÷ Docs Ready</div>
+                    </div>
+                    <div class="kpi-card" style="border-left-color: var(--phase-consent);">
+                        <h4>Send Button Click Rate</h4>
+                        <div class="value">S22 / S21</div>
+                        <div class="formula">Send Pressed ÷ Consent Given</div>
+                    </div>
+                    <div class="kpi-card" style="border-left-color: var(--phase-auth);">
+                        <h4>PIN Success Rate</h4>
+                        <div class="value">S31 / S30</div>
+                        <div class="formula">Verified ÷ Requested</div>
+                    </div>
+                    <div class="kpi-card" style="border-left-color: #f44336;">
+                        <h4>PIN Failure Rate</h4>
+                        <div class="value">S32 / (S31+S32)</div>
+                        <div class="formula">Failed ÷ Attempts</div>
+                    </div>
+                </div>
+
+                <h3>Terminal Distribution KPIs</h3>
+                <div class="kpi-grid">
+                    <div class="kpi-card" style="border-left-color: #4caf50;">
+                        <h4>Overall Success Rate</h4>
+                        <div class="value">S40 / S00</div>
+                        <div class="formula">Success ÷ Created</div>
+                    </div>
+                    <div class="kpi-card" style="border-left-color: #f44336;">
+                        <h4>Tech Error Rate</h4>
+                        <div class="value">S41 / S00</div>
+                        <div class="formula">Tech Error ÷ Created</div>
+                    </div>
+                    <div class="kpi-card" style="border-left-color: #ff9800;">
+                        <h4>Expiry Rate</h4>
+                        <div class="value">S42 / S00</div>
+                        <div class="formula">Expired ÷ Created</div>
+                    </div>
+                    <div class="kpi-card" style="border-left-color: #9c27b0;">
+                        <h4>Abort Rate</h4>
+                        <div class="value">S43 / S00</div>
+                        <div class="formula">Aborted ÷ Created</div>
+                    </div>
+                </div>
+
+                <h3>Timing KPIs</h3>
+                <div class="kpi-grid">
+                    <div class="kpi-card">
+                        <h4>Time to Complete (Median)</h4>
+                        <div class="value">P50(S40.ts - S00.ts)</div>
+                        <div class="formula">Median duration</div>
+                    </div>
+                    <div class="kpi-card">
+                        <h4>Time to Complete (P90)</h4>
+                        <div class="value">P90(S40.ts - S00.ts)</div>
+                        <div class="formula">90th percentile</div>
+                    </div>
+                    <div class="kpi-card">
+                        <h4>Consent Dwell Time</h4>
+                        <div class="value">S21.ts - S20.ts</div>
+                        <div class="formula">Time in awaiting consent</div>
+                    </div>
+                    <div class="kpi-card">
+                        <h4>Step Latency (Avg)</h4>
+                        <div class="value">AVG(step_latency_ms)</div>
+                        <div class="formula">Per-step average</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Sample KPI Values (from data)</h2>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>KPI</th>
+                            <th>Value</th>
+                            <th>Target</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Overall Success Rate</td>
+                            <td>65.6%</td>
+                            <td>75%</td>
+                            <td><span class="phase-badge warning" style="background: #ff9800;">Below</span></td>
+                        </tr>
+                        <tr>
+                            <td>Docs Ready at Open</td>
+                            <td>73.0%</td>
+                            <td>85%</td>
+                            <td><span class="phase-badge warning" style="background: #ff9800;">Below</span></td>
+                        </tr>
+                        <tr>
+                            <td>Consent Rate</td>
+                            <td>93.1%</td>
+                            <td>90%</td>
+                            <td><span class="phase-badge" style="background: #4caf50;">On Target</span></td>
+                        </tr>
+                        <tr>
+                            <td>PIN Success Rate</td>
+                            <td>95.7%</td>
+                            <td>95%</td>
+                            <td><span class="phase-badge" style="background: #4caf50;">On Target</span></td>
+                        </tr>
+                        <tr>
+                            <td>Redirect Channel Success</td>
+                            <td>83.0%</td>
+                            <td>80%</td>
+                            <td><span class="phase-badge" style="background: #4caf50;">On Target</span></td>
+                        </tr>
+                        <tr>
+                            <td>Notification Channel Success</td>
+                            <td>59.7%</td>
+                            <td>70%</td>
+                            <td><span class="phase-badge" style="background: #f44336;">Critical</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ADVANCED REPORTS SECTION -->
+        <div id="advanced-reports" class="section">
+            <div class="card">
+                <h2>Advanced Reports & Visualizations</h2>
+                <p>Interactive visualizations generated from <code>sharing_transactions_new_sample.csv</code> (500 unique requests, 5,068 status records). These charts provide deep insights into funnel performance, bottlenecks, and optimization opportunities.</p>
+
+                <div class="info-box">
+                    <strong>Data Source:</strong> <code>sharing_transactions_new_sample.csv</code><br>
+                    <strong>Sample Period:</strong> Nov 1-28, 2025<br>
+                    <strong>Overall Success Rate:</strong> 65.6% (328/500 requests)
+                </div>
+            </div>
+
+            <!-- 1. MULTI-STAGE FUNNEL -->
+            <div class="card">
+                <h2>1. Multi-Stage Conversion Funnel</h2>
+                <p>Horizontal funnel showing user progression through key stages with drop-off percentages at each step.</p>
+                <div class="chart-container" style="height: 400px;">
+                    <canvas id="advFunnelChart"></canvas>
+                </div>
+                <div style="margin-top: 1rem; padding: 1rem; background: #f8f9fa; border-radius: 8px;">
+                    <strong>Key Insights:</strong>
+                    <ul style="margin: 0.5rem 0 0 1.5rem; font-size: 0.9rem;">
+                        <li>Biggest drop-off: Consent Screen → Reviewing Docs (9.0% drop)</li>
+                        <li>Secondary bottleneck: Reviewing Docs → Docs Collected (9.1% drop)</li>
+                        <li>Overall conversion: 500 → 328 (65.6% success rate)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 2. SP PERFORMANCE BY CHANNEL -->
+            <div class="card">
+                <h2>2. Top 10 SPs: Success Rate by Channel</h2>
+                <p>Compare Service Provider performance across Notification, QR, and Redirect channels.</p>
+                <div class="chart-container" style="height: 500px;">
+                    <canvas id="spPerformanceChart"></canvas>
+                </div>
+                <div style="margin-top: 1rem; padding: 1rem; background: #f8f9fa; border-radius: 8px;">
+                    <strong>Key Insights:</strong>
+                    <ul style="margin: 0.5rem 0 0 1.5rem; font-size: 0.9rem;">
+                        <li>Redirect channel performs best overall (83% success)</li>
+                        <li>Wide variance in SP performance: 31.6% to 85.7%</li>
+                        <li>InsureOne shows lowest notification success (31.6%)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 3. ERROR DISTRIBUTION -->
+            <div class="card">
+                <h2>3. Failure Distribution by Type</h2>
+                <p>Breakdown of the 172 failed requests by terminal error status.</p>
+                <div style="display: flex; gap: 2rem; align-items: center;">
+                    <div class="chart-container" style="height: 300px; width: 300px; flex-shrink: 0;">
+                        <canvas id="errorDistChart"></canvas>
+                    </div>
+                    <div style="flex: 1;">
+                        <table class="data-table" style="font-size: 0.9rem;">
+                            <thead>
+                                <tr>
+                                    <th>Error Type</th>
+                                    <th>Count</th>
+                                    <th>% of Failures</th>
+                                    <th>Impact</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>S43 User Aborted</strong></td>
+                                    <td>89</td>
+                                    <td>51.7%</td>
+                                    <td style="color: #f44336;">UX/Friction issue</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>S42 Expired</strong></td>
+                                    <td>47</td>
+                                    <td>27.3%</td>
+                                    <td style="color: #ff9800;">Timeout/Delay issue</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>S41 Technical Error</strong></td>
+                                    <td>24</td>
+                                    <td>14.0%</td>
+                                    <td style="color: #f44336;">System reliability</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>S44 Not Eligible</strong></td>
+                                    <td>12</td>
+                                    <td>7.0%</td>
+                                    <td style="color: #ff9800;">Doc availability</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. STEP LATENCY ANALYSIS -->
+            <div class="card">
+                <h2>4. Average Step Latency</h2>
+                <p>Time spent at critical status transitions (successful completions only).</p>
+                <div class="chart-container" style="height: 350px;">
+                    <canvas id="latencyChart"></canvas>
+                </div>
+                <div style="margin-top: 1rem; padding: 1rem; background: #f8f9fa; border-radius: 8px;">
+                    <strong>Key Insights:</strong>
+                    <ul style="margin: 0.5rem 0 0 1.5rem; font-size: 0.9rem;">
+                        <li>Review Docs (S20→S21) takes longest: 7.9 seconds</li>
+                        <li>Verification (S30→S31) second highest: 6.89 seconds</li>
+                        <li>Fastest step: Collecting Docs (S21→S30) at 2.0 seconds</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 5. PLATFORM x CHANNEL MATRIX -->
+            <div class="card">
+                <h2>5. Platform × Channel Success Matrix</h2>
+                <p>Compare iOS vs Android performance across all three channels.</p>
+                <div class="chart-container" style="height: 400px;">
+                    <canvas id="platformChannelChart"></canvas>
+                </div>
+                <div style="margin-top: 1rem; padding: 1rem; background: #f8f9fa; border-radius: 8px;">
+                    <strong>Key Insights:</strong>
+                    <ul style="margin: 0.5rem 0 0 1.5rem; font-size: 0.9rem;">
+                        <li>iOS redirect channel highest: 87.3% success</li>
+                        <li>iOS and Android perform similarly on notification and QR</li>
+                        <li>Redirect performs best on both platforms</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 6. DOCUMENT COMPLEXITY IMPACT -->
+            <div class="card">
+                <h2>6. Document Complexity vs Success Rate</h2>
+                <p>How the number of requested documents affects completion rate.</p>
+                <div class="chart-container" style="height: 400px;">
+                    <canvas id="docComplexityChart"></canvas>
+                </div>
+                <div style="margin-top: 1rem; padding: 1rem; background: #f8f9fa; border-radius: 8px;">
+                    <strong>Key Insights:</strong>
+                    <ul style="margin: 0.5rem 0 0 1.5rem; font-size: 0.9rem;">
+                        <li>2-document requests perform best: 71.6% success (257 requests)</li>
+                        <li>Single-doc and 3-doc requests: ~59-60% success</li>
+                        <li>Optimal complexity: 2 documents per request</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 7. WEEKLY TREND -->
+            <div class="card">
+                <h2>7. Daily Success Rate Trend</h2>
+                <p>Success rate variation over the 28-day sample period.</p>
+                <div class="chart-container" style="height: 400px;">
+                    <canvas id="weeklyTrendChart"></canvas>
+                </div>
+                <div style="margin-top: 1rem; padding: 1rem; background: #f8f9fa; border-radius: 8px;">
+                    <strong>Key Insights:</strong>
+                    <ul style="margin: 0.5rem 0 0 1.5rem; font-size: 0.9rem;">
+                        <li>Success rates range from 41.2% to 84.6%</li>
+                        <li>Average: 65.6% with high volatility</li>
+                        <li>Notable drop on Nov 24 (41.2%) and Nov 28 (47.4%)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 8. PATH ANALYSIS -->
+            <div class="card">
+                <h2>8. Top 5 Most Common User Paths</h2>
+                <p>The most frequent complete status paths from creation to terminal state.</p>
+                <div class="chart-container" style="height: 350px;">
+                    <canvas id="pathAnalysisChart"></canvas>
+                </div>
+                <div style="margin-top: 1rem; padding: 1rem; background: #f8f9fa; border-radius: 8px;">
+                    <strong>Key Insights:</strong>
+                    <ul style="margin: 0.5rem 0 0 1.5rem; font-size: 0.9rem;">
+                        <li>Top path (notification flow) accounts for 24.2% of requests</li>
+                        <li>Multiple successful paths indicate healthy flow diversity</li>
+                        <li>7.4% follow common notification path but abort at consent</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 9. BOTTLENECK WATERFALL -->
+            <div class="card">
+                <h2>9. Failure Points: Where Did the 172 Failures Occur?</h2>
+                <p>Distribution of failures by the last successful stage before terminal error.</p>
+                <div class="chart-container" style="height: 400px;">
+                    <canvas id="bottleneckChart"></canvas>
+                </div>
+                <div style="margin-top: 1rem; padding: 1rem; background: #f8f9fa; border-radius: 8px;">
+                    <strong>Key Insights:</strong>
+                    <ul style="margin: 0.5rem 0 0 1.5rem; font-size: 0.9rem;">
+                        <li>Consent Screen is #1 bottleneck: 67 failures (39% of failures)</li>
+                        <li>Doc Availability Check: 43 failures (25%)</li>
+                        <li>Collection & Verification: 40 failures (23%)</li>
+                        <li>Opening stage: 22 failures (13%)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- SUMMARY & RECOMMENDATIONS -->
+            <div class="card">
+                <h2>Summary & Recommendations</h2>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div style="background: #e3f2fd; padding: 1rem; border-radius: 8px; border-left: 4px solid #2196f3;">
+                        <h4 style="color: #1565c0; margin-bottom: 0.5rem;">Top Opportunities</h4>
+                        <ol style="margin: 0; padding-left: 1.5rem; font-size: 0.9rem;">
+                            <li><strong>Optimize Consent Screen UX</strong> - Reduce 67 failures (9% drop-off)</li>
+                            <li><strong>Implement Doc Pre-Check</strong> - Eliminate 43 "not eligible" issues</li>
+                            <li><strong>Reduce Review Dwell Time</strong> - Currently 7.9s avg at S20→S21</li>
+                            <li><strong>Investigate Nov 24/28 Drop</strong> - Success rates fell to 41-47%</li>
+                        </ol>
+                    </div>
+                    <div style="background: #f3e5f5; padding: 1rem; border-radius: 8px; border-left: 4px solid #9c27b0;">
+                        <h4 style="color: #7b1fa2; margin-bottom: 0.5rem;">Best Practices Identified</h4>
+                        <ol style="margin: 0; padding-left: 1.5rem; font-size: 0.9rem;">
+                            <li><strong>Redirect Channel</strong> - 83% success, recommend for new SPs</li>
+                            <li><strong>2-Document Requests</strong> - Optimal complexity (71.6% success)</li>
+                            <li><strong>iOS Redirect</strong> - Highest performing combo at 87.3%</li>
+                            <li><strong>FAB/ADNIC/Lulu</strong> - Top-performing SPs (80-86% success)</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SQL EXAMPLES -->
+            <div class="card">
+                <h2>Report Generation SQL Examples</h2>
+                <p>Sample queries for generating key reports from the data.</p>
+
+                <h3>Funnel by Channel</h3>
+                <div style="background: #1e1e1e; color: #d4d4d4; padding: 1rem; border-radius: 8px; font-family: 'Consolas', monospace; font-size: 0.8rem; overflow-x: auto;">
+<span style="color: #569cd6;">SELECT</span>
+    channel,
+    <span style="color: #569cd6;">COUNT</span>(<span style="color: #569cd6;">DISTINCT</span> <span style="color: #569cd6;">CASE WHEN</span> status_code = <span style="color: #ce9178;">'S00'</span> <span style="color: #569cd6;">THEN</span> request_id <span style="color: #569cd6;">END</span>) <span style="color: #569cd6;">AS</span> created,
+    <span style="color: #569cd6;">COUNT</span>(<span style="color: #569cd6;">DISTINCT</span> <span style="color: #569cd6;">CASE WHEN</span> status_code = <span style="color: #ce9178;">'S08'</span> <span style="color: #569cd6;">THEN</span> request_id <span style="color: #569cd6;">END</span>) <span style="color: #569cd6;">AS</span> viewed,
+    <span style="color: #569cd6;">COUNT</span>(<span style="color: #569cd6;">DISTINCT</span> <span style="color: #569cd6;">CASE WHEN</span> status_code = <span style="color: #ce9178;">'S21'</span> <span style="color: #569cd6;">THEN</span> request_id <span style="color: #569cd6;">END</span>) <span style="color: #569cd6;">AS</span> consent,
+    <span style="color: #569cd6;">COUNT</span>(<span style="color: #569cd6;">DISTINCT</span> <span style="color: #569cd6;">CASE WHEN</span> status_code = <span style="color: #ce9178;">'S40'</span> <span style="color: #569cd6;">THEN</span> request_id <span style="color: #569cd6;">END</span>) <span style="color: #569cd6;">AS</span> success
+<span style="color: #569cd6;">FROM</span> sharing_status_history
+<span style="color: #569cd6;">GROUP BY</span> channel;
+                </div>
+
+                <h3>SP Performance Scorecard</h3>
+                <div style="background: #1e1e1e; color: #d4d4d4; padding: 1rem; border-radius: 8px; font-family: 'Consolas', monospace; font-size: 0.8rem; overflow-x: auto; margin-top: 1rem;">
+<span style="color: #569cd6;">WITH</span> request_outcomes <span style="color: #569cd6;">AS</span> (
+    <span style="color: #569cd6;">SELECT</span> request_id, sp_id,
+           <span style="color: #569cd6;">MAX</span>(<span style="color: #569cd6;">CASE WHEN</span> status_code = <span style="color: #ce9178;">'S40'</span> <span style="color: #569cd6;">THEN</span> <span style="color: #b5cea8;">1</span> <span style="color: #569cd6;">ELSE</span> <span style="color: #b5cea8;">0</span> <span style="color: #569cd6;">END</span>) <span style="color: #569cd6;">AS</span> is_success
+    <span style="color: #569cd6;">FROM</span> sharing_status_history
+    <span style="color: #569cd6;">GROUP BY</span> request_id, sp_id
+)
+<span style="color: #569cd6;">SELECT</span>
+    sp_id,
+    <span style="color: #569cd6;">COUNT</span>(*) <span style="color: #569cd6;">AS</span> total_requests,
+    <span style="color: #569cd6;">SUM</span>(is_success) <span style="color: #569cd6;">AS</span> successful,
+    <span style="color: #569cd6;">ROUND</span>(<span style="color: #569cd6;">AVG</span>(is_success) * <span style="color: #b5cea8;">100</span>, <span style="color: #b5cea8;">1</span>) <span style="color: #569cd6;">AS</span> success_rate_pct
+<span style="color: #569cd6;">FROM</span> request_outcomes
+<span style="color: #569cd6;">GROUP BY</span> sp_id
+<span style="color: #569cd6;">ORDER BY</span> success_rate_pct <span style="color: #569cd6;">DESC</span>;
+                </div>
+
+                <h3>Step Latency Analysis</h3>
+                <div style="background: #1e1e1e; color: #d4d4d4; padding: 1rem; border-radius: 8px; font-family: 'Consolas', monospace; font-size: 0.8rem; overflow-x: auto; margin-top: 1rem;">
+<span style="color: #569cd6;">SELECT</span>
+    previous_status || <span style="color: #ce9178;">' → '</span> || status_code <span style="color: #569cd6;">AS</span> transition,
+    <span style="color: #569cd6;">COUNT</span>(*) <span style="color: #569cd6;">AS</span> occurrences,
+    <span style="color: #569cd6;">ROUND</span>(<span style="color: #569cd6;">AVG</span>(step_latency_ms)/<span style="color: #b5cea8;">1000</span>, <span style="color: #b5cea8;">2</span>) <span style="color: #569cd6;">AS</span> avg_sec,
+    <span style="color: #569cd6;">ROUND</span>(<span style="color: #569cd6;">PERCENTILE_CONT</span>(<span style="color: #b5cea8;">0.9</span>) <span style="color: #569cd6;">WITHIN GROUP</span> (<span style="color: #569cd6;">ORDER BY</span> step_latency_ms)/<span style="color: #b5cea8;">1000</span>, <span style="color: #b5cea8;">2</span>) <span style="color: #569cd6;">AS</span> p90_sec
+<span style="color: #569cd6;">FROM</span> sharing_status_history
+<span style="color: #569cd6;">WHERE</span> previous_status <span style="color: #569cd6;">IS NOT NULL</span>
+<span style="color: #569cd6;">GROUP BY</span> transition
+<span style="color: #569cd6;">ORDER BY</span> avg_sec <span style="color: #569cd6;">DESC</span>;
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Navigation
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // SP Data
+        const spData = [
+            { name: 'DU', total: 19, success: 17, rate: 89.5 },
+            { name: 'ENBD Tablet Banking', total: 22, success: 19, rate: 86.4 },
+            { name: 'Du Esim', total: 21, success: 18, rate: 85.7 },
+            { name: 'FAB Retail Banking', total: 24, success: 20, rate: 83.3 },
+            { name: 'ADNIC', total: 26, success: 20, rate: 76.9 },
+            { name: 'Lulu', total: 24, success: 18, rate: 75.0 },
+            { name: 'Noor Capital', total: 22, success: 16, rate: 72.7 },
+            { name: 'Botim', total: 30, success: 21, rate: 70.0 },
+            { name: 'Emirates Islamic', total: 20, success: 14, rate: 70.0 },
+            { name: 'Commercial Bank of Dubai', total: 21, success: 14, rate: 66.7 },
+            { name: 'Etisalat Retail', total: 29, success: 19, rate: 65.5 },
+            { name: 'AAE', total: 20, success: 13, rate: 65.0 },
+            { name: 'GIG', total: 19, success: 12, rate: 63.2 },
+            { name: 'Etisalat Business', total: 13, success: 8, rate: 61.5 },
+            { name: 'Arab Bank', total: 23, success: 14, rate: 60.9 },
+            { name: 'ADCB', total: 25, success: 15, rate: 60.0 },
+            { name: 'Beyon Money', total: 24, success: 14, rate: 58.3 },
+            { name: 'Baraka', total: 23, success: 13, rate: 56.5 },
+            { name: 'National Bank of Fujairah', total: 22, success: 12, rate: 54.5 },
+            { name: 'National Bonds Corp', total: 26, success: 14, rate: 53.8 },
+            { name: 'ADIB', total: 19, success: 7, rate: 36.8 },
+            { name: 'InsureOne', total: 28, success: 10, rate: 35.7 }
+        ];
+
+        // Populate SP table
+        const spTableBody = document.querySelector('#spTable tbody');
+        spData.forEach(sp => {
+            const row = document.createElement('tr');
+            const rateClass = sp.rate >= 80 ? 'high' : sp.rate >= 60 ? 'medium' : 'low';
+            row.innerHTML = `
+                <td>${sp.name}</td>
+                <td>${sp.total}</td>
+                <td>${sp.success}</td>
+                <td>${sp.rate.toFixed(1)}%</td>
+                <td><div class="progress-bar"><div class="progress-fill ${rateClass}" style="width: ${sp.rate}%;">${sp.rate.toFixed(0)}%</div></div></td>
+            `;
+            spTableBody.appendChild(row);
+        });
+
+        // Chart defaults
+        Chart.defaults.font.family = "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif";
+
+        // Outcome Chart
+        new Chart(document.getElementById('outcomeChart'), {
+            type: 'doughnut',
+            data: {
+                labels: ['S40 Success', 'S43 User Aborted', 'S42 Expired', 'S41 Tech Error', 'S44 Not Eligible'],
+                datasets: [{
+                    data: [328, 89, 47, 24, 12],
+                    backgroundColor: ['#4caf50', '#ff9800', '#9c27b0', '#f44336', '#607d8b'],
+                    borderWidth: 2,
+                    borderColor: '#fff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'right' } }
+            }
+        });
+
+        // Channel Chart
+        new Chart(document.getElementById('channelChart'), {
+            type: 'bar',
+            data: {
+                labels: ['Redirect', 'QR', 'Notification'],
+                datasets: [
+                    { label: 'Success', data: [83, 73, 172], backgroundColor: '#4caf50' },
+                    { label: 'Failed', data: [17, 39, 116], backgroundColor: '#f44336' }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: { x: { stacked: true }, y: { stacked: true } },
+                plugins: { legend: { position: 'top' } }
+            }
+        });
+
+        // Funnel Chart
+        new Chart(document.getElementById('funnelChart'), {
+            type: 'bar',
+            data: {
+                labels: ['S00 Created', 'S08 Viewed', 'S10/S13 Docs Ready', 'S20 Awaiting', 'S21 Consent', 'S22 Send', 'S30 PIN Req', 'S31 PIN OK', 'S40 Success'],
+                datasets: [{
+                    label: 'Requests',
+                    data: [500, 478, 460, 435, 405, 380, 368, 352, 328],
+                    backgroundColor: ['#2196f3', '#03a9f4', '#00bcd4', '#009688', '#4caf50', '#8bc34a', '#cddc39', '#ffeb3b', '#ff9800'],
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: { x: { title: { display: true, text: 'Number of Requests' } } },
+                plugins: { legend: { display: false } }
+            }
+        });
+
+        // Channel Funnel Chart
+        new Chart(document.getElementById('channelFunnelChart'), {
+            type: 'bar',
+            data: {
+                labels: ['Notification', 'QR', 'Redirect'],
+                datasets: [
+                    { label: 'Total', data: [288, 112, 100], backgroundColor: '#e3f2fd' },
+                    { label: 'Viewed (S08)', data: [275, 103, 100], backgroundColor: '#90caf9' },
+                    { label: 'Consent (S21)', data: [228, 85, 92], backgroundColor: '#42a5f5' },
+                    { label: 'Success (S40)', data: [172, 73, 83], backgroundColor: '#4caf50' }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'top' } }
+            }
+        });
+
+        // SP Chart
+        new Chart(document.getElementById('spChart'), {
+            type: 'bar',
+            data: {
+                labels: spData.map(sp => sp.name.length > 18 ? sp.name.substring(0, 18) + '...' : sp.name),
+                datasets: [{
+                    label: 'Success Rate (%)',
+                    data: spData.map(sp => sp.rate),
+                    backgroundColor: spData.map(sp => sp.rate >= 80 ? '#4caf50' : sp.rate >= 60 ? '#ff9800' : '#f44336'),
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: { x: { max: 100, title: { display: true, text: 'Success Rate (%)' } } },
+                plugins: { legend: { display: false } }
+            }
+        });
+
+        // Failure Chart
+        new Chart(document.getElementById('failureChart'), {
+            type: 'pie',
+            data: {
+                labels: ['S43 User Aborted', 'S42 Expired', 'S41 Tech Error', 'S44 Not Eligible'],
+                datasets: [{
+                    data: [89, 47, 24, 12],
+                    backgroundColor: ['#ff9800', '#9c27b0', '#f44336', '#607d8b']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'right' } }
+            }
+        });
+    </script>
+
+    <script>
+// Advanced Charts Initialization
+// This script creates all Chart.js visualizations for the Advanced Reports section
+
+// Data embedded from advanced_charts_data.json
+const advancedChartsData = {
+  "funnel": [
+    {"stage": "S00", "label": "Request Created", "count": 500, "drop_off_pct": 0},
+    {"stage": "S08", "label": "Request Opened", "count": 478, "drop_off_pct": 4.4},
+    {"stage": "S20", "label": "Consent Screen", "count": 435, "drop_off_pct": 9.0},
+    {"stage": "S21", "label": "Reviewing Docs", "count": 405, "drop_off_pct": 6.9},
+    {"stage": "S30", "label": "Docs Collected", "count": 368, "drop_off_pct": 9.1},
+    {"stage": "S31", "label": "Verification Complete", "count": 352, "drop_off_pct": 4.3},
+    {"stage": "S40", "label": "Success", "count": 328, "drop_off_pct": 6.8}
+  ],
+  "sp_performance": [
+    {"sp": "Botim", "notification": 55.0, "qr": 100.0, "redirect": 100.0},
+    {"sp": "Etisalat Retail", "notification": 63.6, "qr": 66.7, "redirect": 75.0},
+    {"sp": "InsureOne (Premier Insurance Brokers L.L.C-O.P.C)", "notification": 31.6, "qr": 33.3, "redirect": 66.7},
+    {"sp": "ADNIC", "notification": 78.6, "qr": 71.4, "redirect": 80.0},
+    {"sp": "National Bonds Corporation Sole Proprietorship P.S.C.", "notification": 40.0, "qr": 62.5, "redirect": 100.0},
+    {"sp": "ADCB", "notification": 56.2, "qr": 75.0, "redirect": 60.0},
+    {"sp": "Lulu", "notification": 80.0, "qr": 55.6, "redirect": 100.0},
+    {"sp": "FAB Retail Banking", "notification": 85.7, "qr": 66.7, "redirect": 85.7},
+    {"sp": "Beyon Money", "notification": 40.0, "qr": 83.3, "redirect": 100.0},
+    {"sp": "Arab Bank", "notification": 55.0, "qr": 100.0, "redirect": 100.0}
+  ],
+  "error_distribution": [
+    {"label": "Technical Error", "count": 24},
+    {"label": "Expired", "count": 47},
+    {"label": "User Aborted", "count": 89},
+    {"label": "Not Eligible", "count": 12}
+  ],
+  "step_latency": [
+    {"transition": "Review Docs", "avg_seconds": 7.9},
+    {"transition": "Collecting Docs", "avg_seconds": 2.0},
+    {"transition": "Verification", "avg_seconds": 6.89},
+    {"transition": "Final Submit", "avg_seconds": 3.16}
+  ],
+  "platform_channel": [
+    {"platform": "ios", "notification": 61.7, "qr": 62.3, "redirect": 87.3},
+    {"platform": "android", "notification": 58.1, "qr": 67.8, "redirect": 75.7}
+  ],
+  "doc_complexity": [
+    {"label": "1 doc", "success_rate": 59.1, "count": 186},
+    {"label": "2 docs", "success_rate": 71.6, "count": 257},
+    {"label": "3 docs", "success_rate": 59.6, "count": 57},
+    {"label": "4+ docs", "success_rate": 0, "count": 0}
+  ],
+  "weekly_trend": [
+    {"date": "2025-11-01", "success_rate": 71.4},
+    {"date": "2025-11-02", "success_rate": 55.6},
+    {"date": "2025-11-03", "success_rate": 71.4},
+    {"date": "2025-11-04", "success_rate": 66.7},
+    {"date": "2025-11-05", "success_rate": 71.4},
+    {"date": "2025-11-06", "success_rate": 58.3},
+    {"date": "2025-11-07", "success_rate": 66.7},
+    {"date": "2025-11-08", "success_rate": 56.2},
+    {"date": "2025-11-09", "success_rate": 68.8},
+    {"date": "2025-11-10", "success_rate": 63.3},
+    {"date": "2025-11-11", "success_rate": 57.1},
+    {"date": "2025-11-12", "success_rate": 80.0},
+    {"date": "2025-11-13", "success_rate": 71.4},
+    {"date": "2025-11-14", "success_rate": 83.3},
+    {"date": "2025-11-15", "success_rate": 70.6},
+    {"date": "2025-11-16", "success_rate": 84.6},
+    {"date": "2025-11-17", "success_rate": 61.9},
+    {"date": "2025-11-18", "success_rate": 69.2},
+    {"date": "2025-11-19", "success_rate": 60.9},
+    {"date": "2025-11-20", "success_rate": 80.0},
+    {"date": "2025-11-21", "success_rate": 58.8},
+    {"date": "2025-11-22", "success_rate": 65.2},
+    {"date": "2025-11-23", "success_rate": 66.7},
+    {"date": "2025-11-24", "success_rate": 41.2},
+    {"date": "2025-11-25", "success_rate": 73.9},
+    {"date": "2025-11-26", "success_rate": 58.8},
+    {"date": "2025-11-27", "success_rate": 66.7},
+    {"date": "2025-11-28", "success_rate": 47.4}
+  ],
+  "path_analysis": [
+    {"path": "S00 > S01 > S02 > S03 > S08...", "outcome": "Success", "count": 121, "percentage": 24.2},
+    {"path": "S00 > S01 > S02 > S03 > S08...", "outcome": "Success", "count": 51, "percentage": 10.2},
+    {"path": "S00 > S04 > S05 > S08 > S10...", "outcome": "Success", "count": 49, "percentage": 9.8},
+    {"path": "S00 > S06 > S07 > S08 > S10...", "outcome": "Success", "count": 41, "percentage": 8.2},
+    {"path": "S00 > S01 > S02 > S03 > S08...", "outcome": "Aborted", "count": 37, "percentage": 7.4}
+  ],
+  "bottleneck": [
+    {"stage": "Opening", "count": 22},
+    {"stage": "Doc Availability Check", "count": 43},
+    {"stage": "Consent Screen", "count": 67},
+    {"stage": "Collection & Verification", "count": 40}
+  ]
+};
+
+// Initialize all charts when DOM is ready
+function initAdvancedCharts() {
+    // 1. FUNNEL CHART (Horizontal Bar) - Advanced Reports section
+    const funnelCtx = document.getElementById('advFunnelChart');
+    if (funnelCtx) {
+        new Chart(funnelCtx, {
+            type: 'bar',
+            data: {
+                labels: advancedChartsData.funnel.map(d => d.label),
+                datasets: [{
+                    label: 'Requests',
+                    data: advancedChartsData.funnel.map(d => d.count),
+                    backgroundColor: [
+                        '#4CAF50',
+                        '#66BB6A',
+                        '#81C784',
+                        '#FFA726',
+                        '#FF7043',
+                        '#EF5350',
+                        '#2196F3'
+                    ],
+                    borderColor: '#fff',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {display: false},
+                    title: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const idx = context.dataIndex;
+                                const count = context.parsed.x;
+                                const dropOff = advancedChartsData.funnel[idx].drop_off_pct;
+                                return [
+                                    `Requests: ${count}`,
+                                    `Drop-off: ${dropOff}%`
+                                ];
+                            }
+                        }
+                    },
+                    datalabels: {
+                        anchor: 'end',
+                        align: 'end',
+                        formatter: (value, ctx) => {
+                            const dropOff = advancedChartsData.funnel[ctx.dataIndex].drop_off_pct;
+                            return `${value} (${dropOff}% drop)`;
+                        },
+                        color: '#333',
+                        font: {weight: 'bold', size: 11}
+                    }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        title: {display: true, text: 'Number of Requests'}
+                    }
+                }
+            }
+        });
+    }
+
+    // 2. SP PERFORMANCE BY CHANNEL (Grouped Bar)
+    const spPerfCtx = document.getElementById('spPerformanceChart');
+    if (spPerfCtx) {
+        const spLabels = advancedChartsData.sp_performance.map(d => {
+            // Shorten long SP names
+            const sp = d.sp;
+            return sp.length > 30 ? sp.substring(0, 27) + '...' : sp;
+        });
+
+        new Chart(spPerfCtx, {
+            type: 'bar',
+            data: {
+                labels: spLabels,
+                datasets: [
+                    {
+                        label: 'Notification',
+                        data: advancedChartsData.sp_performance.map(d => d.notification),
+                        backgroundColor: '#e91e63'
+                    },
+                    {
+                        label: 'QR',
+                        data: advancedChartsData.sp_performance.map(d => d.qr),
+                        backgroundColor: '#009688'
+                    },
+                    {
+                        label: 'Redirect',
+                        data: advancedChartsData.sp_performance.map(d => d.redirect),
+                        backgroundColor: '#3f51b5'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {position: 'top'},
+                    title: {display: false},
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `${context.dataset.label}: ${context.parsed.y}%`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        title: {display: true, text: 'Success Rate (%)'}
+                    },
+                    x: {
+                        ticks: {
+                            maxRotation: 45,
+                            minRotation: 45
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // 3. ERROR DISTRIBUTION (Doughnut)
+    const errorCtx = document.getElementById('errorDistChart');
+    if (errorCtx) {
+        new Chart(errorCtx, {
+            type: 'doughnut',
+            data: {
+                labels: advancedChartsData.error_distribution.map(d => d.label),
+                datasets: [{
+                    data: advancedChartsData.error_distribution.map(d => d.count),
+                    backgroundColor: ['#f44336', '#ff9800', '#ff5722', '#ffc107'],
+                    borderWidth: 2,
+                    borderColor: '#fff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {position: 'right'},
+                    title: {display: false},
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const pct = ((context.parsed / total) * 100).toFixed(1);
+                                return `${context.label}: ${context.parsed} (${pct}%)`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // 4. STEP LATENCY (Bar Chart)
+    const latencyCtx = document.getElementById('latencyChart');
+    if (latencyCtx) {
+        new Chart(latencyCtx, {
+            type: 'bar',
+            data: {
+                labels: advancedChartsData.step_latency.map(d => d.transition),
+                datasets: [{
+                    label: 'Average Latency (seconds)',
+                    data: advancedChartsData.step_latency.map(d => d.avg_seconds),
+                    backgroundColor: '#ff9800',
+                    borderColor: '#f57c00',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {display: false},
+                    title: {display: false},
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `${context.parsed.y}s average`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {display: true, text: 'Seconds'}
+                    }
+                }
+            }
+        });
+    }
+
+    // 5. PLATFORM x CHANNEL MATRIX (Grouped Bar)
+    const platformChannelCtx = document.getElementById('platformChannelChart');
+    if (platformChannelCtx) {
+        new Chart(platformChannelCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Notification', 'QR', 'Redirect'],
+                datasets: [
+                    {
+                        label: 'iOS',
+                        data: [
+                            advancedChartsData.platform_channel[0].notification,
+                            advancedChartsData.platform_channel[0].qr,
+                            advancedChartsData.platform_channel[0].redirect
+                        ],
+                        backgroundColor: '#42a5f5'
+                    },
+                    {
+                        label: 'Android',
+                        data: [
+                            advancedChartsData.platform_channel[1].notification,
+                            advancedChartsData.platform_channel[1].qr,
+                            advancedChartsData.platform_channel[1].redirect
+                        ],
+                        backgroundColor: '#66bb6a'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {position: 'top'},
+                    title: {display: false},
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `${context.dataset.label}: ${context.parsed.y}%`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        title: {display: true, text: 'Success Rate (%)'}
+                    }
+                }
+            }
+        });
+    }
+
+    // 6. DOCUMENT COMPLEXITY (Bar Chart)
+    const docComplexityCtx = document.getElementById('docComplexityChart');
+    if (docComplexityCtx) {
+        const filteredDocs = advancedChartsData.doc_complexity.filter(d => d.count > 0);
+        new Chart(docComplexityCtx, {
+            type: 'bar',
+            data: {
+                labels: filteredDocs.map(d => d.label),
+                datasets: [{
+                    label: 'Success Rate (%)',
+                    data: filteredDocs.map(d => d.success_rate),
+                    backgroundColor: ['#4caf50', '#8bc34a', '#cddc39'],
+                    borderColor: '#388e3c',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {display: false},
+                    title: {display: false},
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const idx = context.dataIndex;
+                                const count = filteredDocs[idx].count;
+                                return [
+                                    `Success Rate: ${context.parsed.y}%`,
+                                    `Requests: ${count}`
+                                ];
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        title: {display: true, text: 'Success Rate (%)'}
+                    }
+                }
+            }
+        });
+    }
+
+    // 7. WEEKLY TREND (Line Chart)
+    const weeklyTrendCtx = document.getElementById('weeklyTrendChart');
+    if (weeklyTrendCtx) {
+        const dates = advancedChartsData.weekly_trend.map(d => {
+            const date = new Date(d.date);
+            return `${date.getMonth() + 1}/${date.getDate()}`;
+        });
+
+        new Chart(weeklyTrendCtx, {
+            type: 'line',
+            data: {
+                labels: dates,
+                datasets: [{
+                    label: 'Success Rate',
+                    data: advancedChartsData.weekly_trend.map(d => d.success_rate),
+                    borderColor: '#2196f3',
+                    backgroundColor: 'rgba(33, 150, 243, 0.1)',
+                    fill: true,
+                    tension: 0.3,
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {display: false},
+                    title: {display: false},
+                    tooltip: {
+                        callbacks: {
+                            title: function(context) {
+                                return advancedChartsData.weekly_trend[context[0].dataIndex].date;
+                            },
+                            label: function(context) {
+                                return `Success Rate: ${context.parsed.y}%`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        title: {display: true, text: 'Success Rate (%)'}
+                    },
+                    x: {
+                        title: {display: true, text: 'Date (Nov 2025)'},
+                        ticks: {
+                            maxRotation: 45,
+                            minRotation: 45
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // 8. PATH ANALYSIS (Horizontal Bar)
+    const pathAnalysisCtx = document.getElementById('pathAnalysisChart');
+    if (pathAnalysisCtx) {
+        const colors = advancedChartsData.path_analysis.map(d =>
+            d.outcome === 'Success' ? '#4caf50' : '#f44336'
+        );
+
+        new Chart(pathAnalysisCtx, {
+            type: 'bar',
+            data: {
+                labels: advancedChartsData.path_analysis.map((d, i) => `Path ${i + 1}`),
+                datasets: [{
+                    label: 'Request Count',
+                    data: advancedChartsData.path_analysis.map(d => d.count),
+                    backgroundColor: colors,
+                    borderColor: '#fff',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {display: false},
+                    title: {display: false},
+                    tooltip: {
+                        callbacks: {
+                            title: function(context) {
+                                const idx = context[0].dataIndex;
+                                return advancedChartsData.path_analysis[idx].path;
+                            },
+                            label: function(context) {
+                                const idx = context.dataIndex;
+                                const data = advancedChartsData.path_analysis[idx];
+                                return [
+                                    `Outcome: ${data.outcome}`,
+                                    `Count: ${data.count} (${data.percentage}%)`
+                                ];
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        title: {display: true, text: 'Number of Requests'}
+                    }
+                }
+            }
+        });
+    }
+
+    // 9. BOTTLENECK WATERFALL (Bar Chart)
+    const bottleneckCtx = document.getElementById('bottleneckChart');
+    if (bottleneckCtx) {
+        new Chart(bottleneckCtx, {
+            type: 'bar',
+            data: {
+                labels: advancedChartsData.bottleneck.map(d => d.stage),
+                datasets: [{
+                    label: 'Failure Count',
+                    data: advancedChartsData.bottleneck.map(d => d.count),
+                    backgroundColor: ['#ff9800', '#f44336', '#d32f2f', '#b71c1c'],
+                    borderColor: '#fff',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {display: false},
+                    title: {display: false},
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const total = 172; // Total failures
+                                const pct = ((context.parsed.y / total) * 100).toFixed(1);
+                                return `${context.parsed.y} failures (${pct}% of all failures)`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {display: true, text: 'Number of Failures'}
+                    },
+                    x: {
+                        ticks: {
+                            maxRotation: 45,
+                            minRotation: 45
+                        }
+                    }
+                }
+            }
+        });
+    }
+}
+
+// Call initialization when section becomes visible or page loads
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initAdvancedCharts);
+} else {
+    initAdvancedCharts();
+}
+
+    </script>
+
+    <footer style="text-align: center; padding: 2rem; background: #f8f9fa; margin-top: 2rem; color: #666;">
+        <p><strong>UAE PASS Document Sharing - Status Model Dashboard</strong></p>
+        <p style="font-size: 0.85rem;">Version 2.0 | Based on Requirements Document | Sample Data: 500 Requests | January 2026</p>
+        <p style="font-size: 0.8rem; margin-top: 0.5rem;">
+            Statuses: 26 total | Phases: 5 | Channels: 3 (Notification, Redirect, QR) | Terminal States: 5
+        </p>
+    </footer>
+</body>
+</html>

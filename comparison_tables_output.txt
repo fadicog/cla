@@ -1,0 +1,123 @@
+====================================================================================================
+TABLE 1: CHANNEL PERFORMANCE COMPARISON
+====================================================================================================
+
+     Channel  Total Requests  Success Success Rate  Tech Errors  Expired  Aborted  Not Eligible Median Time (s) Avg Docs                         Key Metric
+NOTIFICATION             156      118        75.6%            0        6       32             0            36.0      1.2      Delivery: 96.2%, Open: 100.0%
+    REDIRECT              76       49        64.5%            0        0       15            12            31.0      1.2 Land: 100.0%, View->Consent: 64.5%
+          QR              68       43        63.2%            8       17        0             0            30.0      1.3                   Scan Rate: 75.0%
+
+====================================================================================================
+TABLE 2: MOST COMMON DOCUMENT COMBINATIONS - SUCCESS RATES
+====================================================================================================
+
+       Document Combination  Total  Success Success Rate Readiness Rate Median Time (s)
+                       visa     54       41        75.9%          64.0%            34.0
+                emirates_id     47       36        76.6%          75.6%            32.0
+       vehicle_registration     46       28        60.9%          61.0%            33.0
+       emirates_id|passport     43       31        72.1%          70.0%            31.0
+            driving_license     40       31        77.5%          69.2%            33.0
+emirates_id|driving_license     37       23        62.2%          75.8%            34.0
+                   passport     33       20        60.6%          65.5%            37.0
+
+====================================================================================================
+TABLE 3: SERVICE PROVIDER PERFORMANCE BY CHANNEL
+====================================================================================================
+
+Service Provider      Channel  Total  Success Success Rate
+            ADIB notification     24       20        83.3%
+            ADIB           qr     11        6        54.5%
+            ADIB     redirect      7        4        57.1%
+           ADNOC notification     22       11        50.0%
+           ADNOC           qr      8        5        62.5%
+           ADNOC     redirect     10        7        70.0%
+            DEWA notification     18       14        77.8%
+            DEWA     redirect      8        4        50.0%
+        DubaiFAB notification     17       14        82.4%
+        DubaiFAB           qr     10        8        80.0%
+        DubaiFAB     redirect     13        9        69.2%
+     DubaiPolice notification     16        9        56.2%
+     DubaiPolice           qr     11        8        72.7%
+     DubaiPolice     redirect     11        9        81.8%
+     EmiratesNBD notification     18       12        66.7%
+     EmiratesNBD           qr      7        5        71.4%
+     EmiratesNBD     redirect      9        4        44.4%
+        Etisalat notification     24       23        95.8%
+        Etisalat           qr      8        4        50.0%
+        Etisalat     redirect      6        3        50.0%
+     MashreqBank notification     17       15        88.2%
+     MashreqBank           qr      9        5        55.6%
+     MashreqBank     redirect     12        9        75.0%
+
+====================================================================================================
+TABLE 4: PLATFORM PERFORMANCE BY CHANNEL
+====================================================================================================
+
+Platform      Channel  Total  Success Success Rate  Tech Errors  Aborted Median Time (s)
+     IOS NOTIFICATION     87       65        74.7%            0       19            37.0
+     IOS     REDIRECT     35       23        65.7%            0        7            32.0
+     IOS           QR     30       18        60.0%            4        0            30.0
+ ANDROID NOTIFICATION     69       53        76.8%            0       13            36.0
+ ANDROID     REDIRECT     41       26        63.4%            0        8            29.5
+ ANDROID           QR     38       25        65.8%            4        0            31.0
+
+====================================================================================================
+TABLE 5: ERROR DISTRIBUTION BY CHANNEL
+====================================================================================================
+
+     Channel  Total Errors  Issuer  Network  User  DV           Most Common
+NOTIFICATION            12       0        0    12   0     pin_incorrect (6)
+    REDIRECT            27      17        5     0   5 issuer_not_found (12)
+          QR             8       0        7     0   1     network_error (5)
+
+====================================================================================================
+TABLE 6: JOURNEY TIME BY NUMBER OF DOCUMENTS REQUESTED
+====================================================================================================
+
+ Docs Requested  Total Requests  Success Success Rate  Aborted Abort Rate Median Time (s) P90 Time (s)
+              1             220      156        70.9%       31      14.1%            33.0         41.0
+              2              80       54        67.5%       16      20.0%            32.0         39.7
+
+====================================================================================================
+TABLE 7: PERFORMANCE BY HOUR OF DAY
+====================================================================================================
+
+Hour (24h)  Total  Success Success Rate  Aborted Abort Rate Median Time (s)
+     00:00     12        9        75.0%        2      16.7%            30.0
+     01:00      9        5        55.6%        3      33.3%            30.0
+     02:00     11        9        81.8%        1       9.1%            33.0
+     03:00     17       13        76.5%        1       5.9%            32.0
+     04:00     10        7        70.0%        1      10.0%            38.0
+     05:00     12       11        91.7%        1       8.3%            31.0
+     06:00     11        9        81.8%        2      18.2%            32.0
+     07:00     15       10        66.7%        3      20.0%            33.5
+     08:00     14        7        50.0%        5      35.7%            30.0
+     09:00     17       15        88.2%        1       5.9%            34.0
+     10:00      9        5        55.6%        4      44.4%            32.0
+     11:00      9        5        55.6%        2      22.2%            31.0
+     12:00      5        4        80.0%        0       0.0%            35.5
+     13:00     15       10        66.7%        1       6.7%            34.5
+     14:00     15       10        66.7%        2      13.3%            37.0
+     15:00     14       10        71.4%        2      14.3%            31.0
+     16:00     11        9        81.8%        1       9.1%            33.0
+     17:00     10        7        70.0%        3      30.0%            35.0
+     18:00     12        8        66.7%        2      16.7%            34.5
+     19:00     10        5        50.0%        2      20.0%            35.0
+     20:00     16        9        56.2%        2      12.5%            32.0
+     21:00     16       11        68.8%        4      25.0%            31.0
+     22:00     14        9        64.3%        1       7.1%            34.0
+     23:00     16       13        81.2%        1       6.2%            34.0
+
+====================================================================================================
+TABLE 8: PERFORMANCE BY APP VERSION
+====================================================================================================
+
+App Version  Total  Success Success Rate  Tech Errors  Aborted Median Time (s)
+      3.2.1     91       60        65.9%            1       19            33.0
+      3.2.2     87       60        69.0%            3       14            33.0
+      3.3.1     64       45        70.3%            2        7            32.0
+      3.3.0     58       45        77.6%            2        7            34.0
+
+====================================================================================================
+COMPARISON TABLES COMPLETE
+====================================================================================================

@@ -1,0 +1,41 @@
+One time consent 
+
+Advanced reporting  - + errors linked to status code 
+Next things to add - status chain in the database 
+Previous status 
+Linking errors with status 
+Document sharing request reminders 
+One time consent - automatic document addition in sharing requests 
+User behavioral UX monitoring tool 
+
+
+
+
+  User Behavior Analytics Tool Selection → Q1 2026
+    - Why: Foundation for measuring ALL conversion optimizations
+    - Effort: Low (tools already evaluated: UXCam, Firebase Analytics)
+    - Impact: Critical - can't validate UX improvements without this
+
+
+ Customer Feedback Mechanism → Q2 2026
+    - Why: Enables continuous user research, validates changes before rollout
+    - Effort: Medium
+    - Impact: High - prevents building wrong solutions
+
+Document Request Reminder Notification → Q2 2026
+    - Why: Low effort, addresses abandonment
+    - What: Notification if user hasn't acted on sharing request within 24-48 hours
+    - Effort: Low (1-2 sprints)
+
+
+ Sharing Center- dedicated tab for sharing requests
+
+
+
+
+
+Sharing UX enahancment 
+
+QR code revamp 
+
+Homepage revamp 

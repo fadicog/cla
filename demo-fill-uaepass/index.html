@@ -1,0 +1,1396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fill with UAE PASS — Demo</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Inter', sans-serif; background: #f3f4f6; color: #111; min-height: 100vh; }
+
+/* ══ Top bar ══ */
+.topbar {
+  background: #fff;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  height: 52px;
+  gap: 12px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+.topbar-brand { display: flex; align-items: center; gap: 8px; }
+.topbar-brand img { height: 26px; width: 26px; border-radius: 6px; }
+.topbar-brand-name { font-size: 13.5px; font-weight: 700; letter-spacing: -0.3px; }
+.topbar-sep { width: 1px; height: 18px; background: #e5e7eb; }
+.topbar-feature { font-size: 12.5px; color: #6b7280; font-weight: 500; }
+.topbar-tag {
+  margin-left: auto;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  color: #b45309;
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 100px;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
+/* ══ Main layout ══ */
+.layout {
+  display: flex;
+  min-height: calc(100vh - 52px);
+}
+
+/* ── Sidebar ── */
+.sidebar {
+  width: 280px;
+  flex-shrink: 0;
+  background: #fff;
+  border-right: 1px solid #e5e7eb;
+  padding: 20px 0;
+  position: sticky;
+  top: 52px;
+  height: calc(100vh - 52px);
+  overflow-y: auto;
+}
+.sidebar-section-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: #9ca3af;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 0 16px 8px;
+}
+.uc-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 16px;
+  cursor: pointer;
+  border-left: 3px solid transparent;
+  transition: background 0.12s, border-color 0.12s;
+  position: relative;
+}
+.uc-item:hover { background: #f9fafb; }
+.uc-item.active {
+  background: #f0f9ff;
+  border-left-color: var(--uc-color);
+}
+.uc-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 9px;
+  background: var(--uc-bg, #f3f4f6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+.uc-item.active .uc-icon { background: var(--uc-color); }
+.uc-item.active .uc-icon { filter: saturate(1.2); }
+.uc-info { flex: 1; min-width: 0; }
+.uc-name { font-size: 12.5px; font-weight: 600; color: #111; line-height: 1.3; }
+.uc-sub { font-size: 11px; color: #9ca3af; margin-top: 1px; }
+.uc-filled-badge {
+  display: none;
+  width: 8px; height: 8px;
+  background: #22c55e;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.uc-item.done .uc-filled-badge { display: block; }
+
+.sidebar-divider { height: 1px; background: #f3f4f6; margin: 10px 16px; }
+
+.sidebar-info {
+  padding: 12px 16px;
+  background: #f9fafb;
+  margin: 12px 16px 0;
+  border-radius: 10px;
+  border: 1px solid #f0f0f0;
+}
+.sidebar-info-title { font-size: 11px; font-weight: 600; color: #374151; margin-bottom: 5px; }
+.sidebar-info-body { font-size: 10.5px; color: #6b7280; line-height: 1.5; }
+.sidebar-key-hint {
+  margin-top: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: #1a1a1a;
+  color: #fff;
+  padding: 3px 8px;
+  border-radius: 5px;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+/* ── Content ── */
+.content { flex: 1; padding: 28px 32px 60px; min-width: 0; }
+
+/* SP header */
+.sp-header {
+  background: var(--uc-color);
+  border-radius: 14px 14px 0 0;
+  padding: 20px 28px;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.sp-header-logo {
+  width: 46px; height: 46px;
+  background: rgba(255,255,255,0.15);
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 800;
+  color: white;
+  letter-spacing: -0.5px;
+  flex-shrink: 0;
+}
+.sp-header-name { font-size: 17px; font-weight: 700; line-height: 1.2; }
+.sp-header-sub { font-size: 11.5px; opacity: 0.7; margin-top: 3px; }
+
+/* Steps bar */
+.sp-steps {
+  background: rgba(0,0,0,0.25);
+  padding: 0 28px;
+  display: flex;
+  align-items: center;
+  height: 40px;
+  gap: 0;
+}
+.step-item {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 11.5px; color: rgba(255,255,255,0.45);
+}
+.step-item.active { color: #fff; font-weight: 600; }
+.step-item.done { color: rgba(255,255,255,0.6); }
+.step-num {
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.15);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 9.5px; font-weight: 700;
+  flex-shrink: 0;
+}
+.step-item.active .step-num { background: #fff; color: var(--uc-color); }
+.step-item.done .step-num { background: rgba(255,255,255,0.4); }
+.step-arrow { color: rgba(255,255,255,0.2); margin: 0 10px; font-size: 10px; }
+
+/* Form card */
+.form-card {
+  background: #fff;
+  border-radius: 0 0 14px 14px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+
+/* UAE PASS Fill CTA */
+.fill-cta {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 18px 28px;
+  background: #fafafa;
+  border-bottom: 1px solid #f0f0f0;
+}
+.fill-cta-text { flex: 1; }
+.fill-cta-title { font-size: 13px; font-weight: 600; color: #111; margin-bottom: 3px; }
+.fill-cta-desc { font-size: 11.5px; color: #6b7280; line-height: 1.4; }
+.doc-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 7px; }
+.doc-tag {
+  display: inline-flex; align-items: center; gap: 4px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 100px;
+  padding: 2px 9px;
+  font-size: 11px; font-weight: 500; color: #374151;
+}
+
+.up-btn {
+  background: #1a1a1a;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 12px 18px;
+  font-size: 12.5px; font-weight: 700;
+  cursor: pointer;
+  display: flex; align-items: center; gap: 8px;
+  white-space: nowrap; flex-shrink: 0;
+  font-family: 'Inter', sans-serif;
+  transition: background 0.15s, transform 0.15s, box-shadow 0.15s;
+  letter-spacing: 0.1px;
+}
+.up-btn img { height: 20px; width: 20px; border-radius: 5px; }
+.up-btn:hover { background: #2d2d2d; transform: translateY(-1px); box-shadow: 0 4px 14px rgba(0,0,0,0.18); }
+.up-btn:active { transform: none; }
+.up-btn.done { background: #15803d; cursor: default; }
+.up-btn.done:hover { transform: none; box-shadow: none; }
+
+/* Form divider */
+.or-divider {
+  display: flex; align-items: center; gap: 10px;
+  padding: 0 28px; margin: 4px 0;
+}
+.or-divider::before, .or-divider::after { content: ''; flex: 1; height: 1px; background: #f3f4f6; }
+.or-divider span { font-size: 11px; color: #d1d5db; font-weight: 500; }
+
+/* Form body */
+.form-body { padding: 18px 28px 24px; }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 20px; }
+.form-grid .span2 { grid-column: 1/-1; }
+
+.fg { position: relative; }
+.fg label {
+  display: block;
+  font-size: 10.5px; font-weight: 600; color: #9ca3af;
+  text-transform: uppercase; letter-spacing: 0.5px;
+  margin-bottom: 5px;
+}
+.fg input, .fg select {
+  width: 100%;
+  padding: 9px 12px;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 13px; color: #111;
+  background: #fff;
+  outline: none;
+  font-family: 'Inter', sans-serif;
+  transition: border-color 0.18s, background 0.18s, box-shadow 0.18s;
+  -webkit-appearance: none;
+}
+.fg input:focus { border-color: #818cf8; box-shadow: 0 0 0 3px rgba(129,140,248,0.12); }
+.fg input::placeholder { color: #d1d5db; }
+.fg select { cursor: pointer; padding-right: 28px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 10px center; }
+
+/* UP field states */
+.fg.up input { background: #fafafa; color: #aaa; border-color: #e9ebee; }
+.fg.up input::placeholder { color: #ddd; }
+.fg.up .hint { font-size: 10px; color: #d1d5db; margin-top: 3px; display: flex; align-items: center; gap: 3px; }
+
+.fg.up.filling input {
+  background: linear-gradient(90deg, #eef2ff 0%, #e0e7ff 100%);
+  border-color: #818cf8;
+  color: #3730a3;
+  font-weight: 500;
+  animation: fieldFlash 0.35s ease;
+}
+@keyframes fieldFlash { 0% { background: #c7d2fe; } 100% { background: #eef2ff; } }
+
+.fg.up.filled input {
+  background: #f0fdf4;
+  border-color: #22c55e;
+  color: #14532d;
+  font-weight: 600;
+}
+.fg.up .vbadge {
+  display: none;
+  font-size: 10.5px; color: #16a34a;
+  margin-top: 3px;
+  align-items: center; gap: 4px;
+  font-weight: 500;
+}
+.fg.up.filled .vbadge { display: flex; }
+.fg.up.filled .hint { display: none; }
+.vbadge-src {
+  background: #dcfce7;
+  border: 1px solid #bbf7d0;
+  border-radius: 4px;
+  padding: 1px 5px;
+  font-size: 9.5px; font-weight: 700; color: #15803d;
+}
+
+/* Section sep */
+.fsep {
+  display: flex; align-items: center; gap: 10px;
+  margin: 18px 0 14px;
+}
+.fsep span { font-size: 11px; font-weight: 700; color: #d1d5db; text-transform: uppercase; letter-spacing: 0.6px; white-space: nowrap; }
+.fsep::before, .fsep::after { content: ''; flex: 1; height: 1px; background: #f3f4f6; }
+
+/* Form actions */
+.form-actions {
+  display: flex; align-items: center; justify-content: flex-end; gap: 10px;
+  padding: 0 28px 24px;
+}
+.btn-ghost {
+  padding: 9px 18px;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 8px;
+  background: #fff; color: #374151;
+  font-size: 12.5px; font-weight: 500;
+  cursor: pointer; font-family: 'Inter', sans-serif;
+  transition: all 0.12s;
+}
+.btn-ghost:hover { background: #f9fafb; }
+.btn-cta {
+  padding: 9px 22px;
+  border: none;
+  border-radius: 8px;
+  background: var(--uc-color);
+  color: #fff;
+  font-size: 12.5px; font-weight: 700;
+  cursor: pointer; font-family: 'Inter', sans-serif;
+  transition: all 0.12s;
+}
+.btn-cta:hover { opacity: 0.88; transform: translateY(-1px); box-shadow: 0 3px 12px rgba(0,0,0,0.18); }
+
+.reset-link {
+  font-size: 11px; color: #d1d5db;
+  background: none; border: none; cursor: pointer;
+  text-decoration: underline; font-family: 'Inter', sans-serif;
+  display: none; margin-top: 6px;
+}
+.reset-link.vis { display: inline-block; }
+
+/* Fill counter banner */
+.fill-banner {
+  display: none;
+  align-items: center; gap: 10px;
+  background: #f0fdf4;
+  border: 1.5px solid #bbf7d0;
+  border-radius: 10px;
+  padding: 12px 16px;
+  margin-bottom: 12px;
+  animation: slideDown 0.3s ease;
+}
+.fill-banner.vis { display: flex; }
+@keyframes slideDown { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+.fill-banner-icon { font-size: 18px; }
+.fill-banner-text { flex: 1; }
+.fill-banner-title { font-size: 13px; font-weight: 700; color: #14532d; }
+.fill-banner-sub { font-size: 11.5px; color: #16a34a; margin-top: 1px; }
+
+/* ══ Consent Modal ══ */
+.modal-bg {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.55);
+  backdrop-filter: blur(4px);
+  z-index: 200;
+  display: flex; align-items: flex-end; justify-content: center;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.2s;
+}
+.modal-bg.open { opacity: 1; pointer-events: all; }
+
+.consent-sheet {
+  background: #fff;
+  border-radius: 22px 22px 0 0;
+  width: 100%; max-width: 460px;
+  padding-bottom: env(safe-area-inset-bottom, 20px);
+  transform: translateY(100%);
+  transition: transform 0.38s cubic-bezier(0.34, 1.28, 0.64, 1);
+  max-height: 92vh; overflow-y: auto;
+}
+.modal-bg.open .consent-sheet { transform: translateY(0); }
+
+/* Sheet drag handle */
+.sheet-handle { width: 36px; height: 4px; background: #e5e7eb; border-radius: 2px; margin: 10px auto 0; }
+
+/* UAE PASS header in sheet */
+.sheet-up-header {
+  display: flex; align-items: center; gap: 10px;
+  padding: 16px 22px 14px;
+  border-bottom: 1px solid #f3f4f6;
+}
+.sheet-up-header img { height: 32px; width: 32px; border-radius: 9px; }
+.sheet-up-header-text .t1 { font-size: 15px; font-weight: 800; color: #111; }
+.sheet-up-header-text .t2 { font-size: 11.5px; color: #6b7280; margin-top: 1px; }
+.sheet-sp-chip {
+  margin-left: auto;
+  background: #f3f4f6;
+  border-radius: 7px;
+  padding: 4px 10px;
+  font-size: 11px; font-weight: 600; color: #374151;
+  text-align: right;
+  max-width: 130px;
+  word-break: break-word;
+}
+.sheet-sp-chip span { font-size: 9.5px; font-weight: 400; color: #9ca3af; display: block; }
+
+/* Attribute list */
+.sheet-attr-list { padding: 14px 22px; }
+.sheet-attr-hdr { font-size: 10.5px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 10px; }
+
+.attr-row {
+  display: flex; align-items: center; gap: 11px;
+  padding: 9px 12px;
+  border: 1.5px solid #f3f4f6;
+  border-radius: 10px;
+  margin-bottom: 7px;
+  background: #fafafa;
+  transition: border-color 0.15s, background 0.15s;
+}
+.attr-icon {
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  background: #f0f2f5;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px; flex-shrink: 0;
+}
+.attr-body { flex: 1; min-width: 0; }
+.attr-label { font-size: 11px; font-weight: 500; color: #6b7280; }
+.attr-value { font-size: 13px; font-weight: 700; color: #111; margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.attr-src {
+  flex-shrink: 0;
+  background: #ecfdf5;
+  border: 1px solid #d1fae5;
+  border-radius: 7px;
+  padding: 3px 8px;
+  text-align: center;
+  font-size: 9.5px; font-weight: 700; color: #065f46;
+  line-height: 1.5;
+}
+.attr-src span { display: block; color: #6b7280; font-weight: 400; font-size: 8.5px; }
+
+/* Consent notice */
+.sheet-notice {
+  margin: 0 22px 14px;
+  padding: 11px 14px;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: 10px;
+  font-size: 11.5px; color: #92400e; line-height: 1.6;
+}
+
+/* Approve button */
+.sheet-actions { padding: 0 22px 20px; }
+.approve-btn {
+  width: 100%;
+  padding: 15px;
+  background: #111;
+  color: #fff;
+  border: none; border-radius: 12px;
+  font-size: 14px; font-weight: 800;
+  cursor: pointer; font-family: 'Inter', sans-serif;
+  display: flex; align-items: center; justify-content: center; gap: 9px;
+  letter-spacing: 0.1px;
+  transition: background 0.15s;
+}
+.approve-btn img { height: 22px; width: 22px; border-radius: 6px; }
+.approve-btn:hover { background: #2d2d2d; }
+.cancel-link {
+  display: block; text-align: center;
+  margin-top: 12px;
+  font-size: 13px; font-weight: 500; color: #9ca3af;
+  cursor: pointer; border: none; background: none;
+  font-family: 'Inter', sans-serif;
+  transition: color 0.12s;
+}
+.cancel-link:hover { color: #374151; }
+.s-hint { text-align: center; margin-top: 6px; font-size: 10px; color: #e5e7eb; }
+
+/* ══ Toast ══ */
+.toast {
+  position: fixed;
+  bottom: 30px; left: 50%;
+  transform: translateX(-50%) translateY(60px);
+  background: #111; color: #fff;
+  padding: 11px 20px; border-radius: 100px;
+  font-size: 13px; font-weight: 600;
+  display: flex; align-items: center; gap: 8px;
+  z-index: 300;
+  transition: transform 0.38s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s;
+  opacity: 0; white-space: nowrap;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+.toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+.toast-check { width: 20px; height: 20px; background: #22c55e; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+
+/* Display none */
+.uc-panel { display: none; }
+.uc-panel.active { display: block; }
+</style>
+</head>
+<body>
+
+<!-- Top bar -->
+<div class="topbar">
+  <div class="topbar-brand">
+    <img src="Active@3x.png" alt="UAE PASS">
+    <span class="topbar-brand-name">UAE PASS</span>
+  </div>
+  <div class="topbar-sep"></div>
+  <span class="topbar-feature">Fill with UAE PASS — Service Provider Demo</span>
+  <span class="topbar-tag">Feature Preview</span>
+</div>
+
+<div class="layout">
+
+  <!-- ── Sidebar ── -->
+  <aside class="sidebar">
+    <div class="sidebar-section-label">Use Cases</div>
+
+    <div class="uc-item active" id="nav-enb" style="--uc-color:#003a70;--uc-bg:#e6edf5" onclick="switchUC('enb', this)">
+      <div class="uc-icon">🏦</div>
+      <div class="uc-info">
+        <div class="uc-name">Emirates National Bank</div>
+        <div class="uc-sub">Account Opening</div>
+      </div>
+      <div class="uc-filled-badge"></div>
+    </div>
+
+    <div class="uc-item" id="nav-du" style="--uc-color:#c8102e;--uc-bg:#fdecea" onclick="switchUC('du', this)">
+      <div class="uc-icon">📱</div>
+      <div class="uc-info">
+        <div class="uc-name">du Telecom</div>
+        <div class="uc-sub">SIM Registration</div>
+      </div>
+      <div class="uc-filled-badge"></div>
+    </div>
+
+    <div class="uc-item" id="nav-daman" style="--uc-color:#0077b6;--uc-bg:#e0f0fa" onclick="switchUC('daman', this)">
+      <div class="uc-icon">🏥</div>
+      <div class="uc-info">
+        <div class="uc-name">Daman Health</div>
+        <div class="uc-sub">Insurance Application</div>
+      </div>
+      <div class="uc-filled-badge"></div>
+    </div>
+
+    <div class="uc-item" id="nav-ejari" style="--uc-color:#7c5c1e;--uc-bg:#f5eedf" onclick="switchUC('ejari', this)">
+      <div class="uc-icon">🏠</div>
+      <div class="uc-info">
+        <div class="uc-name">DLD / Ejari</div>
+        <div class="uc-sub">Tenancy Registration</div>
+      </div>
+      <div class="uc-filled-badge"></div>
+    </div>
+
+    <div class="uc-item" id="nav-mohre" style="--uc-color:#1a6b2a;--uc-bg:#e4f3e8" onclick="switchUC('mohre', this)">
+      <div class="uc-icon">👷</div>
+      <div class="uc-info">
+        <div class="uc-name">MOHRE</div>
+        <div class="uc-sub">Labour Contract</div>
+      </div>
+      <div class="uc-filled-badge"></div>
+    </div>
+
+    <div class="sidebar-divider"></div>
+
+    <div class="sidebar-info">
+      <div class="sidebar-info-title">How the demo works</div>
+      <div class="sidebar-info-body">
+        Click <b>"Fill with UAE PASS"</b> on the form, review the consent screen, then approve.
+        <br><br>
+        Fields fill automatically with cryptographically verified data from UAE PASS digital documents.
+        <br><br>
+        Secret shortcut:<br>
+        <span class="sidebar-key-hint">⌨ Press S to approve</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ── Main content ── -->
+  <main class="content">
+
+    <!-- ══════════════════════════════════════
+         USE CASE: Emirates National Bank
+         ══════════════════════════════════════ -->
+    <div class="uc-panel active" id="panel-enb" style="--uc-color:#003a70">
+      <div id="banner-enb" class="fill-banner">
+        <span class="fill-banner-icon">✅</span>
+        <div class="fill-banner-text">
+          <div class="fill-banner-title">6 fields filled with verified data</div>
+          <div class="fill-banner-sub">Source: Emirates ID · Issued by ICP · eSeal authenticated</div>
+        </div>
+      </div>
+      <div class="sp-header" style="--uc-color:#003a70; background:#003a70">
+        <div class="sp-header-logo">ENB</div>
+        <div>
+          <div class="sp-header-name">Emirates National Bank</div>
+          <div class="sp-header-sub">Personal Banking — New Account Application</div>
+        </div>
+      </div>
+      <div class="sp-steps" style="background:#002d58">
+        <div class="step-item done"><div class="step-num">✓</div> Welcome</div>
+        <div class="step-arrow">›</div>
+        <div class="step-item active" style="--uc-color:#003a70"><div class="step-num">2</div> Personal Info</div>
+        <div class="step-arrow">›</div>
+        <div class="step-item"><div class="step-num">3</div> Account Type</div>
+        <div class="step-arrow">›</div>
+        <div class="step-item"><div class="step-num">4</div> Review &amp; Submit</div>
+      </div>
+      <div class="form-card">
+        <div class="fill-cta">
+          <div class="fill-cta-text">
+            <div class="fill-cta-title">Auto-fill your personal details with UAE PASS</div>
+            <div class="fill-cta-desc">
+              Save time — your verified Emirates ID data populates the fields below instantly. No manual errors.
+              <div class="doc-tags">
+                <span class="doc-tag">🪪 Emirates ID</span>
+              </div>
+            </div>
+          </div>
+          <button class="up-btn" id="btn-enb" onclick="openModal('enb')">
+            <img src="Active@3x.png" alt=""> Fill with UAE PASS
+          </button>
+        </div>
+        <div class="or-divider"><span>or fill manually below</span></div>
+        <div class="form-body">
+          <div class="form-grid">
+            <div class="fg up" id="fg-enb-0">
+              <label>First Name</label>
+              <input id="f-enb-0" type="text" placeholder="As on Emirates ID" readonly>
+              <div class="hint">🔒 Will be filled via UAE PASS</div>
+              <div class="vbadge">✓ Verified <span class="vbadge-src">Emirates ID · ICP</span></div>
+            </div>
+            <div class="fg up" id="fg-enb-1">
+              <label>Last Name</label>
+              <input id="f-enb-1" type="text" placeholder="As on Emirates ID" readonly>
+              <div class="hint">🔒 Will be filled via UAE PASS</div>
+              <div class="vbadge">✓ Verified <span class="vbadge-src">Emirates ID · ICP</span></div>
+            </div>
+            <div class="fg up span2" id="fg-enb-2">
+              <label>Emirates ID Number</label>
+              <input id="f-enb-2" type="text" placeholder="784-XXXX-XXXXXXX-X" readonly>
+              <div class="hint">🔒 Will be filled via UAE PASS</div>
+              <div class="vbadge">✓ Verified <span class="vbadge-src">Emirates ID · ICP</span></div>
+            </div>
+            <div class="fg up" id="fg-enb-3">
+              <label>Date of Birth</label>
+              <input id="f-enb-3" type="text" placeholder="DD/MM/YYYY" readonly>
+              <div class="hint">🔒 Will be filled via UAE PASS</div>
+              <div class="vbadge">✓ Verified <span class="vbadge-src">Emirates ID · ICP</span></div>
+            </div>
+            <div class="fg up" id="fg-enb-4">
+              <label>Nationality</label>
+              <input id="f-enb-4" type="text" placeholder="Country" readonly>
+              <div class="hint">🔒 Will be filled via UAE PASS</div>
+              <div class="vbadge">✓ Verified <span class="vbadge-src">Emirates ID · ICP</span></div>
+            </div>
+            <div class="fg up" id="fg-enb-5">
+              <label>Gender</label>
+              <input id="f-enb-5" type="text" placeholder="Gender" readonly>
+              <div class="hint">🔒 Will be filled via UAE PASS</div>
+              <div class="vbadge">✓ Verified <span class="vbadge-src">Emirates ID · ICP</span></div>
+            </div>
+            <div class="fsep span2"><span>Account Setup</span></div>
+            <div class="fg">
+              <label>Account Type</label>
+              <select><option selected>Personal Banking Account</option><option>Savings Account</option></select>
+            </div>
+            <div class="fg">
+              <label>Employment Status</label>
+              <select><option selected>Employed — Private Sector</option><option>Government</option><option>Self-Employed</option></select>
+            </div>
+            <div class="fg">
+              <label>Monthly Income (AED)</label>
+              <input type="text" value="18,500" placeholder="e.g. 12,000">
+            </div>
+            <div class="fg">
+              <label>Preferred Currency</label>
+              <select><option selected>AED — UAE Dirham</option><option>USD</option></select>
+            </div>
+          </div>
+        </div>
+        <div class="form-actions" style="--uc-color:#003a70">
+          <button class="btn-ghost">← Back</button>
+          <button class="btn-cta">Continue to Account Type →</button>
+        </div>
+      </div>
+      <button class="reset-link" id="reset-enb" onclick="resetUC('enb')">↺ Reset form</button>
+    </div>
+
+    <!-- ══════════════════════════════════════
+         USE CASE: du Telecom
+         ══════════════════════════════════════ -->
+    <div class="uc-panel" id="panel-du" style="--uc-color:#c8102e">
+      <div id="banner-du" class="fill-banner">
+        <span class="fill-banner-icon">✅</span>
+        <div class="fill-banner-text">
+          <div class="fill-banner-title">6 fields filled with verified data</div>
+          <div class="fill-banner-sub">Sources: Emirates ID · Passport · Residence Visa · Issued by ICP</div>
+        </div>
+      </div>
+      <div class="sp-header" style="background:#c8102e">
+        <div class="sp-header-logo" style="font-style:italic;font-size:18px">du</div>
+        <div>
+          <div class="sp-header-name">du Telecom</div>
+          <div class="sp-header-sub">New SIM Registration — Prepaid / Postpaid</div>
+        </div>
+      </div>
+      <div class="sp-steps" style="background:#a30d25">
+        <div class="step-item done"><div class="step-num">✓</div> Plan</div>
+        <div class="step-arrow">›</div>
+        <div class="step-item active" style="--uc-color:#c8102e"><div class="step-num">2</div> Identity</div>
+        <div class="step-arrow">›</div>
+        <div class="step-item"><div class="step-num">3</div> Number</div>
+        <div class="step-arrow">›</div>
+        <div class="step-item"><div class="step-num">4</div> Confirm</div>
+      </div>
+      <div class="form-card">
+        <div class="fill-cta">
+          <div class="fill-cta-text">
+            <div class="fill-cta-title">Verify your identity instantly with UAE PASS</div>
+            <div class="fill-cta-desc">
+              TRA mandates verified identity for SIM registration. UAE PASS provides cryptographically signed documents.
+              <div class="doc-tags">
+                <span class="doc-tag">🪪 Emirates ID</span>
+                <span class="doc-tag">📘 Passport</span>
+                <span class="doc-tag">📋 Residence Visa</span>
+              </div>
+            </div>
+          </div>
+          <button class="up-btn" id="btn-du" onclick="openModal('du')">
+            <img src="Active@3x.png" alt=""> Fill with UAE PASS
+          </button>
+        </div>
+        <div class="or-divider"><span>or fill manually below</span></div>
+        <div class="form-body">
+          <div class="form-grid">
+            <div class="fg up span2" id="fg-du-0">
+              <label>Full Name (as on passport)</label>
+              <input id="f-du-0" type="text" placeholder="Full legal name" readonly>
+              <div class="hint">🔒 Will be filled via UAE PASS</div>
+              <div class="vbadge">✓ Verified <span class="vbadge-src">Passport · ICP</span></div>
+            </div>
+            <div class="fg up" id="fg-du-1">
+              <label>Emirates ID Number</label>
+              <input id="f-du-1" type="text" placeholder="784-XXXX-XXXXXXX-X" readonly>
+              <div class="hint">🔒 Will be filled via UAE PASS</div>
+              <div class="vbadge">✓ Verified <span class="vbadge-src">Emirates ID · ICP</span></div>
+            </div>
+            <div class="fg up" id="fg-du-2">
+              <label>Passport Number</label>
+              <input id="f-du-2" type="text" placeholder="e.g. P1234567" readonly>
+              <div class="hint">🔒 Will be filled via UAE PASS</div>
+              <div class="vbadge">✓ Verified <span class="vbadge-src">Passport · ICP</span></div>
+            </div>
+            <div class="fg up" id="fg-du-3">
+              <label>Nationality</label>
+              <input id="f-du-3" type="text" placeholder="Country" readonly>
+              <div class="hint">🔒 Will be filled via UAE PASS</div>
+              <div class="vbadge">✓ Verified <span class="vbadge-src">Emirates ID · ICP</span></div>
+            </div>
+            <div class="fg up" id="fg-du-4">
+              <label>Date of Birth</label>
+              <input id="f-du-4" type="text" placeholder="DD/MM/YYYY" readonly>
+              <div class="hint">🔒 Will be filled via UAE PASS</div>
+              <div class="vbadge">✓ Verified <span class="vbadge-src">Emirates ID · ICP</span></div>
+            </div>
+            <div class="fg up" id="fg-du-5">
+              <label>Visa Expiry Date</label>
+              <input id="f-du-5" type="text" placeholder="DD/MM/YYYY" readonly>
+              <div class="hint">🔒 Will be filled via UAE PASS</div>
+              <div class="vbadge">✓ Verified <span class="vbadge-src">Residence Visa · ICP</span></div>
+            </div>
+            <div class="fsep span2"><span>Service Details</span></div>
+            <div class="fg">
+              <label>Selected Plan</label>
+              <input type="text" value="Smart S — 60 AED/month" readonly style="background:#fafafa">
+            </div>
+            <div class="fg">
+              <label>SIM Type</label>
+              <select><option selected>Physical SIM</option><option>eSIM</option></select>
+            </div>
+            <div class="fg span2">
+              <label>Delivery Address</label>
+              <input type="text" placeholder="Building, street, area, emirate">
+            </div>
+          </div>
+        </div>
+        <div class="form-actions" style="--uc-color:#c8102e">
+          <button class="btn-ghost">← Back</button>
+          <button class="btn-cta">Choose Number →</button>
+        </div>
+      </div>
+      <button class="reset-link" id="reset-du" onclick="resetUC('du')">↺ Reset form</button>
+    </div>
+
+    <!-- ══════════════════════════════════════
+         USE CASE: Daman Health
+         ══════════════════════════════════════ -->
+    <div class="uc-panel" id="panel-daman" style="--uc-color:#0077b6">
+      <div id="banner-daman" class="fill-banner">
+        <span class="fill-banner-icon">✅</span>
+        <div class="fill-banner-text">
+          <div class="fill-banner-title">6 fields filled with verified data</div>
+          <div class="fill-banner-sub">Source: Emirates ID · Issued by ICP · eSeal authenticated</div>
+        </div>
+      </div>
+      <div class="sp-header" style="background:#0077b6">
+        <div class="sp-header-logo">DAM</div>
+        <div>
+          <div class="sp-header-name">Daman Health Insurance</div>
+          <div class="sp-header-sub">Individual Health Plan — New Member Application</div>
+        </div>
+      </div>
+      <div class="sp-steps" style="background:#005f92">
+        <div class="step-item done"><div class="step-num">✓</div> Plan</div>
+        <div class="step-arrow">›</div>
+        <div class="step-item active" style="--uc-color:#0077b6"><div class="step-num">2</div> Member Info</div>
+        <div class="step-arrow">›</div>
+        <div class="step-item"><div class="step-num">3</div> Medical</div>
+        <div class="step-arrow">›</div>
+        <div class="step-item"><div class="step-num">4</div> Payment</div>
+      </div>
+      <div class="form-card">
+        <div class="fill-cta">
+          <div class="fill-cta-text">
+            <div class="fill-cta-title">Fill member details from your UAE PASS</div>
+            <div class="fill-cta-desc">
+              Your Emirates ID data is cryptographically verified — no manual errors in your insurance record.
+              <div class="doc-tags">
+                <span class="doc-tag">🪪 Emirates ID</span>
+              </div>
+            </div>
+          </div>
+          <button class="up-btn" id="btn-daman" onclick="openModal('daman')">
+            <img src="Active@3x.png" alt=""> Fill with UAE PASS
+          </button>
+        </div>
+        <div class="or-divider"><span>or fill manually below</span></div>
+        <div class="form-body">
+          <div class="form-grid">
+            <div class="fg up" id="fg-daman-0">
+              <label>First Name</label>
+              <input id="f-daman-0" type="text" placeholder="As on Emirates ID" readonly>
+              <div class="hint">🔒 Will be filled via UAE PASS</div>
+              <div class="vbadge">✓ Verified <span class="vbadge-src">Emirates ID · ICP</span></div>
+            </div>
+            <div class="fg up" id="fg-daman-1">
+              <label>Last Name</label>
+              <input id="f-daman-1" type="text" placeholder="As on Emirates ID" readonly>
+              <div class="hint">🔒 Will be filled via UAE PASS</div>
+              <div class="vbadge">✓ Verified <span class="vbadge-src">Emirates ID · ICP</span></div>
+            </div>
+            <div class="fg up span2" id="fg-daman-2">
+              <label>Emirates ID Number</label>
+              <input id="f-daman-2" type="text" placeholder="784-XXXX-XXXXXXX-X" readonly>
+              <div class="hint">🔒 Will be filled via UAE PASS</div>
+              <div class="vbadge">✓ Verified <span class="vbadge-src">Emirates ID · ICP</span></div>
+            </div>
+            <div class="fg up" id="fg-daman-3">
+              <label>Date of Birth</label>
+              <input id="f-daman-3" type="text" placeholder="DD/MM/YYYY" readonly>
+              <div class="hint">🔒 Will be filled via UAE PASS</div>
+              <div class="vbadge">✓ Verified <span class="vbadge-src">Emirates ID · ICP</span></div>
+            </div>
+            <div class="fg up" id="fg-daman-4">
+              <label>Gender</label>
+              <input id="f-daman-4" type="text" placeholder="Gender" readonly>
+              <div class="hint">🔒 Will be filled via UAE PASS</div>
+              <div class="vbadge">✓ Verified <span class="vbadge-src">Emirates ID · ICP</span></div>
+            </div>
+            <div class="fg up" id="fg-daman-5">
+              <label>Nationality</label>
+              <input id="f-daman-5" type="text" placeholder="Country" readonly>
+              <div class="hint">🔒 Will be filled via UAE PASS</div>
+              <div class="vbadge">✓ Verified <span class="vbadge-src">Emirates ID · ICP</span></div>
+            </div>
+            <div class="fsep span2"><span>Plan Details</span></div>
+            <div class="fg">
+              <label>Selected Plan</label>
+              <input type="text" value="Thiqa Basic — AED 2,800/yr" readonly style="background:#fafafa">
+            </div>
+            <div class="fg">
+              <label>Coverage Network</label>
+              <select><option selected>Abu Dhabi — All Regions</option><option>Dubai</option></select>
+            </div>
+            <div class="fg">
+              <label>Beneficiaries</label>
+              <select><option selected>Individual Only</option><option>Self + Spouse</option><option>Family</option></select>
+            </div>
+            <div class="fg">
+              <label>Policy Start Date</label>
+              <input type="text" value="01/04/2026">
+            </div>
+          </div>
+        </div>
+        <div class="form-actions" style="--uc-color:#0077b6">
+          <button class="btn-ghost">← Back</button>
+          <button class="btn-cta">Medical Declaration →</button>
+        </div>
+      </div>
+      <button class="reset-link" id="reset-daman" onclick="resetUC('daman')">↺ Reset form</button>
+    </div>
+
+    <!-- ══════════════════════════════════════
+         USE CASE: DLD / Ejari
+         ══════════════════════════════════════ -->
+    <div class="uc-panel" id="panel-ejari" style="--uc-color:#7c5c1e">
+      <div id="banner-ejari" class="fill-banner">
+        <span class="fill-banner-icon">✅</span>
+        <div class="fill-banner-text">
+          <div class="fill-banner-title">6 fields filled with verified data</div>
+          <div class="fill-banner-sub">Sources: Emirates ID · Passport · Residence Visa · Issued by ICP</div>
+        </div>
+      </div>
+      <div class="sp-header" style="background:#7c5c1e">
+        <div class="sp-header-logo">DLD</div>
+        <div>
+          <div class="sp-header-name">Dubai Land Department</div>
+          <div class="sp-header-sub">Ejari — Tenancy Contract Registration</div>
+        </div>
+      </div>
+      <div class="sp-steps" style="background:#634a17">
+        <div class="step-item done"><div class="step-num">✓</div> Property</div>
+        <div class="step-arrow">›</div>
+        <div class="step-item active" style="--uc-color:#7c5c1e"><div class="step-num">2</div> Tenant</div>
+        <div class="step-arrow">›</div>
+        <div class="step-item"><div class="step-num">3</div> Contract</div>
+        <div class="step-arrow">›</div>
+        <div class="step-item"><div class="step-num">4</div> Submit</div>
+      </div>
+      <div class="form-card">
+        <div class="fill-cta">
+          <div class="fill-cta-text">
+            <div class="fill-cta-title">Verify tenant identity with UAE PASS</div>
+            <div class="fill-cta-desc">
+              Ejari requires verified residency documents. UAE PASS delivers cryptographically authenticated data instantly.
+              <div class="doc-tags">
+                <span class="doc-tag">🪪 Emirates ID</span>
+                <span class="doc-tag">📘 Passport</span>
+                <span class="doc-tag">📋 Residence Visa</span>
+              </div>
+            </div>
+          </div>
+          <button class="up-btn" id="btn-ejari" onclick="openModal('ejari')">
+            <img src="Active@3x.png" alt=""> Fill with UAE PASS
+          </button>
+        </div>
+        <div class="or-divider"><span>or fill manually below</span></div>
+        <div class="form-body">
+          <div class="form-grid">
+            <div class="fg up span2" id="fg-ejari-0">
+              <label>Tenant Full Name (as on passport)</label>
+              <input id="f-ejari-0" type="text" placeholder="Full legal name" readonly>
+              <div class="hint">🔒 Will be filled via UAE PASS</div>
+              <div class="vbadge">✓ Verified <span class="vbadge-src">Passport · ICP</span></div>
+            </div>
+            <div class="fg up" id="fg-ejari-1">
+              <label>Emirates ID Number</label>
+              <input id="f-ejari-1" type="text" placeholder="784-XXXX-XXXXXXX-X" readonly>
+              <div class="hint">🔒 Will be filled via UAE PASS</div>
+              <div class="vbadge">✓ Verified <span class="vbadge-src">Emirates ID · ICP</span></div>
+            </div>
+            <div class="fg up" id="fg-ejari-2">
+              <label>Passport Number</label>
+              <input id="f-ejari-2" type="text" placeholder="Passport No." readonly>
+              <div class="hint">🔒 Will be filled via UAE PASS</div>
+              <div class="vbadge">✓ Verified <span class="vbadge-src">Passport · ICP</span></div>
+            </div>
+            <div class="fg up" id="fg-ejari-3">
+              <label>Nationality</label>
+              <input id="f-ejari-3" type="text" placeholder="Country" readonly>
+              <div class="hint">🔒 Will be filled via UAE PASS</div>
+              <div class="vbadge">✓ Verified <span class="vbadge-src">Emirates ID · ICP</span></div>
+            </div>
+            <div class="fg up" id="fg-ejari-4">
+              <label>Visa / Permit Number</label>
+              <input id="f-ejari-4" type="text" placeholder="Visa No." readonly>
+              <div class="hint">🔒 Will be filled via UAE PASS</div>
+              <div class="vbadge">✓ Verified <span class="vbadge-src">Residence Visa · ICP</span></div>
+            </div>
+            <div class="fg up" id="fg-ejari-5">
+              <label>Visa Expiry Date</label>
+              <input id="f-ejari-5" type="text" placeholder="DD/MM/YYYY" readonly>
+              <div class="hint">🔒 Will be filled via UAE PASS</div>
+              <div class="vbadge">✓ Verified <span class="vbadge-src">Residence Visa · ICP</span></div>
+            </div>
+            <div class="fsep span2"><span>Tenancy Details</span></div>
+            <div class="fg span2">
+              <label>Property Address</label>
+              <input type="text" value="Unit 804, Marina Heights Tower, Dubai Marina, Dubai" readonly style="background:#fafafa">
+            </div>
+            <div class="fg">
+              <label>Annual Rent (AED)</label>
+              <input type="text" value="95,000">
+            </div>
+            <div class="fg">
+              <label>Contract Duration</label>
+              <select><option selected>12 months</option><option>6 months</option><option>24 months</option></select>
+            </div>
+          </div>
+        </div>
+        <div class="form-actions" style="--uc-color:#7c5c1e">
+          <button class="btn-ghost">← Back</button>
+          <button class="btn-cta">Contract Terms →</button>
+        </div>
+      </div>
+      <button class="reset-link" id="reset-ejari" onclick="resetUC('ejari')">↺ Reset form</button>
+    </div>
+
+    <!-- ══════════════════════════════════════
+         USE CASE: MOHRE
+         ══════════════════════════════════════ -->
+    <div class="uc-panel" id="panel-mohre" style="--uc-color:#1a6b2a">
+      <div id="banner-mohre" class="fill-banner">
+        <span class="fill-banner-icon">✅</span>
+        <div class="fill-banner-text">
+          <div class="fill-banner-title">9 fields filled with verified data</div>
+          <div class="fill-banner-sub">Sources: Emirates ID · Passport · Labour Contract · Issued by ICP / MOHRE</div>
+        </div>
+      </div>
+      <div class="sp-header" style="background:#1a6b2a">
+        <div class="sp-header-logo" style="font-size:12px; text-align:center; line-height:1.2">MOHRE</div>
+        <div>
+          <div class="sp-header-name">Ministry of Human Resources &amp; Emiratisation</div>
+          <div class="sp-header-sub">Labour Contract Registration — New Employment</div>
+        </div>
+      </div>
+      <div class="sp-steps" style="background:#155522">
+        <div class="step-item done"><div class="step-num">✓</div> Employer</div>
+        <div class="step-arrow">›</div>
+        <div class="step-item active" style="--uc-color:#1a6b2a"><div class="step-num">2</div> Worker</div>
+        <div class="step-arrow">›</div>
+        <div class="step-item"><div class="step-num">3</div> Contract</div>
+        <div class="step-arrow">›</div>
+        <div class="step-item"><div class="step-num">4</div> Submit</div>
+      </div>
+      <div class="form-card">
+        <div class="fill-cta">
+          <div class="fill-cta-text">
+            <div class="fill-cta-title">Fill worker &amp; contract data with UAE PASS</div>
+            <div class="fill-cta-desc">
+              Populate worker identity from Emirates ID/Passport and employment details from the Labour Contract document.
+              <div class="doc-tags">
+                <span class="doc-tag">🪪 Emirates ID</span>
+                <span class="doc-tag">📘 Passport</span>
+                <span class="doc-tag">📄 Labour Contract</span>
+              </div>
+            </div>
+          </div>
+          <button class="up-btn" id="btn-mohre" onclick="openModal('mohre')">
+            <img src="Active@3x.png" alt=""> Fill with UAE PASS
+          </button>
+        </div>
+        <div class="or-divider"><span>or fill manually below</span></div>
+        <div class="form-body">
+          <div class="form-grid">
+            <div class="fg up" id="fg-mohre-0">
+              <label>First Name</label>
+              <input id="f-mohre-0" type="text" placeholder="As on Emirates ID" readonly>
+              <div class="hint">🔒 Will be filled via UAE PASS</div>
+              <div class="vbadge">✓ Verified <span class="vbadge-src">Emirates ID · ICP</span></div>
+            </div>
+            <div class="fg up" id="fg-mohre-1">
+              <label>Last Name</label>
+              <input id="f-mohre-1" type="text" placeholder="As on Emirates ID" readonly>
+              <div class="hint">🔒 Will be filled via UAE PASS</div>
+              <div class="vbadge">✓ Verified <span class="vbadge-src">Emirates ID · ICP</span></div>
+            </div>
+            <div class="fg up" id="fg-mohre-2">
+              <label>Emirates ID Number</label>
+              <input id="f-mohre-2" type="text" placeholder="784-XXXX-XXXXXXX-X" readonly>
+              <div class="hint">🔒 Will be filled via UAE PASS</div>
+              <div class="vbadge">✓ Verified <span class="vbadge-src">Emirates ID · ICP</span></div>
+            </div>
+            <div class="fg up" id="fg-mohre-3">
+              <label>Passport Number</label>
+              <input id="f-mohre-3" type="text" placeholder="Passport No." readonly>
+              <div class="hint">🔒 Will be filled via UAE PASS</div>
+              <div class="vbadge">✓ Verified <span class="vbadge-src">Passport · ICP</span></div>
+            </div>
+            <div class="fg up" id="fg-mohre-4">
+              <label>Nationality</label>
+              <input id="f-mohre-4" type="text" placeholder="Country" readonly>
+              <div class="hint">🔒 Will be filled via UAE PASS</div>
+              <div class="vbadge">✓ Verified <span class="vbadge-src">Emirates ID · ICP</span></div>
+            </div>
+            <div class="fg up" id="fg-mohre-5">
+              <label>Date of Birth</label>
+              <input id="f-mohre-5" type="text" placeholder="DD/MM/YYYY" readonly>
+              <div class="hint">🔒 Will be filled via UAE PASS</div>
+              <div class="vbadge">✓ Verified <span class="vbadge-src">Emirates ID · ICP</span></div>
+            </div>
+            <div class="fsep span2"><span>Contract Details — from Labour Contract</span></div>
+            <div class="fg up span2" id="fg-mohre-6">
+              <label>Employer / Company Name</label>
+              <input id="f-mohre-6" type="text" placeholder="As on Labour Contract" readonly>
+              <div class="hint">🔒 Will be filled via UAE PASS</div>
+              <div class="vbadge">✓ Verified <span class="vbadge-src">Labour Contract · MOHRE</span></div>
+            </div>
+            <div class="fg up" id="fg-mohre-7">
+              <label>Job Title / Occupation</label>
+              <input id="f-mohre-7" type="text" placeholder="Job title" readonly>
+              <div class="hint">🔒 Will be filled via UAE PASS</div>
+              <div class="vbadge">✓ Verified <span class="vbadge-src">Labour Contract · MOHRE</span></div>
+            </div>
+            <div class="fg up" id="fg-mohre-8">
+              <label>Basic Salary (AED/month)</label>
+              <input id="f-mohre-8" type="text" placeholder="Monthly salary" readonly>
+              <div class="hint">🔒 Will be filled via UAE PASS</div>
+              <div class="vbadge">✓ Verified <span class="vbadge-src">Labour Contract · MOHRE</span></div>
+            </div>
+            <div class="fsep span2"><span>Additional Terms</span></div>
+            <div class="fg">
+              <label>Contract Start Date</label>
+              <input type="text" value="15/02/2026">
+            </div>
+            <div class="fg">
+              <label>Contract Type</label>
+              <select><option selected>Unlimited</option><option>Limited — 2 years</option><option>Part-time</option></select>
+            </div>
+          </div>
+        </div>
+        <div class="form-actions" style="--uc-color:#1a6b2a">
+          <button class="btn-ghost">← Back</button>
+          <button class="btn-cta">Contract Terms →</button>
+        </div>
+      </div>
+      <button class="reset-link" id="reset-mohre" onclick="resetUC('mohre')">↺ Reset form</button>
+    </div>
+
+  </main>
+</div>
+
+<!-- ══ Consent Modal ══ -->
+<div class="modal-bg" id="modal-bg" onclick="handleBgClick(event)">
+  <div class="consent-sheet" id="consent-sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-up-header">
+      <img src="Active@3x.png" alt="UAE PASS">
+      <div class="sheet-up-header-text">
+        <div class="t1">UAE PASS</div>
+        <div class="t2">Attribute consent request</div>
+      </div>
+      <div class="sheet-sp-chip" id="modal-sp-chip">
+        <span>Requesting service</span>
+        —
+      </div>
+    </div>
+    <div class="sheet-attr-list">
+      <div class="sheet-attr-hdr">Fields to be filled from your documents</div>
+      <div id="modal-attr-rows"></div>
+    </div>
+    <div class="sheet-notice">
+      <b>One-time consent only.</b> This data will be used solely to fill this form. UAE PASS will not store or forward it. You can enter the fields manually instead.
+    </div>
+    <div class="sheet-actions">
+      <button class="approve-btn" onclick="approve()">
+        <img src="Active@3x.png" alt=""> Approve &amp; Fill Form
+      </button>
+      <button class="cancel-link" onclick="closeModal()">Cancel — I'll enter manually</button>
+      <div class="s-hint">press S to approve</div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast">
+  <span class="toast-check">✓</span>
+  Form filled with verified UAE PASS data
+</div>
+
+<script>
+// ── Data ──────────────────────────────────────────────────────────────────────
+const DATA = {
+  enb: {
+    sp: 'Emirates National Bank',
+    fields: [
+      { idx:0, icon:'👤', label:'First Name',      value:'Ahmed',                source:'Emirates ID',  issuer:'ICP'  },
+      { idx:1, icon:'👤', label:'Last Name',        value:'Hassan Al Zaabi',      source:'Emirates ID',  issuer:'ICP'  },
+      { idx:2, icon:'🪪', label:'Emirates ID',      value:'784-1988-1234567-3',   source:'Emirates ID',  issuer:'ICP'  },
+      { idx:3, icon:'📅', label:'Date of Birth',    value:'12/04/1988',           source:'Emirates ID',  issuer:'ICP'  },
+      { idx:4, icon:'🌍', label:'Nationality',      value:'United Arab Emirates', source:'Emirates ID',  issuer:'ICP'  },
+      { idx:5, icon:'⚥',  label:'Gender',           value:'Male',                 source:'Emirates ID',  issuer:'ICP'  },
+    ]
+  },
+  du: {
+    sp: 'du Telecom',
+    fields: [
+      { idx:0, icon:'👤', label:'Full Name',        value:'Priya Nair',           source:'Passport',       issuer:'ICP' },
+      { idx:1, icon:'🪪', label:'Emirates ID',      value:'784-1992-7654321-5',   source:'Emirates ID',    issuer:'ICP' },
+      { idx:2, icon:'📘', label:'Passport Number',  value:'K1234567',             source:'Passport',       issuer:'ICP' },
+      { idx:3, icon:'🌍', label:'Nationality',      value:'India',                source:'Emirates ID',    issuer:'ICP' },
+      { idx:4, icon:'📅', label:'Date of Birth',    value:'08/06/1992',           source:'Emirates ID',    issuer:'ICP' },
+      { idx:5, icon:'📋', label:'Visa Expiry',      value:'20/11/2027',           source:'Residence Visa', issuer:'ICP' },
+    ]
+  },
+  daman: {
+    sp: 'Daman Health Insurance',
+    fields: [
+      { idx:0, icon:'👤', label:'First Name',       value:'Ahmed',                source:'Emirates ID', issuer:'ICP' },
+      { idx:1, icon:'👤', label:'Last Name',         value:'Hassan Al Zaabi',      source:'Emirates ID', issuer:'ICP' },
+      { idx:2, icon:'🪪', label:'Emirates ID',       value:'784-1988-1234567-3',   source:'Emirates ID', issuer:'ICP' },
+      { idx:3, icon:'📅', label:'Date of Birth',     value:'12/04/1988',           source:'Emirates ID', issuer:'ICP' },
+      { idx:4, icon:'⚥',  label:'Gender',            value:'Male',                 source:'Emirates ID', issuer:'ICP' },
+      { idx:5, icon:'🌍', label:'Nationality',       value:'United Arab Emirates', source:'Emirates ID', issuer:'ICP' },
+    ]
+  },
+  ejari: {
+    sp: 'Dubai Land Department — Ejari',
+    fields: [
+      { idx:0, icon:'👤', label:'Tenant Full Name', value:'James Mitchell',       source:'Passport',       issuer:'ICP' },
+      { idx:1, icon:'🪪', label:'Emirates ID',      value:'784-1985-4561237-8',   source:'Emirates ID',    issuer:'ICP' },
+      { idx:2, icon:'📘', label:'Passport Number',  value:'GB1234567',            source:'Passport',       issuer:'ICP' },
+      { idx:3, icon:'🌍', label:'Nationality',      value:'United Kingdom',       source:'Emirates ID',    issuer:'ICP' },
+      { idx:4, icon:'📋', label:'Visa/Permit No.',  value:'201/2023/7654321',     source:'Residence Visa', issuer:'ICP' },
+      { idx:5, icon:'📅', label:'Visa Expiry',      value:'15/08/2026',           source:'Residence Visa', issuer:'ICP' },
+    ]
+  },
+  mohre: {
+    sp: 'MOHRE',
+    fields: [
+      { idx:0, icon:'👤', label:'First Name',       value:'Mohammed',             source:'Emirates ID',    issuer:'ICP'   },
+      { idx:1, icon:'👤', label:'Last Name',         value:'Al Farsi',             source:'Emirates ID',    issuer:'ICP'   },
+      { idx:2, icon:'🪪', label:'Emirates ID',       value:'784-1995-3214567-2',   source:'Emirates ID',    issuer:'ICP'   },
+      { idx:3, icon:'📘', label:'Passport Number',   value:'P7654321',             source:'Passport',       issuer:'ICP'   },
+      { idx:4, icon:'🌍', label:'Nationality',       value:'United Arab Emirates', source:'Emirates ID',    issuer:'ICP'   },
+      { idx:5, icon:'📅', label:'Date of Birth',     value:'21/01/1995',           source:'Emirates ID',    issuer:'ICP'   },
+      { idx:6, icon:'🏢', label:'Employer',          value:'Al Noor Engineering LLC', source:'Labour Contract', issuer:'MOHRE' },
+      { idx:7, icon:'💼', label:'Job Title',         value:'Civil Engineer',       source:'Labour Contract', issuer:'MOHRE' },
+      { idx:8, icon:'💰', label:'Basic Salary (AED)',value:'18,500',              source:'Labour Contract', issuer:'MOHRE' },
+    ]
+  }
+};
+
+let activeUC = 'enb';
+let modalUC = null;
+let busy = false;
+
+// ── Sidebar switch ────────────────────────────────────────────────────────────
+function switchUC(uc, el) {
+  document.querySelectorAll('.uc-item').forEach(x => x.classList.remove('active'));
+  document.querySelectorAll('.uc-panel').forEach(x => x.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('panel-' + uc).classList.add('active');
+  activeUC = uc;
+}
+
+// ── Open modal ────────────────────────────────────────────────────────────────
+function openModal(uc) {
+  if (busy) return;
+  const d = DATA[uc];
+  modalUC = uc;
+
+  document.getElementById('modal-sp-chip').innerHTML =
+    '<span>Requesting service</span>' + d.sp;
+
+  const rows = document.getElementById('modal-attr-rows');
+  rows.innerHTML = '';
+  d.fields.forEach(f => {
+    const r = document.createElement('div');
+    r.className = 'attr-row';
+    r.innerHTML =
+      `<div class="attr-icon">${f.icon}</div>` +
+      `<div class="attr-body"><div class="attr-label">${f.label}</div><div class="attr-value">${f.value}</div></div>` +
+      `<div class="attr-src">${f.source}<span>${f.issuer}</span></div>`;
+    rows.appendChild(r);
+  });
+
+  document.getElementById('modal-bg').classList.add('open');
+}
+
+// ── Close modal ───────────────────────────────────────────────────────────────
+function closeModal() {
+  document.getElementById('modal-bg').classList.remove('open');
+  modalUC = null;
+}
+function handleBgClick(e) {
+  if (e.target === document.getElementById('modal-bg')) closeModal();
+}
+
+// ── Approve ───────────────────────────────────────────────────────────────────
+function approve() {
+  if (!modalUC || busy) return;
+  const uc = modalUC;
+  closeModal();
+  runFill(uc);
+}
+
+// ── Fill animation ────────────────────────────────────────────────────────────
+function runFill(uc) {
+  busy = true;
+  const fields = DATA[uc].fields;
+  const btn = document.getElementById('btn-' + uc);
+  if (btn) btn.disabled = true;
+
+  let i = 0;
+  function next() {
+    if (i >= fields.length) {
+      // Done
+      busy = false;
+      if (btn) {
+        btn.classList.add('done');
+        btn.innerHTML = '<img src="Active@3x.png" alt=""> ✓ Filled with UAE PASS';
+      }
+      // Show banner
+      const banner = document.getElementById('banner-' + uc);
+      if (banner) banner.classList.add('vis');
+      // Show reset
+      const rl = document.getElementById('reset-' + uc);
+      if (rl) rl.classList.add('vis');
+      // Show nav done dot
+      const navEl = document.getElementById('nav-' + uc);
+      if (navEl) navEl.classList.add('done');
+      showToast();
+      return;
+    }
+
+    const f = fields[i];
+    const inputEl = document.getElementById('f-' + uc + '-' + f.idx);
+    const groupEl = document.getElementById('fg-' + uc + '-' + f.idx);
+    if (!inputEl || !groupEl) { i++; next(); return; }
+
+    groupEl.classList.add('filling');
+    inputEl.value = '';
+
+    const val = f.value;
+    const speed = Math.max(16, Math.min(45, 550 / val.length));
+    let c = 0;
+    const t = setInterval(() => {
+      c++;
+      inputEl.value = val.substring(0, c);
+      if (c >= val.length) {
+        clearInterval(t);
+        groupEl.classList.remove('filling');
+        groupEl.classList.add('filled');
+        i++;
+        setTimeout(next, 130);
+      }
+    }, speed);
+  }
+  next();
+}
+
+// ── Toast ─────────────────────────────────────────────────────────────────────
+function showToast() {
+  const t = document.getElementById('toast');
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ── Reset ─────────────────────────────────────────────────────────────────────
+function resetUC(uc) {
+  DATA[uc].fields.forEach(f => {
+    const inp = document.getElementById('f-' + uc + '-' + f.idx);
+    const grp = document.getElementById('fg-' + uc + '-' + f.idx);
+    if (inp) inp.value = '';
+    if (grp) grp.classList.remove('filling', 'filled');
+  });
+  const btn = document.getElementById('btn-' + uc);
+  if (btn) { btn.disabled = false; btn.classList.remove('done'); btn.innerHTML = '<img src="Active@3x.png" alt=""> Fill with UAE PASS'; }
+  const banner = document.getElementById('banner-' + uc);
+  if (banner) banner.classList.remove('vis');
+  const rl = document.getElementById('reset-' + uc);
+  if (rl) rl.classList.remove('vis');
+  const navEl = document.getElementById('nav-' + uc);
+  if (navEl) navEl.classList.remove('done');
+  busy = false;
+}
+
+// ── S key ─────────────────────────────────────────────────────────────────────
+document.addEventListener('keydown', e => {
+  if ((e.key === 's' || e.key === 'S') && !e.ctrlKey && !e.metaKey && !e.altKey) {
+    if (['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName)) return;
+    if (document.getElementById('modal-bg').classList.contains('open')) {
+      e.preventDefault();
+      approve();
+    }
+  }
+});
+</script>
+</body>
+</html>

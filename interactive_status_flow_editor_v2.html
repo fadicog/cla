@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UAE PASS DV - Sharing Request Status Flow v2 (Hierarchical)</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .controls {
+            padding: 20px 30px;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e9ecef;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .control-group label {
+            font-weight: 600;
+            color: #495057;
+        }
+
+        button, select, input[type="number"] {
+            padding: 10px 20px;
+            border: 2px solid #667eea;
+            border-radius: 6px;
+            background: white;
+            color: #667eea;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        button:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        select, input[type="number"] {
+            cursor: pointer;
+        }
+
+        input[type="number"] {
+            width: 80px;
+        }
+
+        .canvas-container {
+            padding: 30px;
+            background: white;
+            overflow: auto;
+            position: relative;
+        }
+
+        #flowCanvas {
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            background: #fafbfc;
+            cursor: grab;
+        }
+
+        #flowCanvas:active {
+            cursor: grabbing;
+        }
+
+        .node {
+            cursor: pointer;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+            transition: filter 0.3s ease;
+        }
+
+        .node:hover {
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+        }
+
+        .node-rect {
+            stroke-width: 2;
+            rx: 8;
+            ry: 8;
+        }
+
+        .node-diamond {
+            stroke-width: 2;
+        }
+
+        .node-text {
+            fill: white;
+            font-weight: 600;
+            font-size: 13px;
+            pointer-events: none;
+            text-anchor: middle;
+        }
+
+        .node-subtext {
+            fill: white;
+            font-size: 11px;
+            opacity: 0.9;
+            pointer-events: none;
+            text-anchor: middle;
+        }
+
+        .link {
+            fill: none;
+            stroke-width: 2;
+            opacity: 0.6;
+            transition: opacity 0.3s ease, stroke-width 0.3s ease;
+        }
+
+        .link:hover {
+            opacity: 1;
+            stroke-width: 3;
+        }
+
+        .link-normal {
+            stroke: #667eea;
+        }
+
+        .link-success {
+            stroke: #28a745;
+        }
+
+        .link-failure {
+            stroke: #dc3545;
+            stroke-dasharray: 5,5;
+        }
+
+        .link-decision {
+            stroke: #ffc107;
+        }
+
+        .arrow {
+            fill: #667eea;
+        }
+
+        .arrow-success {
+            fill: #28a745;
+        }
+
+        .arrow-failure {
+            fill: #dc3545;
+        }
+
+        .arrow-decision {
+            fill: #ffc107;
+        }
+
+        .link-label {
+            font-size: 10px;
+            fill: #495057;
+            font-weight: 600;
+            text-anchor: middle;
+            pointer-events: none;
+        }
+
+        .legend {
+            position: absolute;
+            top: 40px;
+            right: 40px;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            font-size: 12px;
+        }
+
+        .legend h3 {
+            margin-bottom: 15px;
+            color: #495057;
+            font-size: 14px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .legend-color {
+            width: 30px;
+            height: 20px;
+            border-radius: 4px;
+            border: 2px solid #dee2e6;
+        }
+
+        .legend-shape {
+            width: 30px;
+            height: 30px;
+        }
+
+        .stats {
+            padding: 20px 30px;
+            background: #f8f9fa;
+            border-top: 2px solid #e9ecef;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #6c757d;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #212529;
+        }
+
+        .tooltip {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 12px;
+            border-radius: 6px;
+            pointer-events: none;
+            font-size: 12px;
+            max-width: 300px;
+            z-index: 1000;
+            display: none;
+        }
+
+        .tooltip-title {
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: #667eea;
+        }
+
+        .tooltip-content {
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔄 UAE PASS Digital Documents - Sharing Request Status Flow v2</h1>
+            <p>Interactive Hierarchical Flow Diagram with Curved Arrows (23 States)</p>
+        </div>
+
+        <div class="controls">
+            <div class="control-group">
+                <label>Layout:</label>
+                <select id="layoutOrientation">
+                    <option value="vertical">Vertical (Top-Down)</option>
+                    <option value="horizontal">Horizontal (Left-Right)</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label>Node Spacing:</label>
+                <input type="number" id="nodeSpacing" min="50" max="400" value="200">
+            </div>
+            <div class="control-group">
+                <label>Level Spacing:</label>
+                <input type="number" id="levelSpacing" min="100" max="500" value="250">
+            </div>
+            <button id="resetView">Reset View</button>
+            <button id="exportSVG">Export SVG</button>
+            <button id="exportPNG">Export PNG</button>
+            <button id="autoLayout">Auto Layout</button>
+        </div>
+
+        <div class="canvas-container">
+            <svg id="flowCanvas" width="1740" height="1600"></svg>
+
+            <div class="legend">
+                <h3>Legend</h3>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #007bff;"></div>
+                    <span>Initial</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #6c757d;"></div>
+                    <span>Intermediate</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #ffc107;"></div>
+                    <span>Decision Point</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #17a2b8;"></div>
+                    <span>User Action</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #28a745;"></div>
+                    <span>Success</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #dc3545;"></div>
+                    <span>Failure</span>
+                </div>
+                <div class="legend-item">
+                    <svg class="legend-shape" width="30" height="30">
+                        <polygon points="15,2 28,15 15,28 2,15" fill="#ffc107" stroke="#333" stroke-width="1"/>
+                    </svg>
+                    <span>Decision Node</span>
+                </div>
+            </div>
+
+            <div class="tooltip" id="tooltip"></div>
+        </div>
+
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-label">Total States</div>
+                <div class="stat-value" id="statTotal">23</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Decision Points</div>
+                <div class="stat-value" id="statDecisions">2</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Terminal States</div>
+                <div class="stat-value" id="statTerminal">8</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Max Depth</div>
+                <div class="stat-value" id="statDepth">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Success Paths</div>
+                <div class="stat-value" id="statSuccess">3</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Flow data structure (hierarchical)
+        const flowData = {
+            name: "100 REQUEST_CREATED",
+            code: 100,
+            category: "Initial",
+            description: "Sharing request created by SP",
+            type: "initial",
+            children: [
+                {
+                    name: "110 OPENED",
+                    code: 110,
+                    category: "Opening",
+                    description: "User opens sharing request",
+                    type: "intermediate",
+                    children: [
+                        {
+                            name: "115 CHECKING_AVAILABILITY",
+                            code: 115,
+                            category: "Opening",
+                            description: "System checks document availability",
+                            type: "decision",
+                            children: [
+                                {
+                                    name: "300 DOCUMENTS_AVAILABLE",
+                                    code: 300,
+                                    category: "Document Available",
+                                    description: "All mandatory docs in vault",
+                                    type: "intermediate",
+                                    linkType: "success",
+                                    children: [
+                                        {
+                                            name: "310 READY_TO_CONSENT",
+                                            code: 310,
+                                            category: "Consent Flow",
+                                            description: "Show consent screen",
+                                            type: "user_action",
+                                            children: [
+                                                {
+                                                    name: "320 CONSENT_GIVEN",
+                                                    code: 320,
+                                                    category: "Consent Flow",
+                                                    description: "User approved",
+                                                    type: "intermediate",
+                                                    children: [
+                                                        {
+                                                            name: "330 SHARING_INITIATED",
+                                                            code: 330,
+                                                            category: "Consent Flow",
+                                                            description: "Preparing package",
+                                                            type: "intermediate",
+                                                            children: [
+                                                                {
+                                                                    name: "400 SHARED_SUCCESSFULLY",
+                                                                    code: 400,
+                                                                    category: "Success",
+                                                                    description: "Documents shared",
+                                                                    type: "success",
+                                                                    linkType: "success"
+                                                                },
+                                                                {
+                                                                    name: "340 PIN_REQUIRED",
+                                                                    code: 340,
+                                                                    category: "PIN Flow",
+                                                                    description: "Enter PIN",
+                                                                    type: "user_action",
+                                                                    children: [
+                                                                        {
+                                                                            name: "350 PIN_ENTERED",
+                                                                            code: 350,
+                                                                            category: "PIN Flow",
+                                                                            description: "Validating PIN",
+                                                                            type: "intermediate",
+                                                                            children: [
+                                                                                {
+                                                                                    name: "360 PIN_VALIDATION_SUCCESS",
+                                                                                    code: 360,
+                                                                                    category: "PIN Flow",
+                                                                                    description: "PIN correct",
+                                                                                    type: "intermediate",
+                                                                                    linkType: "success",
+                                                                                    children: [
+                                                                                        {
+                                                                                            name: "400 SHARED_SUCCESSFULLY",
+                                                                                            code: 400,
+                                                                                            category: "Success",
+                                                                                            description: "Documents shared",
+                                                                                            type: "success",
+                                                                                            linkType: "success"
+                                                                                        }
+                                                                                    ]
+                                                                                },
+                                                                                {
+                                                                                    name: "370 PIN_VALIDATION_FAILED",
+                                                                                    code: 370,
+                                                                                    category: "PIN Flow",
+                                                                                    description: "PIN incorrect",
+                                                                                    type: "failure",
+                                                                                    linkType: "failure",
+                                                                                    children: [
+                                                                                        {
+                                                                                            name: "520 FAILURE_PIN_EXCEEDED",
+                                                                                            code: 520,
+                                                                                            category: "Failure",
+                                                                                            description: "Too many attempts",
+                                                                                            type: "failure",
+                                                                                            linkType: "failure"
+                                                                                        }
+                                                                                    ]
+                                                                                }
+                                                                            ]
+                                                                        }
+                                                                    ]
+                                                                }
+                                                            ]
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    name: "510 FAILURE_CONSENT_REJECTED",
+                                                    code: 510,
+                                                    category: "Failure",
+                                                    description: "User rejected",
+                                                    type: "failure",
+                                                    linkType: "failure"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    name: "200 DOCUMENTS_NOT_IN_VAULT",
+                                    code: 200,
+                                    category: "Document Unavailable",
+                                    description: "Missing documents",
+                                    type: "intermediate",
+                                    linkType: "failure",
+                                    children: [
+                                        {
+                                            name: "210 USER_TRIGGERED_REQUEST",
+                                            code: 210,
+                                            category: "Document Request",
+                                            description: "User taps request button",
+                                            type: "user_action",
+                                            children: [
+                                                {
+                                                    name: "215 REQUEST_IN_PROGRESS",
+                                                    code: 215,
+                                                    category: "Document Request",
+                                                    description: "Fetching from issuers",
+                                                    type: "decision",
+                                                    children: [
+                                                        {
+                                                            name: "300 DOCS_AVAILABLE_POST_REQUEST",
+                                                            code: 300,
+                                                            category: "Document Available",
+                                                            description: "All docs received",
+                                                            type: "intermediate",
+                                                            linkType: "success",
+                                                            children: [
+                                                                {
+                                                                    name: "310 READY_TO_CONSENT",
+                                                                    code: 310,
+                                                                    category: "Consent Flow",
+                                                                    description: "Show consent",
+                                                                    type: "user_action"
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            name: "220 REQUEST_PARTIAL_SUCCESS",
+                                                            code: 220,
+                                                            category: "Document Request",
+                                                            description: "Some docs received",
+                                                            type: "intermediate",
+                                                            linkType: "decision",
+                                                            children: [
+                                                                {
+                                                                    name: "310 READY_TO_CONSENT",
+                                                                    code: 310,
+                                                                    category: "Consent Flow",
+                                                                    description: "Proceed with available",
+                                                                    type: "user_action"
+                                                                },
+                                                                {
+                                                                    name: "560 FAILURE_DOCS_NOT_AVAILABLE",
+                                                                    code: 560,
+                                                                    category: "Failure",
+                                                                    description: "Cannot fulfill",
+                                                                    type: "failure",
+                                                                    linkType: "failure"
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            name: "230 REQUEST_FAILED",
+                                                            code: 230,
+                                                            category: "Document Request",
+                                                            description: "All requests failed",
+                                                            type: "failure",
+                                                            linkType: "failure",
+                                                            children: [
+                                                                {
+                                                                    name: "560 FAILURE_DOCS_NOT_AVAILABLE",
+                                                                    code: 560,
+                                                                    category: "Failure",
+                                                                    description: "Cannot fulfill",
+                                                                    type: "failure",
+                                                                    linkType: "failure"
+                                                                }
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        };
+
+        // Additional terminal failure states
+        const additionalFailures = [
+            { code: 530, name: "530 FAILURE_SESSION_EXPIRED", category: "Failure", description: "Request expired" },
+            { code: 540, name: "540 FAILURE_TECHNICAL_ERROR", category: "Failure", description: "System error" },
+            { code: 550, name: "550 FAILURE_ISSUER_ERROR", category: "Failure", description: "Issuer unavailable" },
+            { code: 600, name: "600 ABANDONED_BY_USER", category: "Abandonment", description: "User exited" }
+        ];
+
+        // D3 setup
+        const svg = d3.select("#flowCanvas");
+        const width = +svg.attr("width");
+        const height = +svg.attr("height");
+
+        const g = svg.append("g");
+
+        // Add zoom behavior
+        const zoom = d3.zoom()
+            .scaleExtent([0.3, 3])
+            .on("zoom", (event) => {
+                g.attr("transform", event.transform);
+            });
+
+        svg.call(zoom);
+
+        // Color mapping
+        const colorMap = {
+            "initial": "#007bff",
+            "intermediate": "#6c757d",
+            "decision": "#ffc107",
+            "user_action": "#17a2b8",
+            "success": "#28a745",
+            "failure": "#dc3545"
+        };
+
+        let treeLayout, linkGenerator;
+        let currentOrientation = "vertical";
+
+        function initializeLayout(orientation) {
+            currentOrientation = orientation;
+            const nodeSpacing = +document.getElementById("nodeSpacing").value;
+            const levelSpacing = +document.getElementById("levelSpacing").value;
+
+            if (orientation === "vertical") {
+                treeLayout = d3.tree()
+                    .size([width - 100, height - 200])
+                    .nodeSize([nodeSpacing, levelSpacing])
+                    .separation((a, b) => (a.parent == b.parent ? 1 : 1.2));
+
+                linkGenerator = d3.linkVertical()
+                    .x(d => d.x)
+                    .y(d => d.y);
+            } else {
+                treeLayout = d3.tree()
+                    .size([height - 100, width - 300])
+                    .nodeSize([nodeSpacing, levelSpacing])
+                    .separation((a, b) => (a.parent == b.parent ? 1 : 1.2));
+
+                linkGenerator = d3.linkHorizontal()
+                    .x(d => d.y)
+                    .y(d => d.x);
+            }
+        }
+
+        function render() {
+            // Clear existing
+            g.selectAll("*").remove();
+
+            // Create hierarchy
+            const root = d3.hierarchy(flowData);
+
+            // Apply layout
+            initializeLayout(currentOrientation);
+            treeLayout(root);
+
+            // Center the tree
+            const descendants = root.descendants();
+            const xExtent = d3.extent(descendants, d => currentOrientation === "vertical" ? d.x : d.y);
+            const yExtent = d3.extent(descendants, d => currentOrientation === "vertical" ? d.y : d.x);
+
+            const offsetX = currentOrientation === "vertical" ? (width - (xExtent[1] - xExtent[0])) / 2 - xExtent[0] : 50;
+            const offsetY = currentOrientation === "vertical" ? 50 : (height - (xExtent[1] - xExtent[0])) / 2 - xExtent[0];
+
+            descendants.forEach(d => {
+                if (currentOrientation === "vertical") {
+                    d.x += offsetX;
+                    d.y += offsetY;
+                } else {
+                    const temp = d.x;
+                    d.x = d.y + offsetY;
+                    d.y = temp + offsetX;
+                }
+            });
+
+            // Define arrow markers
+            const defs = g.append("defs");
+
+            const arrowTypes = [
+                { id: "arrow-normal", color: "#667eea", class: "arrow" },
+                { id: "arrow-success", color: "#28a745", class: "arrow-success" },
+                { id: "arrow-failure", color: "#dc3545", class: "arrow-failure" },
+                { id: "arrow-decision", color: "#ffc107", class: "arrow-decision" }
+            ];
+
+            arrowTypes.forEach(arrow => {
+                defs.append("marker")
+                    .attr("id", arrow.id)
+                    .attr("viewBox", "0 0 10 10")
+                    .attr("refX", 9)
+                    .attr("refY", 5)
+                    .attr("markerWidth", 6)
+                    .attr("markerHeight", 6)
+                    .attr("orient", "auto")
+                    .append("path")
+                    .attr("d", "M 0 0 L 10 5 L 0 10 z")
+                    .attr("class", arrow.class)
+                    .attr("fill", arrow.color);
+            });
+
+            // Draw links with curved paths
+            const links = root.links();
+
+            const linkGroups = g.selectAll(".link")
+                .data(links)
+                .enter()
+                .append("g");
+
+            linkGroups.append("path")
+                .attr("class", d => {
+                    const linkType = d.target.data.linkType || "normal";
+                    return `link link-${linkType}`;
+                })
+                .attr("d", d => {
+                    if (currentOrientation === "vertical") {
+                        return linkGenerator({
+                            source: { x: d.source.x, y: d.source.y },
+                            target: { x: d.target.x, y: d.target.y }
+                        });
+                    } else {
+                        return linkGenerator({
+                            source: { x: d.source.x, y: d.source.y },
+                            target: { x: d.target.x, y: d.target.y }
+                        });
+                    }
+                })
+                .attr("marker-end", d => {
+                    const linkType = d.target.data.linkType || "normal";
+                    return `url(#arrow-${linkType})`;
+                });
+
+            // Draw nodes
+            const nodes = g.selectAll(".node")
+                .data(descendants)
+                .enter()
+                .append("g")
+                .attr("class", "node")
+                .attr("transform", d => `translate(${d.x},${d.y})`)
+                .on("mouseover", showTooltip)
+                .on("mouseout", hideTooltip);
+
+            // Draw node shapes
+            nodes.each(function(d) {
+                const node = d3.select(this);
+                const isDecision = d.data.type === "decision";
+
+                if (isDecision) {
+                    // Diamond shape - larger
+                    node.append("polygon")
+                        .attr("class", "node-diamond")
+                        .attr("points", "0,-45 70,0 0,45 -70,0")
+                        .attr("fill", colorMap[d.data.type])
+                        .attr("stroke", "#333");
+                } else {
+                    // Rectangle - much wider and taller
+                    node.append("rect")
+                        .attr("class", "node-rect")
+                        .attr("x", -100)
+                        .attr("y", -35)
+                        .attr("width", 200)
+                        .attr("height", 70)
+                        .attr("fill", colorMap[d.data.type])
+                        .attr("stroke", "#333");
+                }
+            });
+
+            // Add text - code on first line
+            nodes.append("text")
+                .attr("class", "node-text")
+                .attr("dy", "-0.8em")
+                .text(d => d.data.code)
+                .each(function(d) {
+                    const text = d3.select(this);
+                    const bbox = text.node().getBBox();
+                    if (bbox.width > 180) {
+                        text.attr("font-size", "11px");
+                    }
+                });
+
+            // Add category text on second line - no truncation
+            nodes.append("text")
+                .attr("class", "node-subtext")
+                .attr("dy", "0.5em")
+                .text(d => d.data.category);
+
+            // Update stats
+            updateStats(root);
+        }
+
+        function updateStats(root) {
+            const descendants = root.descendants();
+            const terminal = descendants.filter(d => !d.children || d.children.length === 0);
+            const decisions = descendants.filter(d => d.data.type === "decision");
+            const success = descendants.filter(d => d.data.type === "success");
+
+            document.getElementById("statTotal").textContent = descendants.length;
+            document.getElementById("statDecisions").textContent = decisions.length;
+            document.getElementById("statTerminal").textContent = terminal.length;
+            document.getElementById("statDepth").textContent = root.height;
+            document.getElementById("statSuccess").textContent = success.length;
+        }
+
+        function showTooltip(event, d) {
+            const tooltip = document.getElementById("tooltip");
+            tooltip.style.display = "block";
+            tooltip.innerHTML = `
+                <div class="tooltip-title">${d.data.name}</div>
+                <div class="tooltip-content">
+                    <strong>Category:</strong> ${d.data.category}<br>
+                    <strong>Description:</strong> ${d.data.description}<br>
+                    <strong>Type:</strong> ${d.data.type}
+                </div>
+            `;
+            tooltip.style.left = (event.pageX + 10) + "px";
+            tooltip.style.top = (event.pageY + 10) + "px";
+        }
+
+        function hideTooltip() {
+            document.getElementById("tooltip").style.display = "none";
+        }
+
+        // Event listeners
+        document.getElementById("layoutOrientation").addEventListener("change", (e) => {
+            render();
+        });
+
+        document.getElementById("nodeSpacing").addEventListener("change", render);
+        document.getElementById("levelSpacing").addEventListener("change", render);
+
+        document.getElementById("resetView").addEventListener("click", () => {
+            svg.transition().duration(750).call(zoom.transform, d3.zoomIdentity);
+        });
+
+        document.getElementById("autoLayout").addEventListener("click", render);
+
+        document.getElementById("exportSVG").addEventListener("click", () => {
+            const svgData = document.getElementById("flowCanvas").outerHTML;
+            const blob = new Blob([svgData], { type: "image/svg+xml" });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = "status_flow_v2.svg";
+            link.click();
+        });
+
+        document.getElementById("exportPNG").addEventListener("click", () => {
+            const svgElement = document.getElementById("flowCanvas");
+            const svgData = new XMLSerializer().serializeToString(svgElement);
+            const canvas = document.createElement("canvas");
+            const ctx = canvas.getContext("2d");
+            const img = new Image();
+
+            canvas.width = width;
+            canvas.height = height;
+
+            img.onload = () => {
+                ctx.fillStyle = "white";
+                ctx.fillRect(0, 0, width, height);
+                ctx.drawImage(img, 0, 0);
+                canvas.toBlob((blob) => {
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement("a");
+                    link.href = url;
+                    link.download = "status_flow_v2.png";
+                    link.click();
+                });
+            };
+
+            img.src = "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svgData)));
+        });
+
+        // Initial render
+        render();
+    </script>
+</body>
+</html>

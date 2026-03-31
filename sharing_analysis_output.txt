@@ -1,0 +1,366 @@
+================================================================================
+UAE PASS DIGITAL DOCUMENTS - SHARING REQUEST ANALYSIS
+================================================================================
+
+Analysis started at: 2025-11-24 16:32:19
+
+
+================================================================================
+1. LOADING DATA
+================================================================================
+
+Main Dataset:
+  - Total records: 422,596
+  - Date range: 2025-06-25 to 2025-11-18
+  - Duration: 146 days
+
+New Fields Dataset (with first-read tracking):
+  - Total records: 22,245
+  - Date range: 2025-11-12 to 2025-11-18
+
+================================================================================
+2. FUNNEL ANALYSIS - DROP-OFF AT EACH STAGE
+================================================================================
+
+Stage 1: Notification Delivered
+  Total requests: 422,596 (100.0%)
+
+Stage 2: Notification Opened (State = 'Read')
+  Opened: 366,888 (86.8%)
+  Drop-off: 55,708 (13.2%)
+
+  Notification States Breakdown:
+    - Read: 366,888 (86.8%)
+    - Rejected: 45,109 (10.7%)
+    - Unread: 8,052 (1.9%)
+
+Stage 3: Consent Given
+  Consent given: 262,447 (62.1%)
+  Drop-off from opened: 104,441 (28.5%)
+
+Stage 4: PIN Entered
+  PIN entered: 224,554 (53.1%)
+  Drop-off from consent: 37,893 (14.4%)
+
+Stage 5: Sharing Completed (Status = 'Shared')
+  Successfully shared: 169,690 (40.2%)
+  Drop-off from PIN entered: 54,864 (24.4%)
+
+============================================================
+OVERALL FUNNEL SUMMARY
+============================================================
+  1. Notification Delivered:  422,596 (100.0%)
+  2. Notification Opened:     366,888 (86.8%) - Drop: 13.2%
+  3. Consent Given:           262,447 (62.1%) - Drop: 37.9%
+  4. PIN Entered:             224,554 (53.1%) - Drop: 46.9%
+  5. Successfully Shared:     169,690 (40.2%) - Drop: 59.8%
+
+  END-TO-END SUCCESS RATE: 40.15%
+
+================================================================================
+3. FAILURE POINT ANALYSIS
+================================================================================
+
+3.1 STATUS Breakdown:
+============================================================
+  Shared                   : 169,690 (40.15%)
+  No Action Taken          : 133,174 (31.51%)
+  Failed                   :  64,026 (15.15%)
+  User Rejected            :  45,107 (10.67%)
+  Unread Notification      :   8,052 ( 1.91%)
+  Saved For Later          :   2,547 ( 0.60%)
+
+3.2 ERROR_CATEGORIZATION Patterns:
+============================================================
+  Total requests with error categorization: 55,697
+  Failed after PIN page                        : 43,818 (78.67% of errors)
+  Failed before PIN page                       : 11,879 (21.33% of errors)
+
+3.3 FAILURE_REASON Patterns:
+============================================================
+  Total requests with failure reasons: 64,026
+  DOCUMENT REQUEST FAILED                           : 11,938 (18.65% of failures)
+  SIGNING_TIMEOUT                                   : 11,275 (17.61% of failures)
+  USER_SESSION_AUTHENTICATION_FAILED                : 10,729 (16.76% of failures)
+  ISSUER_DOCUMENT_RETRIVAL_FAILURE                  :  8,004 (12.50% of failures)
+  SERVER_ERROR                                      :  4,763 ( 7.44% of failures)
+  USER_CANCELLED                                    :  2,129 ( 3.33% of failures)
+  NO_ACKNOWLEDGEMENT_RECEIVED_FROM_SP               :  1,952 ( 3.05% of failures)
+  CREDENTIAL_INVALIDATED_BY_ISSUER                  :  1,807 ( 2.82% of failures)
+  DDA_INVALID_CADES_SIGNATURE_ERROR                 :  1,788 ( 2.79% of failures)
+  DATA_RETREIVAL_ERROR_FROM_REDIS                   :  1,471 ( 2.30% of failures)
+  INVALID_CERTIFICATE_ERROR                         :  1,414 ( 2.21% of failures)
+  SIGNING_FAILED                                    :  1,341 ( 2.09% of failures)
+  STATUS_CHECK_FAILURE                              :  1,324 ( 2.07% of failures)
+  RECEIVE_PRESENTAION_API_FAILURE                   :  1,043 ( 1.63% of failures)
+  UNAUTHORIZED_FROM_SP                              :    933 ( 1.46% of failures)
+  SHARE_ACCESS_TOKEN_RETRIEVAL_FAILURE              :    412 ( 0.64% of failures)
+  PROOF_OF_PRESENTATION_CREATION_FAILURE            :    289 ( 0.45% of failures)
+  BAD_REQUEST                                       :    268 ( 0.42% of failures)
+  CCG_TOKEN_FAILURE#SERVICE_UNAVAILABLE             :    253 ( 0.40% of failures)
+  UAEPASS_ERROR                                     :    215 ( 0.34% of failures)
+
+3.4 Missing Documents Impact:
+============================================================
+  Document Availability:
+    Yes: 323,390 (76.52%)
+    No: 99,206 (23.48%)
+
+  Success Rate Analysis:
+    With all mandatory docs available:    52.47%
+    Without all mandatory docs:            0.00%
+    Impact of missing docs:               +52.47 percentage points
+
+  Users with missing docs who requested credentials:
+    No: 68,986 (69.54%)
+    Yes: 30,220 (30.46%)
+
+================================================================================
+4. SERVICE PROVIDER (SP) ANALYSIS
+================================================================================
+
+4.1 Top 10 Service Providers by Volume:
+============================================================
+   1. ADIB                               :  50,849 (12.03%)
+   2. Etisalat Retail                    :  42,747 (10.12%)
+   3. DU                                 :  35,487 ( 8.40%)
+   4. Al Maryah                          :  27,461 ( 6.50%)
+   5. Botim                              :  24,025 ( 5.69%)
+   6. FAB Retail Banking                 :  18,890 ( 4.47%)
+   7. Etisalat Business                  :  18,286 ( 4.33%)
+   8. ruya                               :  14,069 ( 3.33%)
+   9. Virgin Mobile                      :  12,976 ( 3.07%)
+  10. Al Hilal                           :  12,498 ( 2.96%)
+
+4.2 Success Rate by Top 20 Service Providers:
+============================================================
+
+  Sorted by Success Rate:
+  ADCB                               :  73.9% (5,637/7,625)
+  Ajman Bank PJSC                    :  52.8% (3,314/6,274)
+  eToro (ME) Limited                 :  50.2% (3,346/6,665)
+  Virgin Mobile                      :  45.6% (5,922/12,976)
+  Etisalat Business                  :  45.6% (8,337/18,286)
+  DU IGNITE                          :  43.5% (5,372/12,340)
+  Whizmo                             :  42.4% (4,876/11,499)
+  AAE                                :  41.0% (4,157/10,150)
+  ruya                               :  40.4% (5,684/14,069)
+  Al Hilal                           :  39.8% (4,973/12,498)
+  Lulu                               :  38.6% (3,381/8,759)
+  e\u0026 money                      :  38.3% (2,236/5,835)
+  ADIB                               :  36.6% (18,629/50,849)
+  Al Maryah                          :  35.6% (9,775/27,461)
+  FAB Retail Banking                 :  35.0% (6,608/18,890)
+  Botim                              :  34.9% (8,384/24,025)
+  Etisalat Retail                    :  32.0% (13,700/42,747)
+  DU                                 :  30.4% (10,797/35,487)
+  ADNIC Motor                        :  26.2% (1,840/7,011)
+  Sukoon Insurance PJSC              :  22.2% (1,339/6,035)
+
+4.3 Most Requested Document Types:
+============================================================
+  Emirates ID Card                        : 394,172 requests
+  Residence Visa                          :  93,939 requests
+  Passport                                :  46,082 requests
+  Driving License                         :  19,076 requests
+  Vehicle License                         :  13,221 requests
+  Emirates ID Card	 Residence Visa        :   9,682 requests
+  Emirates ID Card	 Passport              :   3,675 requests
+  Driving License	 Emirates ID Card	 Vehicle License:   1,413 requests
+  Utility Bills                           :     591 requests
+  Driving License	 Emirates ID Card       :     534 requests
+  Tenancy Contract                        :     374 requests
+
+================================================================================
+5. APP VERSION ANALYSIS
+================================================================================
+
+5.1 Version Distribution:
+============================================================
+  6.2.0          :  68,214 (16.56%)
+  6.4.0          :  48,328 (11.73%)
+  6.1.3          :  42,033 (10.21%)
+  6.2.2          :  40,400 ( 9.81%)
+  6.2.1          :  34,191 ( 8.30%)
+  6.3.0          :  22,125 ( 5.37%)
+  5.10.1         :  16,979 ( 4.12%)
+  6.1.0          :  15,731 ( 3.82%)
+  6.1.5          :  15,017 ( 3.65%)
+  6.1.4          :  12,804 ( 3.11%)
+  6.0.0          :  11,560 ( 2.81%)
+  6.1.2          :  10,880 ( 2.64%)
+  6.1.1          :  10,786 ( 2.62%)
+  5.10.0         :   7,717 ( 1.87%)
+  6.4.1          :   7,556 ( 1.83%)
+
+5.2 Success Rate by Version (Top 10 by volume):
+============================================================
+  5.10.1         : 53.73% (9,122/16,979)
+  6.1.0          : 52.07% (8,191/15,731)
+  6.1.3          : 37.64% (15,822/42,033)
+  6.1.4          : 39.35% (5,038/12,804)
+  6.1.5          : 47.67% (7,159/15,017)
+  6.2.0          : 32.74% (22,331/68,214)
+  6.2.1          : 35.61% (12,176/34,191)
+  6.2.2          : 32.62% (13,177/40,400)
+  6.3.0          : 36.09% (7,985/22,125)
+  6.4.0          : 27.57% (13,322/48,328)
+
+5.3 Version 6.4.x Family Analysis:
+============================================================
+  6.4.0     : 27.57% (13,322/48,328)
+  6.4.1     : 31.38% (2,371/7,556)
+  6.4.2     : 32.55% (222/682)
+
+================================================================================
+6. TIME-BASED TRENDS
+================================================================================
+
+6.1 Weekly Success Rate Trend:
+============================================================
+
+  Week             Total    Shared   Success %
+  ---------------------------------------------
+  2025-06-23/2025-06-29    13,498     5,577      41.32%
+  2025-06-30/2025-07-06    18,915     7,812      41.30%
+  2025-07-07/2025-07-13    21,268     8,292      38.99%
+  2025-07-14/2025-07-20    20,655     8,295      40.16%
+  2025-07-21/2025-07-27    21,501     8,398      39.06%
+  2025-07-28/2025-08-03    18,993     7,684      40.46%
+  2025-08-04/2025-08-10    18,149     7,516      41.41%
+  2025-08-11/2025-08-17    17,691     6,990      39.51%
+  2025-08-18/2025-08-24    17,877     7,300      40.83%
+  2025-08-25/2025-08-31    20,139     8,035      39.90%
+  2025-09-01/2025-09-07    18,256     7,198      39.43%
+  2025-09-08/2025-09-14    20,347     7,977      39.20%
+  2025-09-15/2025-09-21    18,738     7,390      39.44%
+  2025-09-22/2025-09-28    19,300     7,629      39.53%
+  2025-09-29/2025-10-05    21,642     8,617      39.82%
+  2025-10-06/2025-10-12    22,011     8,980      40.80%
+  2025-10-13/2025-10-19    22,037     9,038      41.01%
+  2025-10-20/2025-10-26    20,863     8,517      40.82%
+  2025-10-27/2025-11-02    22,596     9,069      40.14%
+  2025-11-03/2025-11-09    20,347     8,392      41.24%
+  2025-11-10/2025-11-16    21,639     8,673      40.08%
+  2025-11-17/2025-11-23     6,134     2,311      37.68%
+
+6.2 Day of Week Analysis:
+============================================================
+
+  Day              Total    Shared   Success %
+  ---------------------------------------------
+  Monday          63,779    25,146      39.43%
+  Tuesday         62,753    25,210      40.17%
+  Wednesday       63,911    25,631      40.10%
+  Thursday        62,640    25,352      40.47%
+  Friday          59,467    23,994      40.35%
+  Saturday        57,136    23,149      40.52%
+  Sunday          52,910    21,208      40.08%
+
+6.3 Hour of Day Analysis (Top/Bottom 5 hours):
+============================================================
+
+  Top 5 Hours (by success rate):
+  Hour       Total    Shared   Success %
+  00:00   422,596   169,690      40.15%
+
+  Bottom 5 Hours (by success rate):
+  Hour       Total    Shared   Success %
+  00:00   422,596   169,690      40.15%
+
+================================================================================
+7. MISSING DOCUMENTS DETAILED IMPACT ANALYSIS
+================================================================================
+
+7.1 Overall Missing Documents:
+  Requests with missing mandatory docs: 99,206 (23.48%)
+
+7.2 Credential Request Behavior (Users with Missing Docs):
+  Total with missing docs: 99,206
+    No: 68,986 (69.54%)
+    Yes: 30,220 (30.46%)
+
+7.3 'Request Missing Docs Then Share' Journey:
+  Users who requested missing docs: 30,220
+  Successfully shared after request: 0 (0.00%)
+
+  Credential Request Status:
+    Failed: 18,276 (60.48%)
+    Success: 11,944 (39.52%)
+
+7.4 Final STATUS for Users with Missing Mandatory Docs:
+  No Action Taken          : 49,911 (50.31%)
+  User Rejected            : 24,391 (24.59%)
+  Failed                   : 14,305 (14.42%)
+  Unread Notification      :  8,052 ( 8.12%)
+  Saved For Later          :  2,547 ( 2.57%)
+
+================================================================================
+8. NOTIFICATION EFFECTIVENESS
+================================================================================
+
+8.1 Notification Type (VIZ_TYPE) Analysis:
+============================================================
+  Push: 396,741 (93.88%)
+  Pull: 25,855 (6.12%)
+
+8.2 Success Rate by Notification Type:
+  Push      : 40.36% (160,124/396,741)
+  Pull      : 37.00% (9,566/25,855)
+
+8.3 Notification Read Rate:
+============================================================
+  Total with notification state: 420,049
+    Read: 366,888 (87.34%)
+    Rejected: 45,109 (10.74%)
+    Unread: 8,052 (1.92%)
+
+8.4 Success Rate by Notification State:
+  Read                : 46.25% (169,690/366,888)
+  Rejected            :  0.00% (0/45,109)
+  Unread              :  0.00% (0/8,052)
+
+================================================================================
+9. NEW FIELDS ANALYSIS - User Lifecycle Tracking
+================================================================================
+
+9.1 First Read vs Current State - Document Availability:
+============================================================
+
+  First Read Availability vs Current Availability:
+MANDATORY_DOCS_AVAILABLE               No    Yes    All
+FIRST_READ_MANDATORY_DOCS_AVAILABLE                    
+No                                   5056   5999  11055
+Yes                                   124  11066  11190
+All                                  5180  17065  22245
+
+  Users who acquired missing docs after first read:
+    Count: 5,999
+    Rate: 54.27% of users who initially lacked docs
+
+9.2 First Read vs Current State - Document Fulfillment:
+============================================================
+
+  First Read Fulfillment vs Current Fulfillment:
+MANDATORY_DOCS_FULFILLED               No    Yes    All
+FIRST_READ_MANDATORY_DOCS_FULFILLED                    
+No                                   5121   6032  11153
+Yes                                   115  10977  11092
+All                                  5236  17009  22245
+
+9.3 Success Rate in New Fields Dataset (Recent Data):
+============================================================
+  Total requests: 22,245
+  Successfully shared: 8,997 (40.45%)
+  Comparison to overall dataset: 40.15%
+
+================================================================================
+10. EXECUTIVE SUMMARY - TOP INSIGHTS
+================================================================================
+Traceback (most recent call last):
+  File "D:\cluade\sharing_request_analysis.py", line 464, in <module>
+    print(f"""
+  File "C:\Users\fadib\AppData\Local\Programs\Python\Python311\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode character '\u2192' in position 154: character maps to <undefined>

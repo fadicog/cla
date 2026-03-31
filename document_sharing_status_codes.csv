@@ -1,0 +1,22 @@
+Status Code,Status Name,Description,From Diagram
+100,REQUEST_CREATED,SP created sharing request initial state,-
+110,REDIRECTING_TO_APP,User clicked link redirecting to UAE PASS,Redirection Successful
+200,PENDING_DOCUMENTS,Missing mandatory documents,Requirements Not Fulfilled (Group B)
+210,DOCUMENTS_BEING_REQUESTED,User initiated request for missing docs,User Tries to request missing documents
+220,DOCUMENTS_REQUEST_PARTIAL_FAILURE,Some docs requested successfully others failed,Mandatory documents request failed or partially failed
+230,DOCUMENTS_REQUEST_FAILED,All document requests failed,Error in service
+240,DOCUMENTS_UNAVAILABLE_FOR_USER,Documents don't exist/not eligible,Final Status: Documents not available for the user
+300,READY_FOR_REVIEW,All requirements met awaiting user action,Requirements Fulfilled (Group A) / Group B→A+
+310,CONSENT_UNDER_REVIEW,User viewing consent screen,User gives Consent path
+320,CONSENT_GIVEN_AWAITING_SHARE,Consent given waiting for share button press,User does not press the Share documents button
+330,AWAITING_PIN_ENTRY,User pressed share PIN prompt shown,User Presses Share documents Button
+340,PIN_VERIFICATION_IN_PROGRESS,Verifying entered PIN,User Enters correct/incorrect PIN
+400,COMPLETED_SUCCESS,Sharing successful documents delivered,Final Status: Sharing Successful
+500,COMPLETED_FAILURE,Terminal failure state (generic),Multiple failure nodes
+510,FAILURE_CONSENT_DECLINED,User declined consent,User does not give consent → Final Status (Consent not given)
+520,FAILURE_EXPIRED_BEFORE_CONSENT,Request expired before consent given,Sharing request Expired before consent was given
+530,FAILURE_EXPIRED_AFTER_CONSENT,Request expired after consent but before completion,-
+540,FAILURE_PIN_INCORRECT,PIN verification failed (max attempts),User Enters Incorrect PIN number → Sharing Failed
+550,FAILURE_SERVICE_ERROR,Backend/technical error during sharing,Final Status: Sharing Failed due to reason
+560,FAILURE_DOCUMENTS_NOT_AVAILABLE,Cannot proceed due to missing documents,Documents not available terminal state
+600,ABANDONED_BY_USER,User left flow without completing,User does not press Share documents button (after timeout)

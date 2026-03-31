@@ -1,0 +1,30 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "Bash(python:*)",
+      "Bash(pip install:*)",
+      "Bash(sharing_analysis_output.txt)",
+      "Bash(cat:*)",
+      "Bash(analysis_output.txt)",
+      "Bash(dir:*)",
+      "Bash(findstr:*)",
+      "Bash(Select-Object -First 150)",
+      "Bash(claude-code agents create:*)",
+      "Bash(python3:*)",
+      "Bash(ls:*)",
+      "Bash(npm run build:*)",
+      "Bash(xargs:*)",
+      "Bash(pushd:*)",
+      "Bash(popd:*)",
+      "Bash(cmd /c \"cd /d D:\\\\claude\\\\roadmap-builder && npm run build\")",
+      "Bash(git branch:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(gh repo view:*)",
+      "Bash(curl:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

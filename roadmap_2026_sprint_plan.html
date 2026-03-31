@@ -1,0 +1,1540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UAE PASS Digital Documents - 2026 Sprint Distribution Plan</title>
+    <style>
+        :root {
+            --score-3: #22c55e;
+            --score-2-4: #3b82f6;
+            --score-1-8: #f97316;
+            --deadline: #ef4444;
+            --holiday: #fbbf24;
+            --completed: #6b7280;
+            --completed-bg: #d1d5db;
+            --bg-dark: #1e293b;
+            --bg-light: #f8fafc;
+            --text-dark: #0f172a;
+            --text-light: #64748b;
+            --border: #e2e8f0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-light);
+            color: var(--text-dark);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--bg-dark) 0%, #334155 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        header .subtitle {
+            color: #94a3b8;
+            font-size: 16px;
+        }
+
+        .metadata {
+            display: flex;
+            gap: 30px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .metadata-item {
+            background: rgba(255,255,255,0.1);
+            padding: 12px 20px;
+            border-radius: 8px;
+        }
+
+        .metadata-item .label {
+            font-size: 12px;
+            color: #94a3b8;
+            text-transform: uppercase;
+        }
+
+        .metadata-item .value {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .section {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .section h2 {
+            font-size: 20px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        /* Legend */
+        .legend {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+
+        /* Gantt Chart */
+        .gantt-container {
+            overflow-x: auto;
+            padding-bottom: 20px;
+        }
+
+        .gantt {
+            display: grid;
+            grid-template-columns: 250px repeat(25, 60px);
+            gap: 2px;
+            min-width: 1800px;
+        }
+
+        .gantt-header {
+            display: contents;
+        }
+
+        .gantt-header > div {
+            background: var(--bg-dark);
+            color: white;
+            padding: 10px 5px;
+            text-align: center;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .gantt-header .sprint-num {
+            font-size: 14px;
+        }
+
+        .gantt-header .sprint-date {
+            font-size: 9px;
+            color: #94a3b8;
+        }
+
+        .gantt-header .item-label {
+            text-align: left;
+            padding-left: 15px;
+        }
+
+        .gantt-row {
+            display: contents;
+        }
+
+        .gantt-row .item-name {
+            background: #f1f5f9;
+            padding: 8px 12px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .gantt-row .item-name .score-badge {
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 10px;
+            color: white;
+            font-weight: 600;
+        }
+
+        .gantt-row .item-name .effort {
+            font-size: 10px;
+            color: var(--text-light);
+            margin-left: auto;
+        }
+
+        .gantt-cell {
+            background: #f8fafc;
+            border-bottom: 1px solid var(--border);
+            min-height: 40px;
+            position: relative;
+        }
+
+        .gantt-cell.holiday {
+            background: repeating-linear-gradient(
+                45deg,
+                #fef3c7,
+                #fef3c7 5px,
+                #fde68a 5px,
+                #fde68a 10px
+            );
+        }
+
+        .gantt-cell.reduced {
+            background: #fef9c3;
+        }
+
+        .gantt-cell.current {
+            background: #dbeafe;
+            border: 2px solid var(--score-2-4);
+        }
+
+        .gantt-bar {
+            position: absolute;
+            top: 5px;
+            bottom: 5px;
+            left: 2px;
+            right: 2px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        .gantt-bar.score-3 { background: var(--score-3); }
+        .gantt-bar.score-2-4 { background: var(--score-2-4); }
+        .gantt-bar.score-1-8 { background: var(--score-1-8); }
+        .gantt-bar.deadline {
+            background: var(--deadline);
+            box-shadow: 0 0 0 2px #fecaca;
+        }
+
+        .gantt-bar.span-2 { right: -62px; z-index: 1; }
+        .gantt-bar.span-3 { right: -124px; z-index: 1; }
+
+        /* Quarter markers */
+        .quarter-marker {
+            position: absolute;
+            top: -25px;
+            left: 0;
+            background: #6366f1;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        /* Deadline marker */
+        .deadline-marker {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: var(--deadline);
+            right: 0;
+            z-index: 10;
+        }
+
+        .deadline-marker::after {
+            content: attr(data-label);
+            position: absolute;
+            top: -20px;
+            right: -30px;
+            background: var(--deadline);
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 9px;
+            white-space: nowrap;
+        }
+
+        /* Summary Tables */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background: #f1f5f9;
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background: #f8fafc;
+        }
+
+        .status-tag {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-tag.high { background: #dcfce7; color: #166534; }
+        .status-tag.medium { background: #dbeafe; color: #1e40af; }
+        .status-tag.complex { background: #fed7aa; color: #9a3412; }
+        .status-tag.deadline { background: #fecaca; color: #991b1b; }
+        .status-tag.completed { background: #e5e7eb; color: #374151; }
+
+        /* Capacity Chart */
+        .capacity-bar {
+            height: 30px;
+            background: #e2e8f0;
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .capacity-fill {
+            height: 100%;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            padding-left: 15px;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .capacity-fill.safe { background: linear-gradient(90deg, var(--score-3), #16a34a); }
+        .capacity-fill.warning { background: linear-gradient(90deg, var(--holiday), #f59e0b); }
+        .capacity-fill.danger { background: linear-gradient(90deg, var(--deadline), #dc2626); }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: #f1f5f9;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-card .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--bg-dark);
+        }
+
+        .stat-card .stat-label {
+            font-size: 12px;
+            color: var(--text-light);
+            text-transform: uppercase;
+            margin-top: 5px;
+        }
+
+        /* Timeline markers */
+        .timeline-markers {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            padding: 0 250px 0 0;
+            font-size: 11px;
+            color: var(--text-light);
+        }
+
+        .q-marker {
+            background: #6366f1;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        /* Notes section */
+        .notes {
+            background: #fffbeb;
+            border-left: 4px solid var(--holiday);
+            padding: 15px 20px;
+            margin-top: 20px;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .notes h4 {
+            color: #92400e;
+            margin-bottom: 10px;
+        }
+
+        .notes ul {
+            margin-left: 20px;
+            color: #78350f;
+        }
+
+        .notes li {
+            margin-bottom: 5px;
+        }
+
+        /* Completed section */
+        .completed-section {
+            background: #f3f4f6;
+            border-left: 4px solid var(--completed);
+        }
+
+        .completed-section h2 {
+            color: var(--completed);
+        }
+
+        /* Print styles */
+        @media print {
+            body { padding: 10px; }
+            .section { break-inside: avoid; }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .metadata { flex-direction: column; gap: 10px; }
+            .gantt { font-size: 10px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>UAE PASS Digital Documents - 2026 Sprint Distribution Plan</h1>
+            <p class="subtitle">Roadmap visualization for Sprints 72-96 with priority-based scheduling (Updated)</p>
+            <div class="metadata">
+                <div class="metadata-item">
+                    <div class="label">Current Sprint</div>
+                    <div class="value">72</div>
+                </div>
+                <div class="metadata-item">
+                    <div class="label">Total Sprints</div>
+                    <div class="value">25</div>
+                </div>
+                <div class="metadata-item">
+                    <div class="label">Planned Items</div>
+                    <div class="value">16</div>
+                </div>
+                <div class="metadata-item">
+                    <div class="label">Utilization</div>
+                    <div class="value">96%</div>
+                </div>
+                <div class="metadata-item">
+                    <div class="label">Planning Horizon</div>
+                    <div class="value">Jan - Dec 2026</div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Completed Pre-2026 Section -->
+        <div class="section completed-section">
+            <h2>Completed Pre-2026 (Sprints 69-71)</h2>
+            <p style="margin-bottom: 15px; color: var(--text-light);">This item was completed before the 2026 planning horizon, freeing capacity for additional work.</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th>Score</th>
+                        <th>Effort</th>
+                        <th>Completed In</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Item 9: Dual Citizenship GA</td>
+                        <td>2.40</td>
+                        <td>3 sprints</td>
+                        <td>Sprints 69-71 (Dec 2025)</td>
+                        <td><span class="status-tag completed">Completed</span></td>
+                    </tr>
+                </tbody>
+            </table>
+            <div style="margin-top: 15px; padding: 12px; background: #dcfce7; border-radius: 8px;">
+                <strong style="color: #166534;">Impact:</strong>
+                <span style="color: #15803d;">Completion of Dual Citizenship GA freed 2 sprint capacity, enabling Item 32 (Automated Testing) to be added to 2026 roadmap.</span>
+            </div>
+        </div>
+
+        <!-- Capacity Overview -->
+        <div class="section">
+            <h2>Capacity Overview</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">25</div>
+                    <div class="stat-label">Total Sprints (72-96)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">24</div>
+                    <div class="stat-label">Effective Capacity</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">23</div>
+                    <div class="stat-label">Planned Effort</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">16</div>
+                    <div class="stat-label">Items Scheduled</div>
+                </div>
+            </div>
+
+            <h4 style="margin-bottom: 10px;">Capacity Utilization</h4>
+            <div class="capacity-bar">
+                <div class="capacity-fill safe" style="width: 96%;">23 / 24 sprints (96% utilization)</div>
+            </div>
+            <p style="margin-top: 10px; color: var(--text-light); font-size: 13px;">
+                <strong>Status:</strong> Plan is within capacity with 1 sprint buffer. Items 20 and 36 (6 sprints total) deferred to 2027.
+            </p>
+        </div>
+
+        <!-- Legend -->
+        <div class="section">
+            <h2>Legend</h2>
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-color" style="background: var(--score-3);"></div>
+                    <span>Score 3.00 (High Priority / Low Complexity)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: var(--score-2-4);"></div>
+                    <span>Score 2.40 (Medium Priority)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: var(--score-1-8);"></div>
+                    <span>Score 1.80 (High Complexity)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: var(--deadline);"></div>
+                    <span>Hard Deadline Item</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: repeating-linear-gradient(45deg, #fef3c7, #fef3c7 3px, #fde68a 3px, #fde68a 6px);"></div>
+                    <span>Holiday Sprint (50% capacity)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #dbeafe; border: 2px solid var(--score-2-4);"></div>
+                    <span>Current Sprint</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gantt Chart -->
+        <div class="section">
+            <h2>Sprint Timeline (Gantt View)</h2>
+            <div class="gantt-container">
+                <div class="gantt">
+                    <!-- Header Row -->
+                    <div class="gantt-header">
+                        <div class="item-label">Item / Sprint</div>
+                        <div><span class="sprint-num">72</span><br><span class="sprint-date">Jan 15-28</span></div>
+                        <div><span class="sprint-num">73</span><br><span class="sprint-date">Jan 29-Feb 11</span></div>
+                        <div><span class="sprint-num">74</span><br><span class="sprint-date">Feb 12-25</span></div>
+                        <div><span class="sprint-num">75</span><br><span class="sprint-date">Feb 26-Mar 11</span></div>
+                        <div><span class="sprint-num">76</span><br><span class="sprint-date">Mar 12-25</span></div>
+                        <div style="background: #7c3aed;"><span class="sprint-num">77</span><br><span class="sprint-date">Eid 50%</span></div>
+                        <div><span class="sprint-num">78</span><br><span class="sprint-date">Apr 9-22</span></div>
+                        <div><span class="sprint-num">79</span><br><span class="sprint-date">Apr 23-May 6</span></div>
+                        <div><span class="sprint-num">80</span><br><span class="sprint-date">May 7-20</span></div>
+                        <div><span class="sprint-num">81</span><br><span class="sprint-date">May 21-Jun 3</span></div>
+                        <div style="background: #7c3aed;"><span class="sprint-num">82</span><br><span class="sprint-date">Eid 50%</span></div>
+                        <div><span class="sprint-num">83</span><br><span class="sprint-date">Jun 18-Jul 1</span></div>
+                        <div><span class="sprint-num">84</span><br><span class="sprint-date">Jul 2-15</span></div>
+                        <div><span class="sprint-num">85</span><br><span class="sprint-date">Jul 16-29</span></div>
+                        <div><span class="sprint-num">86</span><br><span class="sprint-date">Jul 30-Aug 12</span></div>
+                        <div><span class="sprint-num">87</span><br><span class="sprint-date">Aug 13-26</span></div>
+                        <div><span class="sprint-num">88</span><br><span class="sprint-date">Aug 27-Sep 9</span></div>
+                        <div><span class="sprint-num">89</span><br><span class="sprint-date">Sep 10-23</span></div>
+                        <div><span class="sprint-num">90</span><br><span class="sprint-date">Sep 24-Oct 7</span></div>
+                        <div><span class="sprint-num">91</span><br><span class="sprint-date">Oct 8-21</span></div>
+                        <div><span class="sprint-num">92</span><br><span class="sprint-date">Oct 22-Nov 4</span></div>
+                        <div><span class="sprint-num">93</span><br><span class="sprint-date">Nov 5-18</span></div>
+                        <div style="background: #7c3aed;"><span class="sprint-num">94</span><br><span class="sprint-date">Nat'l Day</span></div>
+                        <div><span class="sprint-num">95</span><br><span class="sprint-date">Dec 3-16</span></div>
+                        <div style="background: #7c3aed;"><span class="sprint-num">96</span><br><span class="sprint-date">Year End</span></div>
+                    </div>
+
+                    <!-- Q1: Item 1 - Status-Based Reporting (Sprint 72) -->
+                    <div class="gantt-row">
+                        <div class="item-name">
+                            <span class="score-badge" style="background: var(--score-3);">3.0</span>
+                            Item 1: Status-Based Reporting
+                            <span class="effort">1 sp</span>
+                        </div>
+                        <div class="gantt-cell current"><div class="gantt-bar score-3">S72</div></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell holiday"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell holiday"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell holiday"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell reduced"></div>
+                    </div>
+
+                    <!-- Q1: Item 28 - Infinite Loaders Detection (Sprint 73) -->
+                    <div class="gantt-row">
+                        <div class="item-name">
+                            <span class="score-badge" style="background: var(--score-3);">3.0</span>
+                            Item 28: Infinite Loaders Detection
+                            <span class="effort">1 sp</span>
+                        </div>
+                        <div class="gantt-cell current"></div>
+                        <div class="gantt-cell"><div class="gantt-bar score-3">S73</div></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell holiday"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell holiday"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell holiday"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell reduced"></div>
+                    </div>
+
+                    <!-- Q1: Item 40 - Download All Documents (Sprint 74) -->
+                    <div class="gantt-row">
+                        <div class="item-name">
+                            <span class="score-badge" style="background: var(--score-3);">3.0</span>
+                            Item 40: Download All Documents
+                            <span class="effort">1 sp</span>
+                        </div>
+                        <div class="gantt-cell current"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"><div class="gantt-bar score-3">S74</div></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell holiday"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell holiday"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell holiday"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell reduced"></div>
+                    </div>
+
+                    <!-- Q1: Item 10 - Auto-Add Documents (Sprint 75) -->
+                    <div class="gantt-row">
+                        <div class="item-name">
+                            <span class="score-badge" style="background: var(--score-3);">3.0</span>
+                            Item 10: Auto-Add Documents
+                            <span class="effort">1 sp</span>
+                        </div>
+                        <div class="gantt-cell current"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"><div class="gantt-bar score-3">S75</div></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell holiday"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell holiday"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell holiday"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell reduced"></div>
+                    </div>
+
+                    <!-- Q1: Item 19 - Form Filler (Sprint 76) -->
+                    <div class="gantt-row">
+                        <div class="item-name">
+                            <span class="score-badge" style="background: var(--score-3);">3.0</span>
+                            Item 19: Form Filler
+                            <span class="effort">1 sp</span>
+                        </div>
+                        <div class="gantt-cell current"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"><div class="gantt-bar score-3">S76</div></div>
+                        <div class="gantt-cell holiday"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell holiday"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell holiday"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell reduced"></div>
+                    </div>
+
+                    <!-- Q2: Item 6 - Smart Auto-Redirect (Sprint 77 - Eid 50%) -->
+                    <div class="gantt-row">
+                        <div class="item-name">
+                            <span class="score-badge" style="background: var(--score-2-4);">2.4</span>
+                            Item 6: Smart Auto-Redirect
+                            <span class="effort">1 sp</span>
+                        </div>
+                        <div class="gantt-cell current"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell holiday"><div class="gantt-bar score-2-4">S77</div></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell holiday"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell holiday"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell reduced"></div>
+                    </div>
+
+                    <!-- Q2: Item 46 - AI Strategy Study (Sprint 78) -->
+                    <div class="gantt-row">
+                        <div class="item-name">
+                            <span class="score-badge" style="background: var(--score-3);">3.0</span>
+                            Item 46: AI Strategy Study
+                            <span class="effort">1 sp</span>
+                        </div>
+                        <div class="gantt-cell current"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell holiday"></div>
+                        <div class="gantt-cell"><div class="gantt-bar score-3">S78</div></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell holiday"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell holiday"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell reduced"></div>
+                    </div>
+
+                    <!-- Q2: Item 26 - License QR Code Fix (Sprint 79) -->
+                    <div class="gantt-row">
+                        <div class="item-name">
+                            <span class="score-badge" style="background: var(--score-2-4);">2.4</span>
+                            Item 26: License QR Code Fix
+                            <span class="effort">1 sp</span>
+                        </div>
+                        <div class="gantt-cell current"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell holiday"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"><div class="gantt-bar score-2-4">S79</div></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell holiday"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell holiday"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell reduced"></div>
+                    </div>
+
+                    <!-- Q2: Item 8 - Error-Status Code Linking (Sprints 80-81) -->
+                    <div class="gantt-row">
+                        <div class="item-name">
+                            <span class="score-badge" style="background: var(--score-2-4);">2.4</span>
+                            Item 8: Error-Status Code Linking
+                            <span class="effort">2 sp</span>
+                        </div>
+                        <div class="gantt-cell current"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell holiday"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"><div class="gantt-bar score-2-4 span-2">S80-81</div></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell holiday"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell holiday"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell reduced"></div>
+                    </div>
+
+                    <!-- Q2: Item 18 - UX Enhancements Bundle 2 (Sprints 82-83, 82 = Eid) -->
+                    <div class="gantt-row">
+                        <div class="item-name">
+                            <span class="score-badge" style="background: var(--score-2-4);">2.4</span>
+                            Item 18: UX Enhancements Bundle 2
+                            <span class="effort">2 sp</span>
+                        </div>
+                        <div class="gantt-cell current"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell holiday"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell holiday"><div class="gantt-bar score-2-4 span-2">S82-83</div></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell holiday"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell reduced"></div>
+                    </div>
+
+                    <!-- Q3: Item 3 - Deadend/Failures Analysis (Sprints 84-86) -->
+                    <div class="gantt-row">
+                        <div class="item-name">
+                            <span class="score-badge" style="background: var(--score-1-8);">1.8</span>
+                            Item 3: Deadend/Failures Analysis
+                            <span class="effort">3 sp</span>
+                        </div>
+                        <div class="gantt-cell current"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell holiday"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell holiday"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"><div class="gantt-bar score-1-8 span-3">S84-86</div></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell holiday"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell reduced"></div>
+                    </div>
+
+                    <!-- Q3: Item 14 - AI Chatbot (Sprints 87-89) -->
+                    <div class="gantt-row">
+                        <div class="item-name">
+                            <span class="score-badge" style="background: var(--score-1-8);">1.8</span>
+                            Item 14: AI Chatbot
+                            <span class="effort">3 sp</span>
+                        </div>
+                        <div class="gantt-cell current"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell holiday"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell holiday"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"><div class="gantt-bar score-1-8 span-3">S87-89</div></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell holiday"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell reduced"></div>
+                    </div>
+
+                    <!-- Q4: Item 32 - Automated Testing (Sprints 90-92) - NEW! -->
+                    <div class="gantt-row">
+                        <div class="item-name">
+                            <span class="score-badge" style="background: var(--score-1-8);">1.8</span>
+                            Item 32: Automated Testing
+                            <span class="effort">3 sp | NEW</span>
+                        </div>
+                        <div class="gantt-cell current"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell holiday"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell holiday"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"><div class="gantt-bar score-1-8 span-3">S90-92</div></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell holiday"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell reduced"></div>
+                    </div>
+
+                    <!-- Q4: Item 41 - Physical Document Sharing (Sprints 93-95) - DEADLINE -->
+                    <div class="gantt-row">
+                        <div class="item-name">
+                            <span class="score-badge" style="background: var(--deadline);">DL</span>
+                            Item 41: Physical Doc Sharing
+                            <span class="effort">3 sp | Q4</span>
+                        </div>
+                        <div class="gantt-cell current"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell holiday"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell holiday"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"><div class="gantt-bar deadline span-3">S93-95</div></div>
+                        <div class="gantt-cell holiday"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell reduced"><div class="deadline-marker" data-label="Q4 DL"></div></div>
+                    </div>
+
+                    <!-- Year-End Close (Sprint 96) -->
+                    <div class="gantt-row">
+                        <div class="item-name" style="background: #fef9c3;">
+                            <span class="score-badge" style="background: #9ca3af;">-</span>
+                            Sprint 96: Year-end close
+                            <span class="effort">Buffer</span>
+                        </div>
+                        <div class="gantt-cell current"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell holiday"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell holiday"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell holiday"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell reduced" style="background: #fef9c3;"></div>
+                    </div>
+
+                    <!-- Deferred Items -->
+                    <div class="gantt-row">
+                        <div class="item-name" style="background: #fef2f2;">
+                            <span class="score-badge" style="background: #9ca3af;">1.8</span>
+                            Item 20: Consent Sharing
+                            <span class="effort" style="color: var(--deadline);">DEFERRED</span>
+                        </div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell holiday"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell holiday"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell holiday"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell reduced"></div>
+                    </div>
+
+                    <div class="gantt-row">
+                        <div class="item-name" style="background: #fef2f2;">
+                            <span class="score-badge" style="background: #9ca3af;">1.8</span>
+                            Item 36: Accessibility Enhancement
+                            <span class="effort" style="color: var(--deadline);">DEFERRED</span>
+                        </div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell holiday"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell holiday"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell holiday"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell reduced"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="notes">
+                <h4>Holiday Sprint Impact</h4>
+                <ul>
+                    <li><strong>Sprint 77 (Mar 26 - Apr 8):</strong> Eid al-Fitr - 50% capacity</li>
+                    <li><strong>Sprint 82 (Jun 4-17):</strong> Eid al-Adha - 50% capacity</li>
+                    <li><strong>Sprint 94 (Nov 19 - Dec 2):</strong> National Day - reduced capacity</li>
+                    <li><strong>Sprint 96 (Dec 17-30):</strong> Year-end holidays - buffer sprint</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Summary Tables -->
+        <div class="section">
+            <h2>Quarterly Distribution Summary</h2>
+            <div class="summary-grid">
+                <div>
+                    <h3 style="margin-bottom: 15px; color: #6366f1;">Q1 2026 (Sprints 72-76)</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Item</th>
+                                <th>Score</th>
+                                <th>Effort</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Item 1: Status-Based Reporting</td>
+                                <td>3.00</td>
+                                <td>1 sp</td>
+                                <td><span class="status-tag high">Foundation</span></td>
+                            </tr>
+                            <tr>
+                                <td>Item 28: Infinite Loaders Detection</td>
+                                <td>3.00</td>
+                                <td>1 sp</td>
+                                <td><span class="status-tag high">High Priority</span></td>
+                            </tr>
+                            <tr>
+                                <td>Item 40: Download All Documents</td>
+                                <td>3.00</td>
+                                <td>1 sp</td>
+                                <td><span class="status-tag high">High Priority</span></td>
+                            </tr>
+                            <tr>
+                                <td>Item 10: Auto-Add Documents</td>
+                                <td>3.00</td>
+                                <td>1 sp</td>
+                                <td><span class="status-tag high">High Priority</span></td>
+                            </tr>
+                            <tr>
+                                <td>Item 19: Form Filler</td>
+                                <td>3.00</td>
+                                <td>1 sp</td>
+                                <td><span class="status-tag high">High Priority</span></td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr style="font-weight: 600; background: #f1f5f9;">
+                                <td colspan="2">Q1 Total</td>
+                                <td colspan="2">5 sprints / 5 available</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                    <p style="font-size: 11px; color: var(--text-light); margin-top: 5px;">Quick wins focus - all score 3.0 items</p>
+                </div>
+
+                <div>
+                    <h3 style="margin-bottom: 15px; color: #6366f1;">Q2 2026 (Sprints 77-83)</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Item</th>
+                                <th>Score</th>
+                                <th>Effort</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Item 6: Smart Auto-Redirect</td>
+                                <td>2.40</td>
+                                <td>1 sp</td>
+                                <td><span class="status-tag medium">Eid Sprint</span></td>
+                            </tr>
+                            <tr>
+                                <td>Item 46: AI Strategy Study</td>
+                                <td>3.00</td>
+                                <td>1 sp</td>
+                                <td><span class="status-tag high">High Priority</span></td>
+                            </tr>
+                            <tr>
+                                <td>Item 26: License QR Code Fix</td>
+                                <td>2.40</td>
+                                <td>1 sp</td>
+                                <td><span class="status-tag medium">Medium</span></td>
+                            </tr>
+                            <tr>
+                                <td>Item 8: Error-Status Linking</td>
+                                <td>2.40</td>
+                                <td>2 sp</td>
+                                <td><span class="status-tag medium">Medium</span></td>
+                            </tr>
+                            <tr>
+                                <td>Item 18: UX Bundle 2</td>
+                                <td>2.40</td>
+                                <td>2 sp</td>
+                                <td><span class="status-tag medium">Eid Sprint</span></td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr style="font-weight: 600; background: #f1f5f9;">
+                                <td colspan="2">Q2 Total</td>
+                                <td colspan="2">7 sprints / 7 available</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                    <p style="font-size: 11px; color: var(--text-light); margin-top: 5px;">*Includes Eid sprints 77 and 82 (50% capacity each)</p>
+                </div>
+
+                <div>
+                    <h3 style="margin-bottom: 15px; color: #6366f1;">Q3 2026 (Sprints 84-89)</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Item</th>
+                                <th>Score</th>
+                                <th>Effort</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Item 3: Deadend/Failures Analysis</td>
+                                <td>1.80</td>
+                                <td>3 sp</td>
+                                <td><span class="status-tag complex">Complex</span></td>
+                            </tr>
+                            <tr>
+                                <td>Item 14: AI Chatbot</td>
+                                <td>1.80</td>
+                                <td>3 sp</td>
+                                <td><span class="status-tag complex">Complex</span></td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr style="font-weight: 600; background: #f1f5f9;">
+                                <td colspan="2">Q3 Total</td>
+                                <td colspan="2">6 sprints / 6 available</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                    <p style="font-size: 11px; color: var(--text-light); margin-top: 5px;">High complexity items requiring focused effort</p>
+                </div>
+
+                <div>
+                    <h3 style="margin-bottom: 15px; color: #6366f1;">Q4 2026 (Sprints 90-96)</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Item</th>
+                                <th>Score</th>
+                                <th>Effort</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Item 32: Automated Testing</td>
+                                <td>1.80</td>
+                                <td>3 sp</td>
+                                <td><span class="status-tag complex">NEW</span></td>
+                            </tr>
+                            <tr>
+                                <td>Item 41: Physical Doc Sharing</td>
+                                <td>1.80</td>
+                                <td>3 sp</td>
+                                <td><span class="status-tag deadline">Q4 Deadline</span></td>
+                            </tr>
+                            <tr>
+                                <td>Sprint 96: Year-end close</td>
+                                <td>-</td>
+                                <td>1 sp</td>
+                                <td><span class="status-tag" style="background: #fef9c3; color: #92400e;">Buffer</span></td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr style="font-weight: 600; background: #f1f5f9;">
+                                <td colspan="2">Q4 Total</td>
+                                <td colspan="2">6 sprints + 1 buffer / 7 available</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                    <p style="font-size: 11px; color: var(--text-light); margin-top: 5px;">*Sprint 94 (Nat'l Day) and 96 (Year-end) reduced capacity</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Deferred Items -->
+        <div class="section" style="border-left: 4px solid var(--deadline);">
+            <h2 style="color: var(--deadline);">Deferred to 2027</h2>
+            <p style="margin-bottom: 15px; color: var(--text-light);">These items are deferred to 2027 to maintain healthy capacity utilization (96%).</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th>Score</th>
+                        <th>Effort</th>
+                        <th>Rationale</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Item 20: Consent Sharing</td>
+                        <td>1.80</td>
+                        <td>3 sprints</td>
+                        <td>High complexity, no hard deadline</td>
+                    </tr>
+                    <tr>
+                        <td>Item 36: Accessibility Enhancement</td>
+                        <td>1.80</td>
+                        <td>3 sprints</td>
+                        <td>Important but not deadline-driven</td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr style="font-weight: 600; background: #fef2f2;">
+                        <td colspan="2">Deferred Total</td>
+                        <td colspan="2">6 sprints</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
+        <!-- Effort Summary -->
+        <div class="section">
+            <h2>Total Effort Summary</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Category</th>
+                        <th>Items</th>
+                        <th>Sprint Effort</th>
+                        <th>% of Capacity</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="legend-color" style="background: var(--score-3); display: inline-block; width: 12px; height: 12px; border-radius: 2px; margin-right: 8px;"></span>Score 3.00 (High Priority)</td>
+                        <td>6 items</td>
+                        <td>6 sprints</td>
+                        <td>25%</td>
+                    </tr>
+                    <tr>
+                        <td><span class="legend-color" style="background: var(--score-2-4); display: inline-block; width: 12px; height: 12px; border-radius: 2px; margin-right: 8px;"></span>Score 2.40 (Medium Priority)</td>
+                        <td>5 items</td>
+                        <td>7 sprints</td>
+                        <td>29%</td>
+                    </tr>
+                    <tr>
+                        <td><span class="legend-color" style="background: var(--score-1-8); display: inline-block; width: 12px; height: 12px; border-radius: 2px; margin-right: 8px;"></span>Score 1.80 (High Complexity)</td>
+                        <td>4 items</td>
+                        <td>12 sprints</td>
+                        <td>50%</td>
+                    </tr>
+                    <tr>
+                        <td><span class="legend-color" style="background: var(--deadline); display: inline-block; width: 12px; height: 12px; border-radius: 2px; margin-right: 8px;"></span>Hard Deadlines</td>
+                        <td>1 item</td>
+                        <td>3 sprints</td>
+                        <td>13%</td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr style="font-weight: 700; background: #dcfce7;">
+                        <td>PLANNED (2026)</td>
+                        <td>16 items</td>
+                        <td>23 sprints</td>
+                        <td>96%</td>
+                    </tr>
+                    <tr style="font-weight: 700; background: #fef2f2;">
+                        <td>DEFERRED to 2027</td>
+                        <td>2 items</td>
+                        <td>6 sprints</td>
+                        <td>-</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
+        <!-- Critical Path -->
+        <div class="section">
+            <h2>Critical Path and Dependencies</h2>
+            <div style="display: flex; gap: 30px; flex-wrap: wrap;">
+                <div style="flex: 1; min-width: 300px;">
+                    <h4 style="margin-bottom: 15px; color: var(--deadline);">Hard Deadline Item</h4>
+                    <div style="background: #fef2f2; padding: 15px; border-radius: 8px;">
+                        <strong>Item 41: Physical Document Sharing</strong>
+                        <ul style="margin: 10px 0 0 20px; font-size: 14px;">
+                            <li>Deadline: Q4 2026</li>
+                            <li>Effort: 3 sprints</li>
+                            <li>Scheduled: Sprints 93-95 (Nov 5 - Dec 16)</li>
+                            <li>Buffer: Sprint 96 (year-end)</li>
+                        </ul>
+                    </div>
+                </div>
+                <div style="flex: 1; min-width: 300px;">
+                    <h4 style="margin-bottom: 15px; color: #6366f1;">Key Dependencies</h4>
+                    <div style="background: #eef2ff; padding: 15px; border-radius: 8px; margin-bottom: 10px;">
+                        <strong>Item 1 (Status Reporting) -> Item 3 (Deadend Analysis)</strong>
+                        <p style="font-size: 13px; margin-top: 5px; color: var(--text-light);">
+                            Deadend/Failures Analysis depends on Status-Based Reporting infrastructure.
+                            Item 1 completes in Q1 before Item 3 starts in Q3.
+                        </p>
+                    </div>
+                    <div style="background: #eef2ff; padding: 15px; border-radius: 8px;">
+                        <strong>Item 46 (AI Strategy) -> Item 14 (AI Chatbot)</strong>
+                        <p style="font-size: 13px; margin-top: 5px; color: var(--text-light);">
+                            AI Strategy Study in Q2 informs AI Chatbot implementation in Q3.
+                            Strategic alignment required before major development.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Change Log -->
+        <div class="section" style="border-left: 4px solid var(--score-3);">
+            <h2 style="color: var(--score-3);">Update Log</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Change</th>
+                        <th>Impact</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Jan 27, 2026</td>
+                        <td>Item 9 (Dual Citizenship GA) marked as completed in Sprints 69-71 (pre-2026)</td>
+                        <td>Freed 2 sprints capacity</td>
+                    </tr>
+                    <tr>
+                        <td>Jan 27, 2026</td>
+                        <td>Item 32 (Automated Testing) added to Sprints 90-92</td>
+                        <td>+3 sprints added to 2026 plan</td>
+                    </tr>
+                    <tr>
+                        <td>Jan 27, 2026</td>
+                        <td>Deferred items reduced from 3 to 2 (Items 20, 36 remain deferred)</td>
+                        <td>Deferred effort reduced from 9 to 6 sprints</td>
+                    </tr>
+                    <tr>
+                        <td>Jan 27, 2026</td>
+                        <td>Capacity utilization updated from 128% to 96%</td>
+                        <td>Plan now fits within capacity with 1 sprint buffer</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Footer -->
+        <footer style="text-align: center; padding: 20px; color: var(--text-light); font-size: 13px;">
+            <p>UAE PASS Digital Documents - 2026 Sprint Distribution Plan</p>
+            <p>Generated: January 27, 2026 | Current Sprint: 72 | Planning Horizon: Sprints 72-96</p>
+            <p style="margin-top: 10px;">Total Items: 16 | Total Effort: 23 sprints | Capacity: 24 sprints (96% utilization) | Deferred: 2 items (6 sprints)</p>
+        </footer>
+    </div>
+</body>
+</html>

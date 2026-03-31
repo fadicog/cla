@@ -1,0 +1,254 @@
+Loading data...
+
+Dataset Overview:
+  Total events: 5,068
+  Unique requests: 500
+  Date range: 2025-11-01 00:12:00 to 2025-11-28 21:02:36
+  Channels: ['notification', 'qr', 'redirect']
+  Platforms: ['ios', 'android']
+  Service Providers: 22
+  Status codes: ['S00', 'S01', 'S02', 'S03', 'S04', 'S05', 'S06', 'S07', 'S08', 'S10', 'S11', 'S12', 'S13', 'S14', 'S15', 'S20', 'S21', 'S30', 'S31', 'S32', 'S40', 'S41', 'S42', 'S43', 'S44']
+
+================================================================================
+1. OVERALL PERFORMANCE METRICS
+================================================================================
+
+Overall Metrics:
+  Total Requests: 500
+  Success Rate (S40): 65.60%
+  Technical Error (S41): 4.80%
+  Expired (S42): 9.40%
+  User Aborted (S43): 17.80%
+  Not Eligible (S44): 2.40%
+  Avg Journey Time (Successful): 63.52s
+  Avg Journey Time (Failed): 290.73s
+
+Saved: D:\cluade\visualizations\01_terminal_status_distribution.png
+
+================================================================================
+2. CHANNEL PERFORMANCE ANALYSIS
+================================================================================
+
+Channel Performance:
+     channel  total_requests  successful_requests  success_rate
+    redirect             100                   83     83.000000
+          qr             112                   73     65.178571
+notification             288                  172     59.722222
+Saved: D:\cluade\visualizations\02_channel_performance.png
+
+================================================================================
+3. STATUS TRANSITION ANALYSIS
+================================================================================
+
+Total transitions: 4,568
+Unique transition pairs: 31
+
+Top 10 Most Common Transitions:
+  S20 -> S21: 405 (Consent Screen Shown -> Consent Granted)
+  S21 -> S30: 368 (Consent Granted -> PIN Required)
+  S30 -> S31: 352 (PIN Required -> PIN Success)
+  S08 -> S10: 343 (Request Loaded -> Documents Ready)
+  S31 -> S40: 328 (PIN Success -> Success (Shared))
+  S10 -> S20: 318 (Documents Ready -> Consent Screen Shown)
+  S00 -> S01: 288 (Request Created -> Notification Sent)
+  S01 -> S02: 288 (Notification Sent -> Notification Delivered)
+  S02 -> S03: 288 (Notification Delivered -> Notification Tapped)
+  S03 -> S08: 288 (Notification Tapped -> Request Loaded)
+Saved: D:\cluade\visualizations\03_transition_heatmap.png
+Saved: D:\cluade\visualizations\04_critical_dropoffs.png
+
+================================================================================
+4. ERROR ANALYSIS
+================================================================================
+
+Total error events: 70
+Requests with errors: 58
+
+Error Code Distribution:
+  issuer_not_found: 24 (34.3%)
+  pin_incorrect: 12 (17.1%)
+  dv_5xx: 11 (15.7%)
+  signing_timeout: 6 (8.6%)
+  network_error: 5 (7.1%)
+  pin_dismissed: 4 (5.7%)
+  issuer_5xx: 3 (4.3%)
+  issuer_timeout: 3 (4.3%)
+  dv_timeout: 2 (2.9%)
+
+Error Source Distribution:
+  issuer: 30 (42.9%)
+  dv: 19 (27.1%)
+  user_cancel: 16 (22.9%)
+  network: 5 (7.1%)
+Saved: D:\cluade\visualizations\05_error_analysis.png
+
+================================================================================
+5. SERVICE PROVIDER PERFORMANCE
+================================================================================
+
+Service Provider Performance:
+                                                sp_id  total_requests  successful_requests  success_rate
+                                                   DU              19                   17     89.473684
+                                  ENBD Tablet Banking              22                   19     86.363636
+                                              Du Esim              21                   18     85.714286
+                                   FAB Retail Banking              24                   20     83.333333
+                                                ADNIC              26                   20     76.923077
+                                                 Lulu              24                   18     75.000000
+                                         Noor Capital              22                   16     72.727273
+                                                Botim              30                   21     70.000000
+                                     Emirates Islamic              20                   14     70.000000
+                    Commercial Bank of Dubai - Mobile              21                   14     66.666667
+                                      Etisalat Retail              29                   19     65.517241
+                                                  AAE              20                   13     65.000000
+                                                  GIG              19                   12     63.157895
+                                    Etisalat Business              13                    8     61.538462
+                                            Arab Bank              23                   14     60.869565
+                                                 ADCB              25                   15     60.000000
+                                          Beyon Money              24                   14     58.333333
+                                               Baraka              23                   13     56.521739
+                            National Bank of Fujairah              22                   12     54.545455
+National Bonds Corporation Sole Proprietorship P.S.C.              26                   14     53.846154
+                                                 ADIB              19                    7     36.842105
+    InsureOne (Premier Insurance Brokers L.L.C-O.P.C)              28                   10     35.714286
+Saved: D:\cluade\visualizations\06_service_provider_performance.png
+
+================================================================================
+6. PLATFORM COMPARISON (iOS vs Android)
+================================================================================
+
+Platform Performance:
+platform  total_requests  successful_requests  avg_journey_time_ms  success_rate
+ android             251                  158        137183.266932     62.948207
+     ios             249                  170        146216.867470     68.273092
+Saved: D:\cluade\visualizations\07_platform_comparison.png
+
+================================================================================
+7. MISSING DOCUMENT ANALYSIS
+================================================================================
+
+Requests hitting S11 (Documents Missing): 135 (27.0%)
+Requests with S10 (Documents Ready): 343 (68.6%)
+
+Success rate when docs ready (S10): 61.52%
+Success rate when docs missing (S11): 86.67%
+
+Document Retrieval Started (S12): 135
+  Success (S13): 117 (86.7%)
+  Failed - Network (S14): 6 (4.4%)
+  Failed - Issuer (S15): 12 (8.9%)
+Saved: D:\cluade\visualizations\08_missing_document_analysis.png
+
+================================================================================
+8. USER BEHAVIOR PATTERNS
+================================================================================
+
+Consent Screen Shown (S20): 435
+  Granted (S21): 405 (93.1%)
+  Denied (S22): 0 (0.0%)
+
+PIN Required (S30): 368
+  Success (S31): 352 (95.7%)
+  Failed (S32): 16 (4.3%)
+
+User Aborted (S43): 89
+
+Abandonment by previous status:
+  After S21 (Consent Granted): 37 (41.6%)
+  After S20 (Consent Screen Shown): 30 (33.7%)
+  After S32 (PIN Failed): 16 (18.0%)
+  After S14 (Retrieval Failed (Network)): 6 (6.7%)
+
+Average time at S20 (Consent Screen Shown): 8.00s
+Saved: D:\cluade\visualizations\09_user_behavior_patterns.png
+
+================================================================================
+9. JOURNEY PATH ANALYSIS
+================================================================================
+
+Most common successful paths (Top 10):
+  121 requests: S00 -> S01 -> S02 -> S03 -> S08 -> S10 -> S20 -> S21 -> S30 -> S31 -> S40
+  51 requests: S00 -> S01 -> S02 -> S03 -> S08 -> S11 -> S12 -> S13 -> S20 -> S21 -> S30 -> S31 -> S40
+  49 requests: S00 -> S04 -> S05 -> S08 -> S10 -> S20 -> S21 -> S30 -> S31 -> S40
+  41 requests: S00 -> S06 -> S07 -> S08 -> S10 -> S20 -> S21 -> S30 -> S31 -> S40
+  34 requests: S00 -> S04 -> S05 -> S08 -> S11 -> S12 -> S13 -> S20 -> S21 -> S30 -> S31 -> S40
+  32 requests: S00 -> S06 -> S07 -> S08 -> S11 -> S12 -> S13 -> S20 -> S21 -> S30 -> S31 -> S40
+
+Most common failure paths (Top 10):
+  37 requests (S43): S00 -> S01 -> S02 -> S03 -> S08 -> S10 -> S20 -> S21 -> S43
+  25 requests (S42): S00 -> S01 -> S02 -> S03 -> S08 -> S10 -> S42
+  22 requests (S42): S00 -> S06 -> S42
+  17 requests (S43): S00 -> S04 -> S05 -> S08 -> S10 -> S20 -> S43
+  17 requests (S41): S00 -> S06 -> S07 -> S08 -> S10 -> S20 -> S21 -> S30 -> S31 -> S41
+  16 requests (S43): S00 -> S01 -> S02 -> S03 -> S08 -> S10 -> S20 -> S21 -> S30 -> S32 -> S43
+  13 requests (S43): S00 -> S01 -> S02 -> S03 -> S08 -> S10 -> S20 -> S43
+  12 requests (S44): S00 -> S01 -> S02 -> S03 -> S08 -> S11 -> S12 -> S15 -> S44
+  7 requests (S41): S00 -> S01 -> S02 -> S03 -> S08 -> S10 -> S20 -> S21 -> S30 -> S31 -> S41
+  6 requests (S43): S00 -> S01 -> S02 -> S03 -> S08 -> S11 -> S12 -> S14 -> S43
+
+Journey Length Statistics:
+  Successful (S40): Mean=11.24, Median=11, Min=10, Max=13
+  Failed: Mean=8.03, Median=9, Min=3, Max=11
+Saved: D:\cluade\visualizations\10_journey_path_analysis.png
+
+================================================================================
+10. TIME-BASED ANALYSIS & LATENCY
+================================================================================
+
+Latency Statistics (all statuses):
+  Mean: 15.51s
+  Median: 5.00s
+  95th percentile: 18.00s
+  Max: 900.00s
+
+Top 10 slowest status transitions (by mean latency):
+                   mean  median  count
+status_code                           
+S42          900.000000   900.0     47
+S20           16.694253    17.0    435
+S12           13.770370    14.0    135
+S43           13.730337     8.0     89
+S32           12.000000    12.0     16
+S07           11.100000    11.0     90
+S13           10.017094    10.0    117
+S15           10.000000    10.0     12
+S14            9.000000     9.0      6
+S21            7.903704     8.0    405
+
+Journey Duration by Outcome:
+  Successful (S40): Mean=63.52s, Median=59.00s
+  Failed: Mean=290.73s, Median=63.00s
+Saved: D:\cluade\visualizations\11_time_latency_analysis.png
+
+================================================================================
+11. CONVERSION FUNNEL ANALYSIS
+================================================================================
+
+Conversion Funnel:
+  Request Created: 500 (100.0% of total)
+  Request Loaded: 478 (95.6% of total) (-4.4% from previous)
+  Doc Check Complete: 478 (95.6% of total) (-0.0% from previous)
+  Consent Shown: 435 (87.0% of total) (-9.0% from previous)
+  Consent Granted: 405 (81.0% of total) (-6.9% from previous)
+  PIN Required: 368 (73.6% of total) (-9.1% from previous)
+  PIN Success: 352 (70.4% of total) (-4.3% from previous)
+  Success (Shared): 328 (65.6% of total) (-6.8% from previous)
+Saved: D:\cluade\visualizations\12_conversion_funnel.png
+
+================================================================================
+GENERATING SUMMARY STATISTICS FOR REPORT
+================================================================================
+
+All statistics calculated and ready for report generation.
+
+Total visualizations created: 12
+Output directory: D:\cluade\visualizations
+
+================================================================================
+ANALYSIS COMPLETE
+================================================================================
+
+Next steps:
+1. Review visualizations in D:\cluade\visualizations\
+2. Generate comprehensive markdown report
+3. Create interactive dashboard
+4. Generate insights document

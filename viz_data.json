@@ -1,0 +1,219 @@
+{
+  "sankey": {
+    "init_to_opened": {
+      "S00\u2192S01": 288,
+      "S00\u2192S04": 100,
+      "S00\u2192S06": 112
+    },
+    "opened_to_check": {
+      "S03\u2192S08": 288,
+      "S05\u2192S08": 100,
+      "S07\u2192S08": 90
+    },
+    "check_outcomes": {
+      "S08\u2192S10": 343,
+      "S08\u2192S11": 135
+    },
+    "consent_to_submit": {
+      "S21\u2192S30": 368,
+      "S21\u2192S43": 0
+    },
+    "final_outcomes": {
+      "S31\u2192S40": 328,
+      "S31\u2192S41": 0,
+      "S10\u2192S42": 0,
+      "S20\u2192S43": 0
+    }
+  },
+  "heatmap": [
+    {
+      "sp": "Botim",
+      "notification": 55.0,
+      "qr": 100.0,
+      "redirect": 100.0
+    },
+    {
+      "sp": "Etisalat Retail",
+      "notification": 63.6,
+      "qr": 66.7,
+      "redirect": 75.0
+    },
+    {
+      "sp": "InsureOne (Premier Insurance B",
+      "notification": 31.6,
+      "qr": 33.3,
+      "redirect": 66.7
+    },
+    {
+      "sp": "ADNIC",
+      "notification": 78.6,
+      "qr": 71.4,
+      "redirect": 80.0
+    },
+    {
+      "sp": "National Bonds Corporation Sol",
+      "notification": 40.0,
+      "qr": 62.5,
+      "redirect": 100.0
+    },
+    {
+      "sp": "ADCB",
+      "notification": 56.2,
+      "qr": 75.0,
+      "redirect": 60.0
+    },
+    {
+      "sp": "Lulu",
+      "notification": 80.0,
+      "qr": 55.6,
+      "redirect": 100.0
+    },
+    {
+      "sp": "FAB Retail Banking",
+      "notification": 85.7,
+      "qr": 66.7,
+      "redirect": 85.7
+    }
+  ],
+  "errors": {
+    "issuer_not_found": 24,
+    "pin_incorrect": 12,
+    "dv_5xx": 11,
+    "signing_timeout": 6,
+    "network_error": 5,
+    "pin_dismissed": 4,
+    "issuer_5xx": 3,
+    "issuer_timeout": 3,
+    "dv_timeout": 2
+  },
+  "latencies": {
+    "S01": 3.0,
+    "S02": 4.18,
+    "S03": 4.82,
+    "S08": 6.31,
+    "S10": 1.64,
+    "S20": 16.69,
+    "S21": 7.9,
+    "S30": 2.0,
+    "S31": 6.89,
+    "S40": 3.16
+  },
+  "platforms": [
+    {
+      "platform": "ios",
+      "total": 249,
+      "success_rate": 68.3,
+      "success_count": 170,
+      "avg_time_sec": 62.3,
+      "outcomes": {
+        "S40": 170,
+        "S43": 39,
+        "S42": 25,
+        "S41": 8,
+        "S44": 7
+      }
+    },
+    {
+      "platform": "android",
+      "total": 251,
+      "success_rate": 62.9,
+      "success_count": 158,
+      "avg_time_sec": 64.9,
+      "outcomes": {
+        "S40": 158,
+        "S43": 50,
+        "S42": 22,
+        "S41": 16,
+        "S44": 5
+      }
+    }
+  ],
+  "doc_counts": [
+    {
+      "doc_count": 1,
+      "total": 186,
+      "success_rate": 59.1,
+      "success_count": 110
+    },
+    {
+      "doc_count": 2,
+      "total": 257,
+      "success_rate": 71.6,
+      "success_count": 184
+    },
+    {
+      "doc_count": 3,
+      "total": 57,
+      "success_rate": 59.6,
+      "success_count": 34
+    }
+  ],
+  "doc_types": {
+    "Emirates ID Card": 383,
+    "Residence Visa": 177,
+    "Passport": 177,
+    "Driving License": 70,
+    "Vehicle Registration": 64
+  },
+  "outcomes": {
+    "S40": 328,
+    "S43": 89,
+    "S42": 47,
+    "S41": 24,
+    "S44": 12
+  },
+  "paths": [
+    {
+      "path": "S20 \u2192 S21 \u2192 S30 \u2192 S31 \u2192 S40",
+      "count": 121,
+      "success_count": 121,
+      "success_rate": 100.0
+    },
+    {
+      "path": "S20 \u2192 S21 \u2192 S30 \u2192 S31 \u2192 S40",
+      "count": 51,
+      "success_count": 51,
+      "success_rate": 100.0
+    },
+    {
+      "path": "S20 \u2192 S21 \u2192 S30 \u2192 S31 \u2192 S40",
+      "count": 49,
+      "success_count": 49,
+      "success_rate": 100.0
+    },
+    {
+      "path": "S20 \u2192 S21 \u2192 S30 \u2192 S31 \u2192 S40",
+      "count": 41,
+      "success_count": 41,
+      "success_rate": 100.0
+    },
+    {
+      "path": "S08 \u2192 S10 \u2192 S20 \u2192 S21 \u2192 S43",
+      "count": 37,
+      "success_count": 0,
+      "success_rate": 0.0
+    }
+  ],
+  "weekly_trend": [
+    {
+      "week": "Week 1",
+      "success_rate": 65.6,
+      "total_requests": 125
+    },
+    {
+      "week": "Week 2",
+      "success_rate": 67.6,
+      "total_requests": 125
+    },
+    {
+      "week": "Week 3",
+      "success_rate": 64.6,
+      "total_requests": 125
+    },
+    {
+      "week": "Week 4",
+      "success_rate": 68.6,
+      "total_requests": 125
+    }
+  ]
+}

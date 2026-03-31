@@ -1,0 +1,51 @@
+Number,Category,Tag,Priority,Complexity,Priority_Score,Complexity_Score,Total_Score,Sprint_Effort,Feature_Name,Summary,To_Be_Picked_Up,Track,Remarks
+1,Product,Reporting,High,Low,3,3,3.00,1,Status-Based Reporting Implementation,"Deploy 23-status-code tracking system to enable accurate measurement of all sharing requests. Foundation for all optimization.",Yes,,"Foundation item - do first"
+28,Technical,,High,Low,3,3,3.00,1,Infinite Loaders Detection and Resolution,Detect and resolve infinite loading states across the application.,Yes,,"Quick win"
+29,Technical,,High,Low,3,3,3.00,1,Firebase Configuration & Optimization,"Firebase Remote Config and push notification optimization, monitoring, and maintenance.",,,
+40,Product,New feature,High,Low,3,3,3.00,1,Enable Download of All issued documents in DV,Enable downloading all issued documents in DV,Yes,,"User-requested"
+10,Product,New Feature,High,Low,3,3,3.00,1,Auto-Add Documents Launch / One-Time Consent,One-time consent for DV to periodically check and auto-add new/updated documents from issuers.,Yes,,"Pending Legal TDRA approval"
+19,SP,,High,Low,3,3,3.00,1,Form Filler,Auto-fill forms using stored document data to streamline user workflows.,Yes,SP track,
+46,Technical Team Suggestions,,High,Low,3,3,3.00,1,AI Strategy & Initiative Analysis - Study,Q1 analysis phase for AI initiatives targeting user experience optimization and operational efficiency.,,,
+6,Product,Success Rate Improvement,Medium,Low,2,3,2.40,1,Smart Pending Request Auto-Redirect,Two-part system: (1) Auto-redirect users to pending sharing request on app open,Yes,,"Success rate improvement"
+11,Product,New Feature,Low,Low,1,3,1.80,1,Customer Feedback Mechanism,In-app feedback tool and banner for user research recruitment.,No,,DDA Item
+55,Product,,Low,Low,1,3,1.80,1,Reminder System,Push notification reminders before expiry. Reduces navigation friction.,No,,
+51,SP,,Low,Low,1,3,1.80,1,Introducing SP off-boarding,,,SP track,
+8,Technical,,High,Medium,3,2,2.40,2,Error-to-Status Code Linking System,Structured error taxonomy mapped to status codes for automated troubleshooting.,Yes,,"Builds on status reporting"
+9,Product,New Feature,High,Medium,3,2,2.40,2,Dual Citizenship GA,Complete Primary/Secondary EID handling with final EN/AR copy approval.,COMPLETED,,"DONE - Sprints 69-71"
+18,UX,,High,Medium,3,2,2.40,2,UX/UI Enhancements Bundle 2,Second bundle of UI/UX improvements based on user feedback and analytics.,Yes,,
+7,UX,,High,Medium,3,2,2.40,2,UX Enhancements Bundle,Placeholder for UI/UX enhancements.,,,
+37,UX,,High,Medium,3,2,2.40,2,Enhancement/Revamp Document Request,Redesign the document request flow for improved user experience.,,,
+38,UX,,High,Medium,3,2,2.40,2,Revamp Document Sharing,Redesign document sharing flow to increase success.,,,
+50,UX,,High,Medium,3,2,2.40,2,Revisit documents list view,,Yes,,
+5,Product,Reporting,High,Medium,3,2,2.40,2,User Behavior Analytics Tool Selection,"Select and integrate analytics tool (UXCam/Firebase Analytics).",,,DDA Item
+54,Technical,,High,Medium,3,2,2.40,2,SP integration healthcheck in production,,,SP track,
+13,Product,New Feature,Medium,Medium,2,2,2.00,2,QR code reimagined,Evaluate the current usage of the QR code in the APP and suggest alternative.,Yes,,
+24,Technical,,Medium,Medium,2,2,2.00,2,Current Issues Solutions,Resolution of known technical issues and bugs.,Yes,,
+2,Technical,,Low,Medium,1,2,1.60,2,Document Pre-Check API,API endpoint for SPs to verify document availability before creating share requests.,,,
+12,Product,Onboarding team Initiative,Low,Medium,1,2,1.60,2,SP Quality Scoring Program,"Dashboard showing SP conversion metrics, quality scorecard.",No,,
+21,Product,Study,Medium,High,2,1,1.40,3,UAE Pass for Business (Study),Research and feasibility study for UAE Pass business use cases.,Yes,,DDA Item
+3,Product,Error Handling,High,High,3,1,1.80,3,Deadend/Failures scenarios analysis,Identify the cases where the user does not have a next action.,Yes,,"Depends on item 1"
+14,Product,New Feature,High,High,3,1,1.80,3,AI Chatbot / AI Agent for Uploaded Documents,"Advanced chatbot for document search, request assistance, translation.",Yes,,DDA Item - user-facing
+20,Product,New Feature,High,High,3,1,1.80,3,Consent Sharing (Third Party Data),Sharing third party data via providing consent mechanism.,Yes,,"New capability"
+31,Technical,,High,High,3,1,1.80,3,Performance Enhancement,Application performance improvements including load times.,,,
+32,Technical,,High,High,3,1,1.80,3,Automated Testing,"Implement automated testing framework for regression and quality assurance.",Yes,,
+36,Design,,High,High,3,1,1.80,3,Accessibility Enhancement,Improve accessibility compliance (WCAG) across the application.,Yes,,DDA Item
+41,Product,New feature,High,High,3,1,1.80,3,Physical Document Sharing,Enable sharing of physical document representations or verified copies.,Yes,,"New capability"
+43,Technical Team Suggestions,,High,High,3,1,1.80,3,DR Automation (Disaster Recovery),Automate disaster recovery processes including failover testing.,,,
+44,Technical Team Suggestions,,High,High,3,1,1.80,3,Blockchain Upgrade,Upgrade blockchain infrastructure for improved performance.,,,
+47,Technical Team Suggestions,,High,Medium,3,2,2.40,2,ELK Stack AI Upgrade,Upgrade ELK stack to leverage AI capabilities for enhanced log analysis.,,,
+52,Technical,,High,High,3,1,1.80,3,AI use case implementation,,,,,
+53,Technical,,High,High,3,1,1.80,3,SP Integration through SDK,Build an SDK to streamline the onboarding process.,,SP track,
+4,Product,Success Rate Improvement,Low,Medium,1,2,1.60,2,Android Optimization Sprint,"Dedicated investigation and fix sprint for Android platform.",No,,"Depends on item 1"
+15,Product,New Feature,Low,High,1,1,1.00,3,Selective Disclosure (Attribute-Level),Critical industry standard allowing users to share only necessary attributes.,No,,"Long-term"
+25,Technical,,Low,High,1,1,1.00,3,Unify Verification Methods (eSeal / UAE Verify),Consolidate and unify eSeal and UAE Verify verification methods.,,,
+26,Technical,,Medium,Low,2,3,2.40,1,License QR Code Display Fix,Fix License Name and Number not showing when customer scans QR code.,,,
+27,Technical,,Low,Low,1,3,1.80,1,eSeal & DV QR Code Study,Study QR code implementations for eSeal and DV.,,,
+16,Design,,TBD,TBD,0,0,0.00,0,Design System Update,Update and maintain the DV design system for consistency.,Yes,,Needs priority/complexity
+17,UX,,TBD,TBD,0,0,0.00,0,Home Page Revamp,Redesign the DV home page for improved user experience.,Yes,,Needs priority/complexity
+22,Product,New Initiative,,,0,0,0.00,0,Innovation Track,Exploratory initiatives and innovation projects.,,,Placeholder
+23,Product,Strategy,,,0,0,0.00,0,Extend UAE PASS App Services,Extend the functionalities of UAE PASS.,,,Strategy item
+30,Technical,,TBC,TBC,0,0,0.00,0,eSeal Transition Support,Support ICP transition from DDA eSeal service.,,,Validate with Hindole
+33,SP,,,,,0,0,0.00,0,Service Provider Communication,,,SP track,Needs scoping
+35,Design,,TBD,TBD,0,0,0.00,0,Design Audit,Comprehensive audit of current design patterns.,Yes,,Discuss with Ahmed
+48,Technical Team Suggestions,,Low,Medium,1,2,1.60,2,Automated RCA & Incident Reporting,Automate Root Cause Analysis and incident report generation.,,,

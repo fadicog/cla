@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UAE PASS - Continue with UAE PASS: Risk, Benchmarking & Recommendation</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f0f0f0;
+            color: #1a1a2e;
+        }
+
+        .slide {
+            width: 1280px;
+            height: 720px;
+            margin: 40px auto;
+            background: white;
+            border-radius: 4px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+            position: relative;
+            overflow: hidden;
+            page-break-after: always;
+        }
+
+        .slide-header {
+            background: linear-gradient(135deg, #0d1f33 0%, #1a3a5c 100%);
+            padding: 28px 48px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+        .slide-header-left h1 {
+            color: white;
+            font-size: 24px;
+            font-weight: 800;
+            letter-spacing: -0.3px;
+        }
+        .slide-header-left .subtitle {
+            color: rgba(255,255,255,0.6);
+            font-size: 13px;
+            font-weight: 400;
+            margin-top: 4px;
+        }
+        .slide-header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .slide-header-right .tag {
+            background: rgba(255,255,255,0.15);
+            color: white;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 20px;
+        }
+        .slide-header-right .tag.green { background: #00834b; }
+
+        .bottom-bar {
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            height: 36px;
+            background: #f8fafc;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 48px;
+            font-size: 10px;
+            color: #94a3b8;
+        }
+        .bottom-bar .page {
+            font-weight: 700;
+            color: #1a3a5c;
+        }
+
+        .col-section h2 {
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .dot {
+            width: 8px; height: 8px; border-radius: 50%; display: inline-block;
+        }
+        .dot.green { background: #00834b; }
+        .dot.red { background: #e4002b; }
+        .dot.blue { background: #1a3a5c; }
+        .dot.amber { background: #d97706; }
+        .dot.purple { background: #7c3aed; }
+
+        /* ─── SLIDE 1 ─── */
+        .slide-1-body {
+            padding: 20px 48px 16px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        .comparison-box {
+            background: #f8fafc;
+            border-radius: 10px;
+            padding: 14px 16px;
+            border-left: 3px solid #e2e8f0;
+        }
+        .comparison-box.current { border-left-color: #94a3b8; }
+        .comparison-box.new { border-left-color: #00834b; }
+        .comparison-box h3 {
+            font-size: 11px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .comparison-box.new h3 { color: #00834b; }
+        .flow-steps { display: flex; flex-direction: column; gap: 4px; }
+        .flow-step {
+            font-size: 11px;
+            color: #334155;
+            display: flex;
+            align-items: flex-start;
+            gap: 6px;
+            line-height: 1.4;
+        }
+        .flow-step .num {
+            min-width: 16px; height: 16px;
+            background: #e2e8f0;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 9px; font-weight: 700; color: #64748b;
+            margin-top: 1px;
+        }
+        .comparison-box.new .flow-step .num { background: #dcfce7; color: #00834b; }
+
+        .risk-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 7px;
+        }
+        .risk-card {
+            border-radius: 8px;
+            padding: 9px 11px;
+            border-left: 3px solid #f59e0b;
+        }
+        .risk-card.high { background: #fef2f2; border-left-color: #ef4444; }
+        .risk-card.medium { background: #fff7ed; border-left-color: #f59e0b; }
+        .risk-card h4 { font-size: 10.5px; font-weight: 700; margin-bottom: 2px; }
+        .risk-card.high h4 { color: #dc2626; }
+        .risk-card.medium h4 { color: #d97706; }
+        .risk-card p { font-size: 9.5px; color: #64748b; line-height: 1.3; }
+        .risk-card .severity {
+            font-size: 8px; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 0.5px; margin-top: 2px;
+        }
+        .risk-card.high .severity { color: #ef4444; }
+        .risk-card.medium .severity { color: #f59e0b; }
+
+        .verdict-box {
+            background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+            border: 1.5px solid #86efac;
+            border-radius: 10px;
+            padding: 12px 14px;
+        }
+        .verdict-box h3 { font-size: 12px; font-weight: 700; color: #166534; margin-bottom: 5px; }
+        .verdict-box p { font-size: 10.5px; color: #334155; line-height: 1.5; }
+
+        /* ─── SLIDE 2: BENCHMARKING ─── */
+        .slide-2-body {
+            padding: 20px 48px 16px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .benchmark-card {
+            background: #f8fafc;
+            border-radius: 10px;
+            padding: 14px 16px;
+            border: 1px solid #e2e8f0;
+        }
+        .benchmark-card .bc-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        .bc-flag {
+            font-size: 20px;
+            line-height: 1;
+        }
+        .bc-header h3 {
+            font-size: 13px;
+            font-weight: 800;
+            color: #1a3a5c;
+        }
+        .bc-header .bc-tag {
+            font-size: 8px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin-left: auto;
+        }
+        .bc-tag.live { background: #dcfce7; color: #16a34a; }
+        .bc-tag.enforced { background: #dbeafe; color: #2563eb; }
+        .bc-tag.mandate { background: #fef3c7; color: #d97706; }
+
+        .bc-stats {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .bc-stat {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 5px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .bc-stat:last-child { border-bottom: none; }
+        .bc-stat-label {
+            font-size: 10px;
+            color: #64748b;
+            line-height: 1.3;
+        }
+        .bc-stat-value {
+            font-size: 11px;
+            font-weight: 700;
+            color: #1a3a5c;
+            text-align: right;
+            min-width: 80px;
+        }
+        .bc-stat-value.highlight { color: #00834b; }
+        .bc-stat-value.red { color: #dc2626; }
+
+        .global-stats-bar {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #0d1f33, #1a3a5c);
+            border-radius: 10px;
+            padding: 14px 16px;
+            text-align: center;
+            color: white;
+        }
+        .stat-card .stat-number {
+            font-size: 24px;
+            font-weight: 900;
+            color: #c5a44e;
+            line-height: 1;
+        }
+        .stat-card .stat-label {
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            opacity: 0.7;
+            margin-top: 4px;
+            line-height: 1.3;
+        }
+
+        /* ─── SLIDE 3: MITIGATIONS & RECOMMENDATION ─── */
+        .slide-3-body {
+            padding: 20px 48px 16px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        .mitigation-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .mitigation-item {
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+            padding: 8px 12px;
+            border-radius: 8px;
+        }
+        .mitigation-item.must { background: #fef2f2; border: 1px solid #fecaca; }
+        .mitigation-item.should { background: #fffbeb; border: 1px solid #fde68a; }
+        .mitigation-item.nice { background: #f0fdf4; border: 1px solid #bbf7d0; }
+        .mitigation-num {
+            min-width: 22px; height: 22px;
+            border-radius: 6px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 10px; font-weight: 800;
+        }
+        .mitigation-item.must .mitigation-num { background: #fee2e2; color: #dc2626; }
+        .mitigation-item.should .mitigation-num { background: #fef3c7; color: #d97706; }
+        .mitigation-item.nice .mitigation-num { background: #dcfce7; color: #16a34a; }
+        .mitigation-text h4 { font-size: 11px; font-weight: 700; line-height: 1.3; }
+        .mitigation-item.must .mitigation-text h4 { color: #991b1b; }
+        .mitigation-item.should .mitigation-text h4 { color: #92400e; }
+        .mitigation-item.nice .mitigation-text h4 { color: #166534; }
+        .mitigation-text p { font-size: 9.5px; color: #64748b; line-height: 1.3; margin-top: 1px; }
+
+        .cbuae-callout {
+            background: #eff6ff;
+            border: 1.5px solid #93c5fd;
+            border-radius: 10px;
+            padding: 12px 14px;
+        }
+        .cbuae-callout h3 { font-size: 12px; font-weight: 700; color: #1e40af; margin-bottom: 4px; }
+        .cbuae-callout p { font-size: 10.5px; color: #334155; line-height: 1.4; }
+
+        .risk-comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 10px;
+            margin-top: 8px;
+        }
+        .risk-comparison-table th {
+            background: #f1f5f9;
+            padding: 6px 10px;
+            text-align: left;
+            font-weight: 700;
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #64748b;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        .risk-comparison-table td {
+            padding: 5px 10px;
+            border-bottom: 1px solid #f1f5f9;
+            color: #334155;
+            line-height: 1.3;
+        }
+        .risk-comparison-table tr:last-child td { border-bottom: none; }
+        .tag-good { color: #16a34a; font-weight: 700; }
+        .tag-bad { color: #dc2626; font-weight: 700; }
+        .tag-neutral { color: #d97706; font-weight: 700; }
+
+        .decision-box {
+            background: linear-gradient(135deg, #1a3a5c, #0d1f33);
+            border-radius: 10px;
+            padding: 16px;
+            color: white;
+        }
+        .decision-box h3 {
+            font-size: 13px;
+            font-weight: 800;
+            margin-bottom: 6px;
+            color: #c5a44e;
+        }
+        .decision-box p { font-size: 11px; line-height: 1.5; opacity: 0.85; }
+        .decision-box .decision-options { display: flex; gap: 10px; margin-top: 10px; }
+        .decision-option {
+            flex: 1;
+            background: rgba(255,255,255,0.08);
+            border-radius: 8px;
+            padding: 10px;
+            border: 1px solid rgba(255,255,255,0.12);
+        }
+        .decision-option h4 { font-size: 11px; font-weight: 700; margin-bottom: 3px; }
+        .decision-option.recommended {
+            border-color: #00834b;
+            background: rgba(0,131,75,0.15);
+        }
+        .decision-option.recommended h4 { color: #4ade80; }
+        .decision-option p { font-size: 9.5px; opacity: 0.7; line-height: 1.3; }
+        .rec-badge {
+            font-size: 8px; font-weight: 800;
+            background: #00834b; color: white;
+            padding: 2px 8px; border-radius: 10px;
+            margin-bottom: 4px; display: inline-block;
+        }
+    </style>
+</head>
+<body>
+
+<!-- ============ SLIDE 1: Risk & Opportunity Analysis ============ -->
+<div class="slide">
+    <div class="slide-header">
+        <div class="slide-header-left">
+            <h1>"Continue with UAE PASS" Button — Risk & Opportunity Analysis</h1>
+            <div class="subtitle">From QR Scan to Push Notification: Security Trade-offs for the New Document Sharing UX</div>
+        </div>
+        <div class="slide-header-right">
+            <span class="tag">SLIDE 1/3</span>
+            <span class="tag green">FEB 2026</span>
+        </div>
+    </div>
+
+    <div class="slide-1-body">
+        <!-- LEFT COLUMN -->
+        <div>
+            <div class="col-section">
+                <h2><span class="dot blue"></span> Flow Comparison</h2>
+                <div style="display:flex; flex-direction:column; gap:10px;">
+                    <div class="comparison-box current">
+                        <h3>Current: QR Code Scan</h3>
+                        <div class="flow-steps">
+                            <div class="flow-step"><span class="num">1</span> SP displays QR on screen</div>
+                            <div class="flow-step"><span class="num">2</span> User opens UAE PASS app & scans QR</div>
+                            <div class="flow-step"><span class="num">3</span> Sharing request appears in-app</div>
+                            <div class="flow-step"><span class="num">4</span> User approves &rarr; documents shared</div>
+                        </div>
+                    </div>
+                    <div class="comparison-box new">
+                        <h3>New: "Continue with UAE PASS" Button</h3>
+                        <div class="flow-steps">
+                            <div class="flow-step"><span class="num">1</span> User clicks button on SP website</div>
+                            <div class="flow-step"><span class="num">2</span> SP backend creates request via API</div>
+                            <div class="flow-step"><span class="num">3</span> Push notification sent to user's phone</div>
+                            <div class="flow-step"><span class="num">4</span> User approves in-app &rarr; documents shared</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-section" style="margin-top:14px;">
+                <div class="verdict-box">
+                    <h3>Assessment Verdict</h3>
+                    <p>The UX improvement is <strong>strategically sound</strong> and aligns with CBUAE's push toward app-based auth (Notice 3057). It eliminates QR tampering risk flagged by Dubai Electronic Security Center. However, it <strong>shifts the attack surface from physical proximity to remote initiation</strong>. All 7 risks are mitigatable with industry-standard controls. <strong>Proceed with mitigations as mandatory gates.</strong></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT COLUMN -->
+        <div>
+            <div class="col-section">
+                <h2><span class="dot red"></span> Key Risks Identified (7 Total)</h2>
+                <div class="risk-grid">
+                    <div class="risk-card high">
+                        <h4>1. Push Fatigue / Spam</h4>
+                        <p>Attacker floods user with requests until accidental approval</p>
+                        <div class="severity">HIGH LIKELIHOOD</div>
+                    </div>
+                    <div class="risk-card high">
+                        <h4>2. Impersonation</h4>
+                        <p>Attacker uses leaked EID+phone to trigger legitimate-looking request</p>
+                        <div class="severity">HIGH IMPACT</div>
+                    </div>
+                    <div class="risk-card medium">
+                        <h4>3. Identity Enumeration</h4>
+                        <p>Endpoint reveals if EID+phone matches a UAE PASS user</p>
+                        <div class="severity">MEDIUM</div>
+                    </div>
+                    <div class="risk-card medium">
+                        <h4>4. Wrong-Person Delivery</h4>
+                        <p>Mistyped data or recycled phone sends request to wrong user</p>
+                        <div class="severity">MEDIUM</div>
+                    </div>
+                    <div class="risk-card medium">
+                        <h4>5. Bot / DoS Abuse</h4>
+                        <p>Automated floods using leaked ID lists; reputational damage</p>
+                        <div class="severity">MEDIUM</div>
+                    </div>
+                    <div class="risk-card medium">
+                        <h4>6. Social Engineering</h4>
+                        <p>"Approve the request now" phone scams exploit trained behavior</p>
+                        <div class="severity">MEDIUM</div>
+                    </div>
+                    <div class="risk-card medium">
+                        <h4>7. Privacy / PDPL</h4>
+                        <p>Collecting EID+phone increases data protection obligations</p>
+                        <div class="severity">COMPLIANCE</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bottom-bar">
+        <span>UAE PASS Digital Documents &mdash; "Continue with UAE PASS" Feature</span>
+        <span class="page">1 / 3</span>
+    </div>
+</div>
+
+<!-- ============ SLIDE 2: Global Benchmarking ============ -->
+<div class="slide">
+    <div class="slide-header">
+        <div class="slide-header-left">
+            <h1>Global Benchmarking — The World Is Moving This Way</h1>
+            <div class="subtitle">Regulatory Mandates, Industry Adoption & Security Outcomes Across Key Markets</div>
+        </div>
+        <div class="slide-header-right">
+            <span class="tag">SLIDE 2/3</span>
+            <span class="tag green">FEB 2026</span>
+        </div>
+    </div>
+
+    <div style="padding: 18px 48px 0;">
+        <div class="global-stats-bar">
+            <div class="stat-card">
+                <div class="stat-number">340M+</div>
+                <div class="stat-label">Banking customers on<br>push/passkey auth globally</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">78%</div>
+                <div class="stat-label">Top 50 global banks<br>launched passwordless</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">42–68%</div>
+                <div class="stat-label">Fraud loss reduction<br>after implementation</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">93%</div>
+                <div class="stat-label">Login success rate<br>with passkeys/push auth</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide-2-body" style="padding-top: 0;">
+        <!-- LEFT COLUMN -->
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+            <div class="benchmark-card">
+                <div class="bc-header">
+                    <span class="bc-flag">&#x1F1E6;&#x1F1EA;</span>
+                    <h3>UAE — CBUAE Notice 3057</h3>
+                    <span class="bc-tag mandate">MANDATE MAR 2026</span>
+                </div>
+                <div class="bc-stats">
+                    <div class="bc-stat">
+                        <span class="bc-stat-label">SMS/email OTP phase-out deadline</span>
+                        <span class="bc-stat-value red">March 31, 2026</span>
+                    </div>
+                    <div class="bc-stat">
+                        <span class="bc-stat-label">Approved replacement methods</span>
+                        <span class="bc-stat-value">In-app push, biometrics, FIDO2</span>
+                    </div>
+                    <div class="bc-stat">
+                        <span class="bc-stat-label">Liability shift for OTP fraud</span>
+                        <span class="bc-stat-value red">Already in effect</span>
+                    </div>
+                    <div class="bc-stat">
+                        <span class="bc-stat-label">Early movers</span>
+                        <span class="bc-stat-value highlight">ENBD, ADIB, FAB</span>
+                    </div>
+                    <div class="bc-stat">
+                        <span class="bc-stat-label">Global significance</span>
+                        <span class="bc-stat-value highlight">First country to fully ban OTP</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="benchmark-card">
+                <div class="bc-header">
+                    <span class="bc-flag">&#x1F1F8;&#x1F1EC;</span>
+                    <h3>Singapore — MAS Directive</h3>
+                    <span class="bc-tag live">LIVE SINCE 2024</span>
+                </div>
+                <div class="bc-stats">
+                    <div class="bc-stat">
+                        <span class="bc-stat-label">SMS OTP phase-out announced</span>
+                        <span class="bc-stat-value">July 2024</span>
+                    </div>
+                    <div class="bc-stat">
+                        <span class="bc-stat-label">Digital token adoption (DBS, OCBC, UOB)</span>
+                        <span class="bc-stat-value highlight">60–90%</span>
+                    </div>
+                    <div class="bc-stat">
+                        <span class="bc-stat-label">Singpass Face Verification added</span>
+                        <span class="bc-stat-value">Sep 2024</span>
+                    </div>
+                    <div class="bc-stat">
+                        <span class="bc-stat-label">Phishing losses before mandate</span>
+                        <span class="bc-stat-value red">S$14.2M (2023)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT COLUMN -->
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+            <div class="benchmark-card">
+                <div class="bc-header">
+                    <span class="bc-flag">&#x1F1EA;&#x1F1FA;</span>
+                    <h3>EU — PSD2 / Strong Customer Auth</h3>
+                    <span class="bc-tag enforced">ENFORCED 2021</span>
+                </div>
+                <div class="bc-stats">
+                    <div class="bc-stat">
+                        <span class="bc-stat-label">Coverage</span>
+                        <span class="bc-stat-value">300M+ ecommerce shoppers</span>
+                    </div>
+                    <div class="bc-stat">
+                        <span class="bc-stat-label">Frictionless auth rate</span>
+                        <span class="bc-stat-value highlight">60%+ of transactions</span>
+                    </div>
+                    <div class="bc-stat">
+                        <span class="bc-stat-label">Required factors</span>
+                        <span class="bc-stat-value">2 of 3: know/have/are</span>
+                    </div>
+                    <div class="bc-stat">
+                        <span class="bc-stat-label">Next evolution</span>
+                        <span class="bc-stat-value">PSD3 in draft</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="benchmark-card">
+                <div class="bc-header">
+                    <span class="bc-flag">&#x1F6E1;&#xFE0F;</span>
+                    <h3>Microsoft & Okta — Number Matching</h3>
+                    <span class="bc-tag enforced">ENFORCED MAY 2023</span>
+                </div>
+                <div class="bc-stats">
+                    <div class="bc-stat">
+                        <span class="bc-stat-label">Microsoft enforcement date</span>
+                        <span class="bc-stat-value">May 8, 2023</span>
+                    </div>
+                    <div class="bc-stat">
+                        <span class="bc-stat-label">Trigger</span>
+                        <span class="bc-stat-value red">Lapsus$ breached MS, Cisco, Uber</span>
+                    </div>
+                    <div class="bc-stat">
+                        <span class="bc-stat-label">How it works</span>
+                        <span class="bc-stat-value">2-digit code match on both ends</span>
+                    </div>
+                    <div class="bc-stat">
+                        <span class="bc-stat-label">Supported by</span>
+                        <span class="bc-stat-value">Microsoft, Okta, Duo (Cisco)</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="benchmark-card" style="background: linear-gradient(135deg, #f0fdf4, #f8fafc); border-color: #86efac;">
+                <div class="bc-header">
+                    <span class="bc-flag">&#x1F30D;</span>
+                    <h3>Notable Early Movers</h3>
+                    <span class="bc-tag live">RESULTS</span>
+                </div>
+                <div class="bc-stats">
+                    <div class="bc-stat">
+                        <span class="bc-stat-label">HSBC — 14 markets, launched Q3 2025</span>
+                        <span class="bc-stat-value highlight">41M users (60% in 6mo)</span>
+                    </div>
+                    <div class="bc-stat">
+                        <span class="bc-stat-label">Nordea — Nordics, highest regional rate</span>
+                        <span class="bc-stat-value highlight">73% adoption</span>
+                    </div>
+                    <div class="bc-stat">
+                        <span class="bc-stat-label">Biometric auth among mobile banking users</span>
+                        <span class="bc-stat-value highlight">77% globally</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bottom-bar">
+        <span>UAE PASS Digital Documents &mdash; "Continue with UAE PASS" Feature</span>
+        <span class="page">2 / 3</span>
+    </div>
+</div>
+
+<!-- ============ SLIDE 3: Mitigations & Recommendation ============ -->
+<div class="slide">
+    <div class="slide-header">
+        <div class="slide-header-left">
+            <h1>Required Mitigations & Recommendation</h1>
+            <div class="subtitle">Mandatory Controls, Risk Comparison, and Decision Framework</div>
+        </div>
+        <div class="slide-header-right">
+            <span class="tag">SLIDE 3/3</span>
+            <span class="tag green">FEB 2026</span>
+        </div>
+    </div>
+
+    <div class="slide-3-body">
+        <!-- LEFT COLUMN: Mitigations -->
+        <div>
+            <div class="col-section">
+                <h2><span class="dot red"></span> Must-Have (Launch Blockers)</h2>
+                <div class="mitigation-list">
+                    <div class="mitigation-item must">
+                        <div class="mitigation-num">1</div>
+                        <div class="mitigation-text">
+                            <h4>Number Matching / Challenge Code</h4>
+                            <p>Display code on SP website; user confirms same code in UAE PASS app. Industry standard since Microsoft/Okta mandate (2023).</p>
+                        </div>
+                    </div>
+                    <div class="mitigation-item must">
+                        <div class="mitigation-num">2</div>
+                        <div class="mitigation-text">
+                            <h4>Aggressive Rate Limiting</h4>
+                            <p>Max 3 requests/EID/hour, 5/day. Cool-down + CAPTCHA after failures. Per-IP and device fingerprint throttling.</p>
+                        </div>
+                    </div>
+                    <div class="mitigation-item must">
+                        <div class="mitigation-num">3</div>
+                        <div class="mitigation-text">
+                            <h4>Generic Responses (Anti-Enumeration)</h4>
+                            <p>"If details are correct, you'll receive a request." Same response for valid/invalid. Constant-time API responses.</p>
+                        </div>
+                    </div>
+                    <div class="mitigation-item must">
+                        <div class="mitigation-num">4</div>
+                        <div class="mitigation-text">
+                            <h4>Short TTL + Single-Use Tokens</h4>
+                            <p>Requests expire in 3–5 min. Non-reusable correlation IDs. Already enforced via DB unique constraint.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-section" style="margin-top:10px;">
+                <h2><span class="dot amber"></span> Should-Have (Post-Launch)</h2>
+                <div class="mitigation-list">
+                    <div class="mitigation-item should">
+                        <div class="mitigation-num">5</div>
+                        <div class="mitigation-text">
+                            <h4>Data Minimization & Retention Policy</h4>
+                            <p>Hash EID+phone after linking. Delete raw data within 24hrs. Audit trail for UAE PDPL compliance.</p>
+                        </div>
+                    </div>
+                    <div class="mitigation-item should">
+                        <div class="mitigation-num">6</div>
+                        <div class="mitigation-text">
+                            <h4>Bot Protection & Abuse Monitoring</h4>
+                            <p>WAF rules, device attestation, anomaly scoring by IP/ASN/geo. Real-time alerting dashboard.</p>
+                        </div>
+                    </div>
+                    <div class="mitigation-item nice">
+                        <div class="mitigation-num">7</div>
+                        <div class="mitigation-text">
+                            <h4>"Report Suspicious Request" + User Muting</h4>
+                            <p>Report/block requests from specific SPs. In-app: "We will never call and ask you to approve."</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT COLUMN: Comparison + Decision -->
+        <div>
+            <div class="cbuae-callout">
+                <h3>CBUAE Regulatory Tailwind</h3>
+                <p>CBUAE Notice 3057 mandates <strong>all UAE financial institutions phase out SMS OTP by March 2026</strong>. UAE is the <strong>first country globally</strong> to take this step. This creates natural demand for the "Continue with UAE PASS" pattern from every bank, insurer, and payment provider.</p>
+            </div>
+
+            <div class="col-section" style="margin-top:12px;">
+                <h2><span class="dot blue"></span> Risk Comparison: Before vs After</h2>
+                <table class="risk-comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Risk</th>
+                            <th>Current (QR)</th>
+                            <th>New (Button + Mitigations)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>QR tampering / overlay</td>
+                            <td class="tag-bad">Exposed</td>
+                            <td class="tag-good">Eliminated</td>
+                        </tr>
+                        <tr>
+                            <td>Push fatigue attacks</td>
+                            <td class="tag-good">N/A</td>
+                            <td class="tag-good">Mitigated (number matching)</td>
+                        </tr>
+                        <tr>
+                            <td>Remote impersonation</td>
+                            <td class="tag-good">Low (proximity)</td>
+                            <td class="tag-neutral">Mitigated (rate limit + code)</td>
+                        </tr>
+                        <tr>
+                            <td>Identity enumeration</td>
+                            <td class="tag-good">N/A</td>
+                            <td class="tag-good">Mitigated (generic responses)</td>
+                        </tr>
+                        <tr>
+                            <td>User friction / drop-off</td>
+                            <td class="tag-bad">Higher (app+camera)</td>
+                            <td class="tag-good">Lower (single tap)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="decision-box" style="margin-top:12px;">
+                <h3>Recommendation</h3>
+                <p>Should we proceed with the "Continue with UAE PASS" button feature?</p>
+                <div class="decision-options">
+                    <div class="decision-option recommended">
+                        <div class="rec-badge">RECOMMENDED</div>
+                        <h4>Go with Mitigations</h4>
+                        <p>Implement 4 must-have controls as launch gates. Security review & pen test before pilot with 2–3 SPs.</p>
+                    </div>
+                    <div class="decision-option">
+                        <h4>Defer</h4>
+                        <p>Wait for more demand signals. Risk: miss CBUAE compliance window; SPs build proprietary alternatives.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bottom-bar">
+        <span>UAE PASS Digital Documents &mdash; "Continue with UAE PASS" Feature</span>
+        <span class="page">3 / 3</span>
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,25 @@
+Status Code,Status Name,Category,Description,Trigger,User Action Required,Next Possible States,Terminal State,Typical Duration,Analytics Tags
+100,REQUEST_CREATED,Initial,Sharing request created by SP and available for user,SP creates correlation ID and generates QR/deep link,No (awaiting user),110,No,Variable (until user opens),request_lifecycle
+110,OPENED,Opening,User opens the sharing request via notification or QR scan,User taps notification or scans QR code,No (automatic check),115,No,<1 second,user_engagement
+115,CHECKING_DOCUMENT_AVAILABILITY,Opening,System automatically checks if all mandatory documents are in vault,Automatic after OPENED,No (system process),200|300,No,<1 second,document_check
+200,DOCUMENTS_NOT_IN_VAULT,Document Unavailable,At least one mandatory document is missing from user's vault,System check finds missing docs,Yes (show missing docs screen),210,No,Variable (user decision time),document_gap
+210,USER_TRIGGERED_DOCUMENT_REQUEST,Document Request,User explicitly taps "Request Missing Documents" button,User taps request button,No (system processing),215,No,<500ms,user_intent
+215,DOCUMENTS_REQUEST_IN_PROGRESS,Document Request,System actively fetching documents from issuers,After user triggers request,No (wait for issuer response),220|230|300,No,5-30 seconds,issuer_fetch
+220,DOCUMENTS_REQUEST_PARTIAL_SUCCESS,Document Request,Some but not all documents were successfully received,Issuer responses received,Yes (user decides to proceed or wait),310|560,No,Variable (user decision),partial_fulfillment
+230,DOCUMENTS_REQUEST_FAILED,Document Request,All document requests failed (issuer unavailable/rejected),All issuer requests failed,Yes (user sees error),560,No,Variable (user may retry),request_failure
+300,DOCUMENTS_AVAILABLE,Document Available,All mandatory documents are confirmed in vault,System check completed successfully,No (automatic),310,No,<500ms,document_ready
+310,READY_TO_CONSENT,Consent Flow,User is presented with consent screen showing documents to share,After documents confirmed available,Yes (review and consent),320,No,Variable (user review time),consent_initiation
+320,CONSENT_GIVEN,Consent Flow,User has provided consent to share documents,User taps "Approve" or "Share" button,No (automatic),330,No,<1 second,consent_granted
+330,SHARING_INITIATED,Consent Flow,System begins preparing verifiable presentation package,After consent given,No (system process),340|400,No,1-3 seconds,package_creation
+340,PIN_REQUIRED,PIN Flow,System requires PIN entry for additional authentication,Security policy triggered,Yes (enter PIN),350,No,Variable (user input time),security_check
+350,PIN_ENTERED,PIN Flow,User has entered PIN awaiting validation,User completes PIN entry,No (validation in progress),360|370,No,<1 second,pin_validation
+360,PIN_VALIDATION_SUCCESS,PIN Flow,PIN validated successfully,PIN matches stored credential,No (automatic),400,No,<500ms,pin_success
+370,PIN_VALIDATION_FAILED,PIN Flow,PIN validation failed,PIN does not match,Yes (retry or cancel),340|510,No,Variable (retry decision),pin_failure
+400,SHARED_SUCCESSFULLY,Success,Documents successfully shared with SP,Verifiable presentation delivered to SP,No (completion),None,Yes,N/A,success
+510,FAILURE_CONSENT_REJECTED,Failure,User explicitly rejected consent,User taps "Reject" or "Cancel",No (terminal),None,Yes,N/A,user_rejection
+520,FAILURE_PIN_ATTEMPTS_EXCEEDED,Failure,User exceeded maximum PIN retry attempts,Too many failed PIN attempts,No (lockout),None,Yes,N/A,security_lockout
+530,FAILURE_SESSION_EXPIRED,Failure,Request expired due to timeout,TTL exceeded during flow,No (terminal),None,Yes,N/A,timeout
+540,FAILURE_TECHNICAL_ERROR,Failure,System error during sharing process,Backend/network error,No (terminal),None,Yes,N/A,technical_failure
+550,FAILURE_ISSUER_ERROR,Failure,Issuer system unavailable during document request,Issuer system down/timeout,No (terminal),None,Yes,N/A,issuer_unavailable
+560,FAILURE_DOCUMENTS_NOT_AVAILABLE,Failure,Unable to fulfill mandatory documents requirement,Documents cannot be obtained,No (terminal),None,Yes,N/A,document_unavailable
+600,ABANDONED_BY_USER,Abandonment,User closed app/navigated away without completing,User exits flow,No (terminal),None,Yes,N/A,abandonment

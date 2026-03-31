@@ -1,0 +1,273 @@
+        <!-- ADVANCED REPORTS SECTION -->
+        <div id="advanced-reports" class="section">
+            <div class="card">
+                <h2>Advanced Reports & Visualizations</h2>
+                <p>Interactive visualizations generated from <code>sharing_transactions_new_sample.csv</code> (500 unique requests, 5,068 status records). These charts provide deep insights into funnel performance, bottlenecks, and optimization opportunities.</p>
+
+                <div class="info-box">
+                    <strong>Data Source:</strong> <code>sharing_transactions_new_sample.csv</code><br>
+                    <strong>Sample Period:</strong> Nov 1-28, 2025<br>
+                    <strong>Overall Success Rate:</strong> 65.6% (328/500 requests)
+                </div>
+            </div>
+
+            <!-- 1. MULTI-STAGE FUNNEL -->
+            <div class="card">
+                <h2>1. Multi-Stage Conversion Funnel</h2>
+                <p>Horizontal funnel showing user progression through key stages with drop-off percentages at each step.</p>
+                <div class="chart-container" style="height: 400px;">
+                    <canvas id="funnelChart"></canvas>
+                </div>
+                <div style="margin-top: 1rem; padding: 1rem; background: #f8f9fa; border-radius: 8px;">
+                    <strong>Key Insights:</strong>
+                    <ul style="margin: 0.5rem 0 0 1.5rem; font-size: 0.9rem;">
+                        <li>Biggest drop-off: Consent Screen → Reviewing Docs (9.0% drop)</li>
+                        <li>Secondary bottleneck: Reviewing Docs → Docs Collected (9.1% drop)</li>
+                        <li>Overall conversion: 500 → 328 (65.6% success rate)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 2. SP PERFORMANCE BY CHANNEL -->
+            <div class="card">
+                <h2>2. Top 10 SPs: Success Rate by Channel</h2>
+                <p>Compare Service Provider performance across Notification, QR, and Redirect channels.</p>
+                <div class="chart-container" style="height: 500px;">
+                    <canvas id="spPerformanceChart"></canvas>
+                </div>
+                <div style="margin-top: 1rem; padding: 1rem; background: #f8f9fa; border-radius: 8px;">
+                    <strong>Key Insights:</strong>
+                    <ul style="margin: 0.5rem 0 0 1.5rem; font-size: 0.9rem;">
+                        <li>Redirect channel performs best overall (83% success)</li>
+                        <li>Wide variance in SP performance: 31.6% to 85.7%</li>
+                        <li>InsureOne shows lowest notification success (31.6%)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 3. ERROR DISTRIBUTION -->
+            <div class="card">
+                <h2>3. Failure Distribution by Type</h2>
+                <p>Breakdown of the 172 failed requests by terminal error status.</p>
+                <div style="display: flex; gap: 2rem; align-items: center;">
+                    <div class="chart-container" style="height: 300px; width: 300px; flex-shrink: 0;">
+                        <canvas id="errorDistChart"></canvas>
+                    </div>
+                    <div style="flex: 1;">
+                        <table class="data-table" style="font-size: 0.9rem;">
+                            <thead>
+                                <tr>
+                                    <th>Error Type</th>
+                                    <th>Count</th>
+                                    <th>% of Failures</th>
+                                    <th>Impact</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>S43 User Aborted</strong></td>
+                                    <td>89</td>
+                                    <td>51.7%</td>
+                                    <td style="color: #f44336;">UX/Friction issue</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>S42 Expired</strong></td>
+                                    <td>47</td>
+                                    <td>27.3%</td>
+                                    <td style="color: #ff9800;">Timeout/Delay issue</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>S41 Technical Error</strong></td>
+                                    <td>24</td>
+                                    <td>14.0%</td>
+                                    <td style="color: #f44336;">System reliability</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>S44 Not Eligible</strong></td>
+                                    <td>12</td>
+                                    <td>7.0%</td>
+                                    <td style="color: #ff9800;">Doc availability</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. STEP LATENCY ANALYSIS -->
+            <div class="card">
+                <h2>4. Average Step Latency</h2>
+                <p>Time spent at critical status transitions (successful completions only).</p>
+                <div class="chart-container" style="height: 350px;">
+                    <canvas id="latencyChart"></canvas>
+                </div>
+                <div style="margin-top: 1rem; padding: 1rem; background: #f8f9fa; border-radius: 8px;">
+                    <strong>Key Insights:</strong>
+                    <ul style="margin: 0.5rem 0 0 1.5rem; font-size: 0.9rem;">
+                        <li>Review Docs (S20→S21) takes longest: 7.9 seconds</li>
+                        <li>Verification (S30→S31) second highest: 6.89 seconds</li>
+                        <li>Fastest step: Collecting Docs (S21→S30) at 2.0 seconds</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 5. PLATFORM x CHANNEL MATRIX -->
+            <div class="card">
+                <h2>5. Platform × Channel Success Matrix</h2>
+                <p>Compare iOS vs Android performance across all three channels.</p>
+                <div class="chart-container" style="height: 400px;">
+                    <canvas id="platformChannelChart"></canvas>
+                </div>
+                <div style="margin-top: 1rem; padding: 1rem; background: #f8f9fa; border-radius: 8px;">
+                    <strong>Key Insights:</strong>
+                    <ul style="margin: 0.5rem 0 0 1.5rem; font-size: 0.9rem;">
+                        <li>iOS redirect channel highest: 87.3% success</li>
+                        <li>iOS and Android perform similarly on notification and QR</li>
+                        <li>Redirect performs best on both platforms</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 6. DOCUMENT COMPLEXITY IMPACT -->
+            <div class="card">
+                <h2>6. Document Complexity vs Success Rate</h2>
+                <p>How the number of requested documents affects completion rate.</p>
+                <div class="chart-container" style="height: 400px;">
+                    <canvas id="docComplexityChart"></canvas>
+                </div>
+                <div style="margin-top: 1rem; padding: 1rem; background: #f8f9fa; border-radius: 8px;">
+                    <strong>Key Insights:</strong>
+                    <ul style="margin: 0.5rem 0 0 1.5rem; font-size: 0.9rem;">
+                        <li>2-document requests perform best: 71.6% success (257 requests)</li>
+                        <li>Single-doc and 3-doc requests: ~59-60% success</li>
+                        <li>Optimal complexity: 2 documents per request</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 7. WEEKLY TREND -->
+            <div class="card">
+                <h2>7. Daily Success Rate Trend</h2>
+                <p>Success rate variation over the 28-day sample period.</p>
+                <div class="chart-container" style="height: 400px;">
+                    <canvas id="weeklyTrendChart"></canvas>
+                </div>
+                <div style="margin-top: 1rem; padding: 1rem; background: #f8f9fa; border-radius: 8px;">
+                    <strong>Key Insights:</strong>
+                    <ul style="margin: 0.5rem 0 0 1.5rem; font-size: 0.9rem;">
+                        <li>Success rates range from 41.2% to 84.6%</li>
+                        <li>Average: 65.6% with high volatility</li>
+                        <li>Notable drop on Nov 24 (41.2%) and Nov 28 (47.4%)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 8. PATH ANALYSIS -->
+            <div class="card">
+                <h2>8. Top 5 Most Common User Paths</h2>
+                <p>The most frequent complete status paths from creation to terminal state.</p>
+                <div class="chart-container" style="height: 350px;">
+                    <canvas id="pathAnalysisChart"></canvas>
+                </div>
+                <div style="margin-top: 1rem; padding: 1rem; background: #f8f9fa; border-radius: 8px;">
+                    <strong>Key Insights:</strong>
+                    <ul style="margin: 0.5rem 0 0 1.5rem; font-size: 0.9rem;">
+                        <li>Top path (notification flow) accounts for 24.2% of requests</li>
+                        <li>Multiple successful paths indicate healthy flow diversity</li>
+                        <li>7.4% follow common notification path but abort at consent</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 9. BOTTLENECK WATERFALL -->
+            <div class="card">
+                <h2>9. Failure Points: Where Did the 172 Failures Occur?</h2>
+                <p>Distribution of failures by the last successful stage before terminal error.</p>
+                <div class="chart-container" style="height: 400px;">
+                    <canvas id="bottleneckChart"></canvas>
+                </div>
+                <div style="margin-top: 1rem; padding: 1rem; background: #f8f9fa; border-radius: 8px;">
+                    <strong>Key Insights:</strong>
+                    <ul style="margin: 0.5rem 0 0 1.5rem; font-size: 0.9rem;">
+                        <li>Consent Screen is #1 bottleneck: 67 failures (39% of failures)</li>
+                        <li>Doc Availability Check: 43 failures (25%)</li>
+                        <li>Collection & Verification: 40 failures (23%)</li>
+                        <li>Opening stage: 22 failures (13%)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- SUMMARY & RECOMMENDATIONS -->
+            <div class="card">
+                <h2>Summary & Recommendations</h2>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div style="background: #e3f2fd; padding: 1rem; border-radius: 8px; border-left: 4px solid #2196f3;">
+                        <h4 style="color: #1565c0; margin-bottom: 0.5rem;">Top Opportunities</h4>
+                        <ol style="margin: 0; padding-left: 1.5rem; font-size: 0.9rem;">
+                            <li><strong>Optimize Consent Screen UX</strong> - Reduce 67 failures (9% drop-off)</li>
+                            <li><strong>Implement Doc Pre-Check</strong> - Eliminate 43 "not eligible" issues</li>
+                            <li><strong>Reduce Review Dwell Time</strong> - Currently 7.9s avg at S20→S21</li>
+                            <li><strong>Investigate Nov 24/28 Drop</strong> - Success rates fell to 41-47%</li>
+                        </ol>
+                    </div>
+                    <div style="background: #f3e5f5; padding: 1rem; border-radius: 8px; border-left: 4px solid #9c27b0;">
+                        <h4 style="color: #7b1fa2; margin-bottom: 0.5rem;">Best Practices Identified</h4>
+                        <ol style="margin: 0; padding-left: 1.5rem; font-size: 0.9rem;">
+                            <li><strong>Redirect Channel</strong> - 83% success, recommend for new SPs</li>
+                            <li><strong>2-Document Requests</strong> - Optimal complexity (71.6% success)</li>
+                            <li><strong>iOS Redirect</strong> - Highest performing combo at 87.3%</li>
+                            <li><strong>FAB/ADNIC/Lulu</strong> - Top-performing SPs (80-86% success)</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SQL EXAMPLES -->
+            <div class="card">
+                <h2>Report Generation SQL Examples</h2>
+                <p>Sample queries for generating key reports from the data.</p>
+
+                <h3>Funnel by Channel</h3>
+                <div style="background: #1e1e1e; color: #d4d4d4; padding: 1rem; border-radius: 8px; font-family: 'Consolas', monospace; font-size: 0.8rem; overflow-x: auto;">
+<span style="color: #569cd6;">SELECT</span>
+    channel,
+    <span style="color: #569cd6;">COUNT</span>(<span style="color: #569cd6;">DISTINCT</span> <span style="color: #569cd6;">CASE WHEN</span> status_code = <span style="color: #ce9178;">'S00'</span> <span style="color: #569cd6;">THEN</span> request_id <span style="color: #569cd6;">END</span>) <span style="color: #569cd6;">AS</span> created,
+    <span style="color: #569cd6;">COUNT</span>(<span style="color: #569cd6;">DISTINCT</span> <span style="color: #569cd6;">CASE WHEN</span> status_code = <span style="color: #ce9178;">'S08'</span> <span style="color: #569cd6;">THEN</span> request_id <span style="color: #569cd6;">END</span>) <span style="color: #569cd6;">AS</span> viewed,
+    <span style="color: #569cd6;">COUNT</span>(<span style="color: #569cd6;">DISTINCT</span> <span style="color: #569cd6;">CASE WHEN</span> status_code = <span style="color: #ce9178;">'S21'</span> <span style="color: #569cd6;">THEN</span> request_id <span style="color: #569cd6;">END</span>) <span style="color: #569cd6;">AS</span> consent,
+    <span style="color: #569cd6;">COUNT</span>(<span style="color: #569cd6;">DISTINCT</span> <span style="color: #569cd6;">CASE WHEN</span> status_code = <span style="color: #ce9178;">'S40'</span> <span style="color: #569cd6;">THEN</span> request_id <span style="color: #569cd6;">END</span>) <span style="color: #569cd6;">AS</span> success
+<span style="color: #569cd6;">FROM</span> sharing_status_history
+<span style="color: #569cd6;">GROUP BY</span> channel;
+                </div>
+
+                <h3>SP Performance Scorecard</h3>
+                <div style="background: #1e1e1e; color: #d4d4d4; padding: 1rem; border-radius: 8px; font-family: 'Consolas', monospace; font-size: 0.8rem; overflow-x: auto; margin-top: 1rem;">
+<span style="color: #569cd6;">WITH</span> request_outcomes <span style="color: #569cd6;">AS</span> (
+    <span style="color: #569cd6;">SELECT</span> request_id, sp_id,
+           <span style="color: #569cd6;">MAX</span>(<span style="color: #569cd6;">CASE WHEN</span> status_code = <span style="color: #ce9178;">'S40'</span> <span style="color: #569cd6;">THEN</span> <span style="color: #b5cea8;">1</span> <span style="color: #569cd6;">ELSE</span> <span style="color: #b5cea8;">0</span> <span style="color: #569cd6;">END</span>) <span style="color: #569cd6;">AS</span> is_success
+    <span style="color: #569cd6;">FROM</span> sharing_status_history
+    <span style="color: #569cd6;">GROUP BY</span> request_id, sp_id
+)
+<span style="color: #569cd6;">SELECT</span>
+    sp_id,
+    <span style="color: #569cd6;">COUNT</span>(*) <span style="color: #569cd6;">AS</span> total_requests,
+    <span style="color: #569cd6;">SUM</span>(is_success) <span style="color: #569cd6;">AS</span> successful,
+    <span style="color: #569cd6;">ROUND</span>(<span style="color: #569cd6;">AVG</span>(is_success) * <span style="color: #b5cea8;">100</span>, <span style="color: #b5cea8;">1</span>) <span style="color: #569cd6;">AS</span> success_rate_pct
+<span style="color: #569cd6;">FROM</span> request_outcomes
+<span style="color: #569cd6;">GROUP BY</span> sp_id
+<span style="color: #569cd6;">ORDER BY</span> success_rate_pct <span style="color: #569cd6;">DESC</span>;
+                </div>
+
+                <h3>Step Latency Analysis</h3>
+                <div style="background: #1e1e1e; color: #d4d4d4; padding: 1rem; border-radius: 8px; font-family: 'Consolas', monospace; font-size: 0.8rem; overflow-x: auto; margin-top: 1rem;">
+<span style="color: #569cd6;">SELECT</span>
+    previous_status || <span style="color: #ce9178;">' → '</span> || status_code <span style="color: #569cd6;">AS</span> transition,
+    <span style="color: #569cd6;">COUNT</span>(*) <span style="color: #569cd6;">AS</span> occurrences,
+    <span style="color: #569cd6;">ROUND</span>(<span style="color: #569cd6;">AVG</span>(step_latency_ms)/<span style="color: #b5cea8;">1000</span>, <span style="color: #b5cea8;">2</span>) <span style="color: #569cd6;">AS</span> avg_sec,
+    <span style="color: #569cd6;">ROUND</span>(<span style="color: #569cd6;">PERCENTILE_CONT</span>(<span style="color: #b5cea8;">0.9</span>) <span style="color: #569cd6;">WITHIN GROUP</span> (<span style="color: #569cd6;">ORDER BY</span> step_latency_ms)/<span style="color: #b5cea8;">1000</span>, <span style="color: #b5cea8;">2</span>) <span style="color: #569cd6;">AS</span> p90_sec
+<span style="color: #569cd6;">FROM</span> sharing_status_history
+<span style="color: #569cd6;">WHERE</span> previous_status <span style="color: #569cd6;">IS NOT NULL</span>
+<span style="color: #569cd6;">GROUP BY</span> transition
+<span style="color: #569cd6;">ORDER BY</span> avg_sec <span style="color: #569cd6;">DESC</span>;
+                </div>
+            </div>
+        </div>

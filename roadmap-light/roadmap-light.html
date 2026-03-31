@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Roadmap Light — PowerPoint Export Tool</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<style>
+:root {
+  --gold: #a89030;
+  --dark-green: #11a56f;
+  --teal: #3fcaa7;
+  --bg: #f8f9fa;
+  --surface: #ffffff;
+  --text: #1a1a2e;
+  --text-secondary: #555;
+  --border: #e0e0e0;
+  --font-en: 'Inter', sans-serif;
+  --font-ar: 'Cairo', sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font-en);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.5;
+  padding: 24px;
+}
+
+body[dir="rtl"] {
+  font-family: var(--font-ar);
+}
+
+/* Top Bar */
+.top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  background: var(--surface);
+  border-radius: 12px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  margin-bottom: 24px;
+}
+
+.top-bar h1 {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--dark-green);
+}
+
+.top-bar-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: inherit;
+}
+
+.btn:hover { opacity: 0.88; transform: translateY(-1px); }
+.btn:active { transform: translateY(0); }
+
+.btn-primary {
+  background: var(--dark-green);
+  color: #fff;
+}
+
+.btn-gold {
+  background: var(--gold);
+  color: #fff;
+}
+
+.btn-teal {
+  background: var(--teal);
+  color: #fff;
+}
+
+.btn-outline {
+  background: transparent;
+  border: 1.5px solid var(--border);
+  color: var(--text);
+}
+
+.btn-outline:hover { border-color: var(--dark-green); color: var(--dark-green); }
+
+.btn-sm { padding: 5px 10px; font-size: 12px; }
+
+.btn-danger { background: #ef4444; color: #fff; }
+
+.btn-icon {
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.15s;
+}
+
+.btn-icon:hover { border-color: #ef4444; color: #ef4444; }
+
+/* Instance Card */
+.instance-card {
+  background: var(--surface);
+  border-radius: 12px;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.07);
+  margin-bottom: 28px;
+  overflow: hidden;
+}
+
+.instance-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border);
+  background: linear-gradient(135deg, var(--dark-green) 0%, var(--teal) 100%);
+  color: #fff;
+}
+
+.instance-header input {
+  background: rgba(255,255,255,0.18);
+  border: 1px solid rgba(255,255,255,0.3);
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 700;
+  font-family: inherit;
+  width: 320px;
+}
+
+.instance-header input::placeholder { color: rgba(255,255,255,0.6); }
+
+.instance-controls {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.instance-controls .btn {
+  background: rgba(255,255,255,0.2);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.3);
+}
+
+.instance-controls .btn:hover {
+  background: rgba(255,255,255,0.35);
+}
+
+.lang-toggle {
+  display: flex;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.3);
+}
+
+.lang-toggle button {
+  padding: 5px 14px;
+  border: none;
+  background: rgba(255,255,255,0.12);
+  color: rgba(255,255,255,0.7);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: inherit;
+}
+
+.lang-toggle button.active {
+  background: rgba(255,255,255,0.95);
+  color: var(--dark-green);
+}
+
+/* Item Table */
+.items-section {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.items-section summary {
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 4px 0;
+  user-select: none;
+}
+
+.items-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  font-size: 13px;
+}
+
+.items-table th {
+  text-align: left;
+  padding: 8px 10px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 2px solid var(--border);
+}
+
+[dir="rtl"] .items-table th { text-align: right; }
+
+.items-table td {
+  padding: 6px 10px;
+  border-bottom: 1px solid #f0f0f0;
+  vertical-align: middle;
+}
+
+.items-table input[type="text"],
+.items-table input[type="date"],
+.items-table select {
+  width: 100%;
+  padding: 5px 8px;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  font-size: 13px;
+  font-family: inherit;
+  background: #fafafa;
+}
+
+.items-table input[type="text"]:focus,
+.items-table input[type="date"]:focus,
+.items-table select:focus {
+  outline: none;
+  border-color: var(--teal);
+  background: #fff;
+}
+
+.items-table .color-cell {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.color-swatch {
+  width: 22px;
+  height: 22px;
+  border-radius: 4px;
+  border: 1px solid rgba(0,0,0,0.1);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.color-picker-wrapper {
+  position: relative;
+}
+
+.color-picker-wrapper input[type="color"] {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 22px;
+  height: 22px;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.add-item-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  align-items: center;
+}
+
+/* Roadmap Grid (export area) */
+.roadmap-export-area {
+  padding: 0;
+}
+
+.roadmap-grid {
+  width: 100%;
+  padding: 40px 48px;
+  background: #ffffff;
+  position: relative;
+}
+
+.roadmap-grid.dark-mode {
+  background: #1a1a2e;
+}
+
+.roadmap-title {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--dark-green);
+  margin-bottom: 28px;
+  padding-bottom: 12px;
+  border-bottom: 3px solid var(--dark-green);
+}
+
+[dir="rtl"] .roadmap-title {
+  text-align: right;
+}
+
+.grid-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.grid-table th {
+  padding: 10px 4px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  text-align: center;
+  border-bottom: 2px solid var(--dark-green);
+  background: #f0faf6;
+}
+
+.grid-table th:first-child {
+  text-align: left;
+  width: 260px;
+  min-width: 260px;
+  max-width: 260px;
+  padding-left: 12px;
+  font-size: 12px;
+}
+
+[dir="rtl"] .grid-table th:first-child {
+  text-align: right;
+  padding-left: 4px;
+  padding-right: 12px;
+}
+
+[dir="rtl"] .grid-table th:last-child {
+  text-align: right;
+}
+
+.grid-table td {
+  padding: 0;
+  min-height: 48px;
+  height: auto;
+  position: relative;
+  border-bottom: 1px solid #f0f0f0;
+  vertical-align: middle;
+}
+
+.grid-table td:first-child {
+  padding: 6px 12px 6px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+  white-space: normal;
+  word-break: break-word;
+  line-height: 1.35;
+  width: 260px;
+  min-width: 260px;
+  max-width: 260px;
+}
+
+[dir="rtl"] .grid-table td:first-child {
+  text-align: right;
+}
+
+.grid-table tr:last-child td {
+  border-bottom: 2px solid var(--dark-green);
+}
+
+/* Bar cell container */
+.bar-cell-wrapper {
+  position: absolute;
+  top: 6px;
+  bottom: 6px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+  z-index: 2;
+  min-width: 8px;
+}
+
+.bar-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Month column dividers */
+.month-divider {
+  border-left: 1px solid #eee;
+}
+
+[dir="rtl"] .month-divider {
+  border-left: none;
+  border-right: 1px solid #eee;
+}
+
+/* Footer controls */
+.instance-footer {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 20px;
+  align-items: center;
+  border-top: 1px solid var(--border);
+}
+
+/* Export size selector */
+.export-options {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.export-options select {
+  padding: 5px 8px;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  font-size: 12px;
+  font-family: inherit;
+}
+
+/* Month range selector */
+.month-range {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 12px;
+  padding: 0 20px;
+}
+
+.month-range select {
+  padding: 5px 8px;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  font-size: 12px;
+  font-family: inherit;
+}
+
+/* Remove instance button */
+.btn-remove-instance {
+  background: rgba(255,255,255,0.15);
+  color: rgba(255,255,255,0.8);
+  border: 1px solid rgba(255,255,255,0.2);
+  padding: 4px 10px;
+  border-radius: 5px;
+  font-size: 11px;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.btn-remove-instance:hover {
+  background: #ef4444;
+  color: #fff;
+  border-color: #ef4444;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  body { padding: 12px; }
+  .roadmap-grid { padding: 20px 16px; }
+  .grid-table th:first-child,
+  .grid-table td:first-child { width: 180px; min-width: 180px; max-width: 180px; }
+}
+
+/* Print/export overrides */
+.no-export { /* items hidden during export */ }
+
+/* Save toast */
+#save-toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: var(--dark-green);
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  z-index: 999;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <h1>Roadmap Light</h1>
+  <div class="top-bar-actions">
+    <button class="btn btn-primary" onclick="addInstance()">+ New Roadmap Instance</button>
+    <button class="btn btn-gold" onclick="saveAll()">&#128190; Save</button>
+  </div>
+</div>
+<div id="save-toast">Saved ✓</div>
+
+<div id="instances-container"></div>
+
+<script>
+// ─── Data & Config ───
+const MONTHS_EN = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const MONTHS_EN_SHORT = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const MONTHS_AR = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+const THEME_COLORS = ['#a89030','#11a56f','#3fcaa7'];
+const THEME_COLOR_NAMES = { '#a89030': 'Gold', '#11a56f': 'Dark Green', '#3fcaa7': 'Teal' };
+
+let instanceCounter = 0;
+const instances = {};
+
+// ─── Default data for first instance (2026) ───
+const DEFAULT_ITEMS = [
+  // Sprint 70-72: already in progress, cap start to Jan 1
+  { nameEn: 'Status-Based Reporting Implementation', nameAr: 'تتبع حالة الطلبات',
+    startDate: '2026-01-01', endDate: '2026-01-28', color: '#a89030' },
+
+  // Sprint 72-72
+  { nameEn: 'Dual Citizenship GA', nameAr: 'الجنسية المزدوجة',
+    startDate: '2026-01-15', endDate: '2026-01-28', color: '#a89030' },
+
+  // Sprint 73-73
+  { nameEn: 'UAEVerify SEO', nameAr: 'تحسين محركات البحث لـ UAEVerify',
+    startDate: '2026-01-29', endDate: '2026-02-11', color: '#3fcaa7' },
+
+  // Sprint 73-76
+  { nameEn: 'SP Off-boarding', nameAr: 'إلغاء تسجيل مزودي الخدمة',
+    startDate: '2026-01-29', endDate: '2026-03-25', color: '#3fcaa7' },
+
+  // Sprint 73-77
+  { nameEn: 'QR Code Simplification – Direct Sharing', nameAr: 'تبسيط رمز QR – المشاركة المباشرة',
+    startDate: '2026-01-29', endDate: '2026-04-08', color: '#3fcaa7' },
+
+  // Sprint 74-77
+  { nameEn: 'Design Audit', nameAr: 'مراجعة التصميم',
+    startDate: '2026-02-12', endDate: '2026-04-08', color: '#11a56f' },
+
+  // Sprint 75-76
+  { nameEn: 'SP Automation Testing Suite', nameAr: 'حزمة الاختبار الآلي لمزودي الخدمة',
+    startDate: '2026-02-26', endDate: '2026-03-25', color: '#3fcaa7' },
+
+  // Sprint 76-78
+  { nameEn: 'Design System Update', nameAr: 'تحديث نظام التصميم',
+    startDate: '2026-03-12', endDate: '2026-04-22', color: '#11a56f' },
+
+  // Sprint 79-82
+  { nameEn: 'Form Filler', nameAr: 'تعبئة النماذج',
+    startDate: '2026-04-23', endDate: '2026-06-17', color: '#3fcaa7' },
+
+  // Sprint 79-82
+  { nameEn: 'Accessibility Enhancement', nameAr: 'تحسين إمكانية الوصول',
+    startDate: '2026-04-23', endDate: '2026-06-17', color: '#11a56f' },
+
+  // Sprint 81-86
+  { nameEn: 'Auto-Add Documents (One-Time Consent)', nameAr: 'إضافة المستندات تلقائياً',
+    startDate: '2026-05-21', endDate: '2026-08-12', color: '#a89030' },
+
+  // Sprint 82-84
+  { nameEn: 'User Behavior Analytics Tool', nameAr: 'تحليل سلوك المستخدم',
+    startDate: '2026-06-04', endDate: '2026-07-15', color: '#a89030' },
+
+  // Sprint 83-85
+  { nameEn: 'Consent Sharing (Third Party Data)', nameAr: 'مشاركة بيانات أطراف ثالثة',
+    startDate: '2026-06-18', endDate: '2026-07-29', color: '#a89030' },
+
+  // Sprint 87-88
+  { nameEn: 'Enable Download of All Documents', nameAr: 'تحميل المستندات',
+    startDate: '2026-08-13', endDate: '2026-09-09', color: '#a89030' },
+
+  // Sprint 89-94
+  { nameEn: 'Physical Document Sharing', nameAr: 'مشاركة المستندات الورقية',
+    startDate: '2026-09-10', endDate: '2026-12-02', color: '#a89030' },
+];
+
+// ─── Default data for second instance (2025) ───
+const ITEMS_2025 = [
+  { nameEn: 'Performance Enhancement', nameAr: 'تحسين الأداء',
+    startDate: '2025-01-01', endDate: '2025-02-14', color: '#5a9e6f' },
+
+  { nameEn: 'Enhance Document Details View', nameAr: 'تطوير عرض تفاصيل المستند',
+    startDate: '2025-02-01', endDate: '2025-03-14', color: '#5a9e6f' },
+
+  { nameEn: 'App Content Update – Part 1', nameAr: 'تحديث محتوى التطبيق – الجزء الأول',
+    startDate: '2025-02-17', endDate: '2025-03-14', color: '#5a9e6f' },
+
+  { nameEn: 'Documents Tab Refresh', nameAr: 'تحديث تبويب المستندات',
+    startDate: '2025-03-01', endDate: '2025-08-29', color: '#5a9e6f' },
+
+  { nameEn: 'Mock Service Provider Application', nameAr: 'تطبيق محاكاة مزود الخدمة',
+    startDate: '2025-04-01', endDate: '2025-06-27', color: '#5a9e6f' },
+
+  { nameEn: 'UI/UX Enhancement and Ghost Loader Addition', nameAr: 'تحسينات الواجهة وإضافة التحميل الوهمي',
+    startDate: '2025-04-01', endDate: '2025-06-13', color: '#5a9e6f' },
+
+  { nameEn: 'Enhanced Sharing Experience', nameAr: 'تجربة مشاركة محسّنة',
+    startDate: '2025-05-15', endDate: '2025-08-29', color: '#5a9e6f' },
+
+  { nameEn: 'One-Time General Consent & Automated Document Retrieval – Feasibility Study',
+    nameAr: 'الموافقة العامة لمرة واحدة واسترجاع المستندات الآلي – دراسة الجدوى',
+    startDate: '2025-05-01', endDate: '2025-11-14', color: '#2c3a55' },
+
+  { nameEn: 'Bulk Signing – Storage of Multiple Documents', nameAr: 'التوقيع الجماعي – تخزين مستندات متعددة',
+    startDate: '2025-06-01', endDate: '2025-08-15', color: '#2c3a55' },
+
+  { nameEn: 'Document Details Page Refresh', nameAr: 'تجديد صفحة تفاصيل المستند',
+    startDate: '2025-08-01', endDate: '2025-11-28', color: '#7ab0cc' },
+
+  { nameEn: 'Automatic Document Update Detection', nameAr: 'كشف تحديثات المستندات تلقائياً',
+    startDate: '2025-08-15', endDate: '2025-11-28', color: '#7ab0cc' },
+
+  { nameEn: 'Dual Citizenship Support in DV', nameAr: 'دعم الجنسية المزدوجة في المحفظة',
+    startDate: '2025-09-01', endDate: '2025-10-31', color: '#7ab0cc' },
+];
+
+// ─── Instance Management ───
+function createInstanceData(title, lang, items, startYear, endYear) {
+  return {
+    title: title || 'DV 2026 Roadmap',
+    lang: lang || 'en',
+    items: items || [],
+    startMonth: 0,
+    startYear: startYear || 2026,
+    endMonth: 11,
+    endYear: endYear || 2026,
+    exportSize: '1920x1080',
+    showBarLabels: true
+  };
+}
+
+function addInstance(preloadItems, startYear, endYear) {
+  const id = ++instanceCounter;
+  const data = createInstanceData(
+    id === 1 ? 'DV 2026 Roadmap' : 'Roadmap ' + id,
+    'en',
+    preloadItems ? preloadItems.map(it => ({...it})) : [],
+    startYear,
+    endYear
+  );
+  instances[id] = data;
+  renderInstance(id);
+  renderGrid(id);
+}
+
+function removeInstance(id) {
+  if (Object.keys(instances).length <= 1) return;
+  delete instances[id];
+  const el = document.getElementById('instance-' + id);
+  if (el) el.remove();
+}
+
+// ─── Sort Items by Start Date ───
+function sortItems(id) {
+  instances[id].items.sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
+  renderInstance(id);
+  renderGrid(id);
+}
+
+// ─── Render Instance Card ───
+function renderInstance(id) {
+  const data = instances[id];
+  const container = document.getElementById('instances-container');
+  let card = document.getElementById('instance-' + id);
+  if (!card) {
+    card = document.createElement('div');
+    card.id = 'instance-' + id;
+    card.className = 'instance-card';
+    container.appendChild(card);
+  }
+
+  const isAr = data.lang === 'ar';
+  const dir = isAr ? 'rtl' : 'ltr';
+  const font = isAr ? "'Cairo', sans-serif" : "'Inter', sans-serif";
+
+  card.innerHTML = `
+    <div class="instance-header">
+      <input type="text" value="${escHtml(data.title)}" onchange="instances[${id}].title=this.value; renderGrid(${id})" placeholder="Roadmap Title" style="font-family: ${font}">
+      <div class="instance-controls">
+        <div class="lang-toggle">
+          <button class="${data.lang==='en'?'active':''}" onclick="setLang(${id},'en')">EN</button>
+          <button class="${data.lang==='ar'?'active':''}" onclick="setLang(${id},'ar')">AR</button>
+        </div>
+        ${Object.keys(instances).length > 1 ? `<button class="btn-remove-instance" onclick="removeInstance(${id})">Remove</button>` : ''}
+      </div>
+    </div>
+
+    <details class="items-section no-export" open>
+      <summary>Items (${data.items.length})</summary>
+      <table class="items-table">
+        <thead>
+          <tr>
+            <th style="width:25%">Name (EN)</th>
+            <th style="width:20%">Name (AR)</th>
+            <th style="width:12%">Start</th>
+            <th style="width:12%">End</th>
+            <th style="width:14%">Color</th>
+            <th style="width:5%"></th>
+          </tr>
+        </thead>
+        <tbody>
+          ${data.items.map((item, idx) => renderItemRow(id, item, idx)).join('')}
+        </tbody>
+      </table>
+      <div class="add-item-row">
+        <button class="btn btn-sm btn-primary" onclick="addItem(${id})">+ Add Item</button>
+        <button class="btn btn-sm btn-outline" onclick="sortItems(${id})">Sort &#x2191;</button>
+      </div>
+    </details>
+
+    <div class="month-range no-export" style="padding-top:12px">
+      <span>Display range:</span>
+      ${monthSelect('start', id, data.startMonth, data.startYear)}
+      <span>to</span>
+      ${monthSelect('end', id, data.endMonth, data.endYear)}
+    </div>
+
+    <div class="roadmap-export-area" id="export-area-${id}">
+      <div class="roadmap-grid" id="grid-${id}" dir="${dir}" style="font-family: ${font}">
+        <!-- grid rendered by renderGrid -->
+      </div>
+    </div>
+
+    <div class="instance-footer no-export">
+      <div class="export-options">
+        <span>Export size:</span>
+        <select onchange="instances[${id}].exportSize=this.value">
+          <option value="1920x1080" ${data.exportSize==='1920x1080'?'selected':''}>1920 x 1080 (Full HD)</option>
+          <option value="2400x1350" ${data.exportSize==='2400x1350'?'selected':''}>2400 x 1350 (High-res)</option>
+          <option value="2560x1440" ${data.exportSize==='2560x1440'?'selected':''}>2560 x 1440 (QHD)</option>
+        </select>
+        <label style="font-size:12px;color:var(--text-secondary);display:flex;align-items:center;gap:6px;margin-left:16px">
+          <input type="checkbox" ${data.showBarLabels !== false ? 'checked' : ''} onchange="instances[${id}].showBarLabels=this.checked; renderGrid(${id})">
+          Show labels on bars
+        </label>
+      </div>
+      <button class="btn btn-gold" onclick="exportPNG(${id})">Export PNG</button>
+    </div>
+  `;
+}
+
+function renderItemRow(id, item, idx) {
+  const colorOptions = THEME_COLORS.map(c =>
+    `<option value="${c}" ${item.color===c?'selected':''}>${THEME_COLOR_NAMES[c]}</option>`
+  ).join('');
+
+  return `<tr>
+    <td><input type="text" value="${escHtml(item.nameEn)}" onchange="updateItem(${id},${idx},'nameEn',this.value)"></td>
+    <td><input type="text" value="${escHtml(item.nameAr)}" onchange="updateItem(${id},${idx},'nameAr',this.value)" dir="rtl" style="font-family:'Cairo',sans-serif"></td>
+    <td><input type="date" value="${item.startDate}" onchange="updateItem(${id},${idx},'startDate',this.value); renderGrid(${id})"></td>
+    <td><input type="date" value="${item.endDate}" onchange="updateItem(${id},${idx},'endDate',this.value); renderGrid(${id})"></td>
+    <td>
+      <div class="color-cell">
+        <select onchange="updateItemColor(${id},${idx},this.value)" style="width:auto">
+          ${colorOptions}
+          <option value="custom" ${THEME_COLORS.includes(item.color)?'':'selected'}>Custom</option>
+        </select>
+        <div class="color-picker-wrapper">
+          <div class="color-swatch" style="background:${item.color}"></div>
+          <input type="color" value="${item.color}" onchange="updateItem(${id},${idx},'color',this.value)">
+        </div>
+      </div>
+    </td>
+    <td><button class="btn-icon" onclick="removeItem(${id},${idx})" title="Delete item">&#x2715;</button></td>
+  </tr>`;
+}
+
+// Generate plain month options for display range selectors
+function monthOptions(selectedMonth, selectedYear) {
+  let html = '';
+  for (let y = 2025; y <= 2028; y++) {
+    for (let m = 0; m < 12; m++) {
+      const val = `${y}-${m}`;
+      const sel = (m === selectedMonth && y === selectedYear) ? 'selected' : '';
+      html += `<option value="${val}" ${sel}>${MONTHS_EN_SHORT[m]} ${y}</option>`;
+    }
+  }
+  return html;
+}
+
+function monthSelect(type, id, month, year) {
+  let html = `<select onchange="updateRange(${id},'${type}',this.value)">`;
+  html += monthOptions(month, year);
+  html += '</select>';
+  return html;
+}
+
+// ─── Item CRUD ───
+function addItem(id) {
+  const yr = instances[id].startYear || 2026;
+  instances[id].items.push({
+    nameEn: '', nameAr: '',
+    startDate: yr + '-01-01',
+    endDate:   yr + '-03-31',
+    color: '#a89030'
+  });
+  renderInstance(id);
+  renderGrid(id);
+}
+
+function removeItem(id, idx) {
+  instances[id].items.splice(idx, 1);
+  renderInstance(id);
+  renderGrid(id);
+}
+
+function updateItem(id, idx, field, value) {
+  instances[id].items[idx][field] = value;
+  renderInstance(id);
+  renderGrid(id);
+}
+
+function updateItemColor(id, idx, val) {
+  if (val !== 'custom') {
+    instances[id].items[idx].color = val;
+    renderInstance(id);
+    renderGrid(id);
+  }
+}
+
+function updateRange(id, type, val) {
+  const [y, m] = val.split('-').map(Number);
+  if (type === 'start') {
+    instances[id].startMonth = m;
+    instances[id].startYear = y;
+  } else {
+    instances[id].endMonth = m;
+    instances[id].endYear = y;
+  }
+  renderInstance(id);
+  renderGrid(id);
+}
+
+function setLang(id, lang) {
+  instances[id].lang = lang;
+  renderInstance(id);
+  renderGrid(id);
+}
+
+// ─── Bar Layout: Sub-Month Fractional Precision ───
+function daysInMonth(year, month) {
+  return new Date(year, month + 1, 0).getDate();
+}
+
+function getBarLayout(item, rangeStartYear, rangeStartMonth, rangeEndYear, rangeEndMonth) {
+  const rangeStartAbs = rangeStartYear * 12 + rangeStartMonth;
+  const rangeEndAbs = rangeEndYear * 12 + rangeEndMonth;
+
+  const sd = new Date(item.startDate + 'T00:00:00');
+  const ed = new Date(item.endDate + 'T00:00:00');
+
+  // Clamp to visible range
+  const rangeFirstDay = new Date(rangeStartYear, rangeStartMonth, 1);
+  const rangeLastDay  = new Date(rangeEndYear, rangeEndMonth + 1, 0);
+  if (ed < rangeFirstDay || sd > rangeLastDay) return null; // out of range
+
+  const clampedStart = sd < rangeFirstDay ? rangeFirstDay : sd;
+  const clampedEnd   = ed > rangeLastDay  ? rangeLastDay  : ed;
+
+  const startAbsMonth = clampedStart.getFullYear() * 12 + clampedStart.getMonth();
+  const endAbsMonth   = clampedEnd.getFullYear()   * 12 + clampedEnd.getMonth();
+
+  const startColIdx = startAbsMonth - rangeStartAbs;
+  const endColIdx   = endAbsMonth   - rangeStartAbs;
+  const colspan     = endColIdx - startColIdx + 1;
+
+  // Fraction of start day within start month (0 = 1st, approaches 1 = last day)
+  const startDayFrac = (clampedStart.getDate() - 1) / daysInMonth(clampedStart.getFullYear(), clampedStart.getMonth());
+  // Fraction of end day within end month (0 = 1st, 1 = last day)
+  const endDayFrac   = clampedEnd.getDate() / daysInMonth(clampedEnd.getFullYear(), clampedEnd.getMonth());
+
+  // Percentages relative to the full colspan width
+  const leftPct  = (startDayFrac / colspan) * 100;
+  const rightPct = ((1 - endDayFrac) / colspan) * 100;
+
+  return { startColIdx, colspan, leftPct, rightPct };
+}
+
+// ─── Render Grid ───
+function renderGrid(id) {
+  const data = instances[id];
+  const grid = document.getElementById('grid-' + id);
+  if (!grid) return;
+
+  const isAr = data.lang === 'ar';
+  const dir = isAr ? 'rtl' : 'ltr';
+  const font = isAr ? "'Cairo', sans-serif" : "'Inter', sans-serif";
+  grid.setAttribute('dir', dir);
+  grid.style.fontFamily = font;
+
+  // Build month list for the display range
+  const months = [];
+  let y = data.startYear, m = data.startMonth;
+  const endAbsMonth = data.endYear * 12 + data.endMonth;
+  while (y * 12 + m <= endAbsMonth) {
+    months.push({ month: m, year: y, label: isAr ? MONTHS_AR[m] : MONTHS_EN_SHORT[m], fullLabel: isAr ? MONTHS_AR[m] : MONTHS_EN[m] });
+    m++;
+    if (m > 11) { m = 0; y++; }
+  }
+
+  if (months.length === 0) { grid.innerHTML = '<p style="padding:20px;color:#999">No months in range</p>'; return; }
+
+  const totalMonths = months.length;
+  const itemLabel = isAr ? 'العنصر' : 'Item';
+  const showYears = months[0].year !== months[months.length - 1].year || months.length > 12;
+
+  let html = `<div class="roadmap-title" style="font-family:${font}">${escHtml(data.title)}</div>`;
+  html += `<table class="grid-table"><thead><tr>`;
+  html += `<th>${itemLabel}</th>`;
+
+  // Header: one <th> per month
+  months.forEach((mo, i) => {
+    const divClass = i > 0 ? ' class="month-divider"' : '';
+    const yearStr = showYears ? '<br><span style="font-size:10px;font-weight:400;opacity:0.6">' + mo.year + '</span>' : '';
+    html += `<th${divClass}>${mo.label}${yearStr}</th>`;
+  });
+
+  html += `</tr></thead><tbody>`;
+
+  // Sort items by start date for display
+  const sortedItems = [...data.items].sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
+
+  sortedItems.forEach(item => {
+    const name = isAr ? (item.nameAr || item.nameEn) : item.nameEn;
+    const layout = getBarLayout(item, data.startYear, data.startMonth, data.endYear, data.endMonth);
+
+    // Skip if completely outside range
+    if (!layout) return;
+
+    html += `<tr>`;
+    html += `<td title="${escHtml(name)}">${escHtml(name)}</td>`;
+
+    // In RTL mode, swap left/right percentages on the bar
+    const barLeft = isAr ? layout.rightPct : layout.leftPct;
+    const barRight = isAr ? layout.leftPct : layout.rightPct;
+
+    for (let c = 0; c < totalMonths; c++) {
+      const divClass = c > 0 ? ' month-divider' : '';
+
+      if (c === layout.startColIdx) {
+        html += `<td colspan="${layout.colspan}" class="${divClass}" style="position:relative">`;
+        html += `<div class="bar-cell-wrapper" style="left:${barLeft.toFixed(1)}%;right:${barRight.toFixed(1)}%;background:${item.color}">`;
+        html += (data.showBarLabels !== false ? `<span class="bar-label">${escHtml(name)}</span>` : '') + `</div>`;
+        html += `</td>`;
+        c += layout.colspan - 1; // skip covered cols
+      } else {
+        html += `<td class="${divClass}"></td>`;
+      }
+    }
+
+    html += `</tr>`;
+  });
+
+  html += `</tbody></table>`;
+
+  grid.innerHTML = html;
+}
+
+// ─── Export ───
+async function exportPNG(id) {
+  const data = instances[id];
+  const [targetW, targetH] = data.exportSize.split('x').map(Number);
+  const exportArea = document.getElementById('export-area-' + id);
+  const gridEl = document.getElementById('grid-' + id);
+
+  // Temporarily size the grid for export
+  const origWidth = gridEl.style.width;
+  const origMinWidth = gridEl.style.minWidth;
+  gridEl.style.width = targetW + 'px';
+  gridEl.style.minWidth = targetW + 'px';
+  gridEl.style.minHeight = targetH + 'px';
+
+  // Always hide title in export
+  const titleEl = gridEl.querySelector('.roadmap-title');
+  if (titleEl) titleEl.style.display = 'none';
+
+  try {
+    const canvas = await html2canvas(gridEl, {
+      width: targetW,
+      height: targetH,
+      scale: 2,
+      useCORS: true,
+      backgroundColor: '#ffffff',
+      logging: false,
+    });
+
+    const link = document.createElement('a');
+    link.download = (data.title || 'roadmap').replace(/[^a-zA-Z0-9_\- ]/g, '') + '_' + targetW + 'x' + targetH + '.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  } catch (err) {
+    alert('Export failed: ' + err.message);
+  } finally {
+    // Restore title visibility
+    if (titleEl) {
+      titleEl.style.display = '';
+    }
+  }
+
+  gridEl.style.width = origWidth;
+  gridEl.style.minWidth = origMinWidth;
+  gridEl.style.minHeight = '';
+}
+
+// ─── Helpers ───
+function escHtml(str) {
+  if (!str) return '';
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ─── Save / Load (localStorage) ───
+function saveAll() {
+  try {
+    localStorage.setItem('roadmap-light-v1', JSON.stringify({
+      instanceCounter,
+      instances
+    }));
+    const toast = document.getElementById('save-toast');
+    toast.style.opacity = '1';
+    setTimeout(() => toast.style.opacity = '0', 1800);
+  } catch(e) {
+    alert('Save failed: ' + e.message);
+  }
+}
+
+function loadSaved() {
+  try {
+    const raw = localStorage.getItem('roadmap-light-v1');
+    if (!raw) return false;
+    const saved = JSON.parse(raw);
+    if (!saved.instances || !saved.instanceCounter) return false;
+    instanceCounter = saved.instanceCounter;
+    Object.assign(instances, saved.instances);
+    // Re-render all saved instances in order
+    for (const id of Object.keys(instances).map(Number).sort((a,b)=>a-b)) {
+      renderInstance(id);
+      renderGrid(id);
+    }
+    return true;
+  } catch(e) {
+    return false;
+  }
+}
+
+// ─── Initialize ───
+if (!loadSaved()) {
+  addInstance(DEFAULT_ITEMS);
+  addInstance(ITEMS_2025, 2025, 2025);
+  const id2025 = instanceCounter;
+  instances[id2025].title = 'DV 2025 Roadmap';
+  renderInstance(id2025);
+  renderGrid(id2025);
+}
+</script>
+</body>
+</html>

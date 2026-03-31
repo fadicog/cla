@@ -1,0 +1,22 @@
+Status Code,Status Name,Status Type,Description,Possible Next States,Trigger/Condition,Is Final State,Estimated % of Requests,Notes
+100,REQUEST_CREATED,Initial,SP created sharing request - initial state,110,SP calls POST /sharing-requests with valid correlation ID,No,100%,Entry point for all sharing requests
+110,OPENED,Intermediate,User opened the sharing request in UAE PASS,200|300,User taps notification or navigates to pending requests,No,95%,5% abandon before opening
+200,DOCUMENTS_NOT_IN_VAULT,Intermediate,Mandatory documents not available in user's vault,210|240|600,System checks document availability and finds missing docs,No,35%,Branch B: Missing documents path
+210,DOCUMENTS_REQUEST_INITIATED,Intermediate,User initiated request for missing documents from ICP,220|230|300,User taps Request Missing Documents button,No,30%,Documents being fetched from ICP
+220,DOCUMENTS_PARTIALLY_AVAILABLE,Intermediate,Some documents requested successfully but others failed,300|230|600,ICP returns partial success for document requests,No,5%,User may proceed with available docs or retry
+230,DOCUMENTS_REQUEST_FAILED,Terminal,All document requests to ICP failed,NONE,ICP returns error for all document types requested,Yes,2%,Terminal failure - user cannot proceed
+240,DOCUMENTS_UNAVAILABLE_FOR_USER,Terminal,Documents do not exist or user not eligible,NONE,ICP confirms user cannot get these documents,Yes,1%,Terminal failure - eligibility issue
+300,DOCUMENTS_AVAILABLE,Intermediate,All mandatory documents already in vault,310,System confirms all requested docs are available,No,65%,Branch A: Happy path
+310,READY_TO_CONSENT,Intermediate,User viewing consent screen with all requirements met,320|510|600,User reaches consent screen with available documents,No,92%,Critical decision point
+320,CONSENT_GIVEN,Intermediate,User checked consent checkbox,330|530|600,User checks I consent checkbox,No,88%,Consent provided but not yet shared
+330,SHARE_INITIATED,Intermediate,User pressed Share My Documents button,340,User taps Share My Documents button,No,85%,Proceeding to authentication
+340,PIN_REQUESTED,Intermediate,PIN entry screen displayed to user,350|360,System prompts for PIN authentication,No,85%,Security checkpoint
+350,PIN_ENTERED_CORRECTLY,Intermediate,PIN validated successfully,370|550,User enters correct PIN within 3 attempts,No,80%,Ready for transmission
+360,PIN_ENTERED_INCORRECTLY,Terminal,PIN verification failed after max attempts,NONE,User exhausted 3 PIN attempts,Yes,2%,Terminal failure - security lockout
+370,SHARING_IN_PROGRESS,Intermediate,Creating verifiable presentation and transmitting to SP,400|550,System begins eSeal validation and SP API call,No,80%,Backend processing
+400,SHARING_SUCCESSFUL,Terminal,Documents successfully delivered to SP,NONE,SP API returns 200 OK and confirms receipt,Yes,75%,Successful completion
+510,CONSENT_DECLINED,Terminal,User explicitly declined to share documents,NONE,User taps Decline or Cancel on consent screen,Yes,4%,User choice to not share
+520,EXPIRED_BEFORE_CONSENT,Terminal,Request expired before user provided consent,NONE,TTL reached before user checked consent checkbox,Yes,3%,Timeout before consent
+530,EXPIRED_AFTER_CONSENT,Terminal,Request expired after consent but before completion,NONE,TTL reached after consent but before successful transmission,Yes,1%,Rare edge case
+550,SERVICE_ERROR,Terminal,Backend or technical error during sharing process,NONE,eSeal validation failure / SP API error / Network timeout,Yes,5%,Includes all technical failures
+600,ABANDONED_BY_USER,Terminal,User left flow without completing,NONE,User exits app or does not return after timeout threshold,Yes,7%,User drop-off at various stages

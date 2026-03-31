@@ -1,0 +1,27 @@
+Status Code,Status Name,Description,Channel,Phase,Terminal
+S00,REQUEST_CREATED,Sharing request registered in DV system,All,Ingress,No
+S01,NOTIF_SENT,Push notification sent to user device,Notification,Ingress,No
+S02,NOTIF_DELIVERED,Push delivered by OS (confirmed),Notification,Ingress,No
+S03,NOTIF_OPENED,User opened push notification,Notification,Ingress,No
+S04,REDIRECT_LAUNCHED,SP triggered app/web-to-app redirect,Redirect,Ingress,No
+S05,REDIRECT_LANDED,User landed on request via redirect,Redirect,Ingress,No
+S06,QR_RENDERED,QR code shown on SP web page,QR,Ingress,No
+S07,QR_SCANNED,User scanned QR and landed on request,QR,Ingress,No
+S08,REQUEST_VIEWED,Request screen viewed in UAE PASS (stable landed state),All,Ingress,No
+S10,DOCS_READY_AT_OPEN,All mandatory documents present at first view,All,Document,No
+S11,DOCS_MISSING_AT_OPEN,Mandatory documents missing at first view,All,Document,No
+S12,MISSING_DOC_REQUEST_INITIATED,User tapped Request for a required document,All,Document,No
+S13,MISSING_DOC_REQUEST_SUCCESS,Required document retrieved and added to vault,All,Document,No
+S14,MISSING_DOC_REQUEST_ERROR,Technical error from issuer/DV during fetch,All,Document,No
+S15,MISSING_DOC_NOT_FOUND_AT_ISSUER,Issuer reports document does not exist for user,All,Document,No
+S20,AWAITING_CONSENT,Documents ready but consent checkbox not yet checked,All,Consent,No
+S21,CONSENT_GIVEN,User checked consent checkbox and Share button enabled,All,Consent,No
+S22,SEND_DOCUMENTS_PRESSED,User pressed Send Documents / Share button,All,Consent,No
+S30,PIN_REQUESTED,App prompted user for PIN entry,All,Auth,No
+S31,PIN_VERIFIED,PIN entered correctly,All,Auth,No
+S32,PIN_FAILED,PIN incorrect or user aborted PIN screen,All,Auth,No
+S40,SHARE_SUCCESS,Documents shared successfully to SP,All,Terminal,Yes
+S41,SHARE_TECH_ERROR,Technical failure after PIN (timeouts / 5xx errors),All,Terminal,Yes
+S42,EXPIRED,Request expired (TTL reached without completion),All,Terminal,Yes
+S43,USER_ABORTED,User backed out / closed without completing,All,Terminal,Yes
+S44,NOT_ELIGIBLE,Cannot satisfy requirements (doc not available at issuer),All,Terminal,Yes
