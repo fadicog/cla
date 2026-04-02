@@ -1,0 +1,1373 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DV-PREFILL-2026 | SP Form Pre-Fill via Issuer Claims — TDRA Presentation</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Cairo:wght@400;600;700&display=swap');
+
+  :root {
+    --primary: #0055A4;
+    --primary-light: #E8F0FE;
+    --primary-dark: #003D7A;
+    --accent: #00B4D8;
+    --accent-light: #E0F7FA;
+    --gold: #C8A415;
+    --gold-light: #FFF8E1;
+    --green: #00875A;
+    --green-light: #E3FCEF;
+    --red: #DE350B;
+    --red-light: #FFEBE6;
+    --orange: #FF8B00;
+    --orange-light: #FFF4E5;
+    --text: #172B4D;
+    --text-secondary: #5E6C84;
+    --border: #DFE1E6;
+    --bg: #FFFFFF;
+    --bg-subtle: #F4F5F7;
+    --slide-w: 1200px;
+    --slide-h: 675px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #1a1a2e;
+    color: var(--text);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px 0;
+  }
+
+  .slide-container {
+    position: relative;
+    width: var(--slide-w);
+    max-width: 96vw;
+  }
+
+  .slide {
+    display: none;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: var(--bg);
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  }
+
+  .slide.active { display: flex; flex-direction: column; }
+
+  /* DRAFT watermark */
+  .slide::after {
+    content: 'DRAFT — For TDRA Review';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-30deg);
+    font-size: 48px;
+    font-weight: 800;
+    color: rgba(0, 85, 164, 0.06);
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 1;
+    letter-spacing: 4px;
+  }
+
+  /* Slide header bar */
+  .slide-header {
+    background: var(--primary);
+    color: white;
+    padding: 16px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+  }
+
+  .slide-header h2 {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+  }
+
+  .slide-header .slide-num {
+    font-size: 13px;
+    font-weight: 500;
+    opacity: 0.8;
+  }
+
+  .slide-body {
+    flex: 1;
+    padding: 28px 40px;
+    overflow: hidden;
+    position: relative;
+    z-index: 2;
+  }
+
+  /* Title slide special */
+  .title-slide {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: white;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 60px;
+  }
+  .title-slide::after { color: rgba(255,255,255,0.06); }
+  .title-slide .feature-code {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    opacity: 0.7;
+    margin-bottom: 20px;
+  }
+  .title-slide h1 {
+    font-size: 40px;
+    font-weight: 800;
+    line-height: 1.2;
+    margin-bottom: 12px;
+    letter-spacing: -0.5px;
+  }
+  .title-slide .subtitle {
+    font-size: 20px;
+    font-weight: 300;
+    opacity: 0.85;
+    margin-bottom: 40px;
+    max-width: 700px;
+  }
+  .title-slide .meta {
+    font-size: 13px;
+    font-weight: 500;
+    opacity: 0.6;
+    display: flex;
+    gap: 24px;
+  }
+  .title-slide .meta span { display: flex; align-items: center; gap: 6px; }
+  .title-slide .uae-pass-logo {
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    padding: 6px 16px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-radius: 6px;
+    margin-bottom: 24px;
+    display: inline-block;
+  }
+
+  /* Content helpers */
+  h3 { font-size: 17px; font-weight: 700; color: var(--primary); margin-bottom: 12px; }
+  h4 { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 8px; }
+  .subtitle-bar { font-size: 13px; color: var(--text-secondary); margin-bottom: 16px; }
+
+  .columns { display: flex; gap: 28px; }
+  .col { flex: 1; }
+
+  ul.clean { list-style: none; padding: 0; }
+  ul.clean li {
+    padding: 6px 0 6px 20px;
+    position: relative;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--text);
+  }
+  ul.clean li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 12px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+  ul.clean li.red::before { background: var(--red); }
+  ul.clean li.gold::before { background: var(--gold); }
+  ul.clean li.green::before { background: var(--green); }
+
+  .stat-row {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+  .stat-box {
+    flex: 1;
+    background: var(--bg-subtle);
+    border-radius: 8px;
+    padding: 14px 16px;
+    text-align: center;
+    border-left: 4px solid var(--primary);
+  }
+  .stat-box .num { font-size: 28px; font-weight: 800; color: var(--primary); }
+  .stat-box .label { font-size: 11px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
+
+  .stat-box.accent { border-left-color: var(--accent); }
+  .stat-box.accent .num { color: var(--accent); }
+  .stat-box.gold { border-left-color: var(--gold); }
+  .stat-box.gold .num { color: var(--gold); }
+  .stat-box.green { border-left-color: var(--green); }
+  .stat-box.green .num { color: var(--green); }
+
+  /* Tables */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12.5px;
+  }
+  th {
+    background: var(--primary);
+    color: white;
+    padding: 8px 10px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 11.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+  td {
+    padding: 7px 10px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  tr:nth-child(even) td { background: var(--bg-subtle); }
+  tr.highlight td { background: var(--primary-light); font-weight: 500; }
+
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+  .badge.phase1 { background: var(--green-light); color: var(--green); }
+  .badge.phase2 { background: var(--primary-light); color: var(--primary); }
+  .badge.phase3 { background: var(--gold-light); color: #8B6914; }
+  .badge.blocked { background: var(--red-light); color: var(--red); }
+  .badge.high { background: var(--green-light); color: var(--green); }
+  .badge.vhigh { background: #E8F5E9; color: #1B5E20; }
+  .badge.medium { background: var(--orange-light); color: var(--orange); }
+
+  /* Flow diagram */
+  .flow {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin: 12px 0;
+  }
+  .flow-step {
+    flex: 1;
+    background: var(--bg-subtle);
+    border-radius: 8px;
+    padding: 12px 10px;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 500;
+    border-top: 3px solid var(--primary);
+    line-height: 1.4;
+  }
+  .flow-step .step-num {
+    display: block;
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--primary);
+    margin-bottom: 4px;
+  }
+  .flow-step .ar {
+    font-family: 'Cairo', sans-serif;
+    font-size: 11px;
+    color: var(--text-secondary);
+    direction: rtl;
+    display: block;
+    margin-top: 4px;
+  }
+  .flow-arrow {
+    font-size: 20px;
+    color: var(--accent);
+    flex-shrink: 0;
+  }
+
+  /* Callout boxes */
+  .callout {
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 13px;
+    line-height: 1.5;
+    margin: 10px 0;
+  }
+  .callout.policy {
+    background: var(--gold-light);
+    border-left: 4px solid var(--gold);
+  }
+  .callout.strategic {
+    background: var(--primary-light);
+    border-left: 4px solid var(--primary);
+  }
+  .callout.warning {
+    background: var(--red-light);
+    border-left: 4px solid var(--red);
+  }
+  .callout.success {
+    background: var(--green-light);
+    border-left: 4px solid var(--green);
+  }
+  .callout strong { font-weight: 700; }
+
+  /* Decision boxes */
+  .decision-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .decision-card {
+    background: var(--bg-subtle);
+    border-radius: 8px;
+    padding: 14px 16px;
+    border-left: 4px solid var(--gold);
+  }
+  .decision-card .q-num {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--gold);
+    float: left;
+    margin-right: 10px;
+    line-height: 1;
+  }
+  .decision-card p { font-size: 13px; line-height: 1.5; }
+
+  /* Coverage map */
+  .coverage-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+    margin: 12px 0;
+  }
+  .emirate-card {
+    border-radius: 8px;
+    padding: 12px 8px;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .emirate-card.covered { background: var(--green-light); color: var(--green); border: 2px solid var(--green); }
+  .emirate-card.partial { background: var(--orange-light); color: var(--orange); border: 2px solid var(--orange); }
+  .emirate-card.gap { background: var(--bg-subtle); color: var(--text-secondary); border: 2px dashed var(--border); }
+  .emirate-card .status { display: block; font-size: 10px; font-weight: 500; margin-top: 4px; }
+
+  /* Navigation */
+  .nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 20px;
+    color: white;
+  }
+  .nav button {
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: white;
+    padding: 8px 20px;
+    border-radius: 6px;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .nav button:hover { background: rgba(255,255,255,0.25); }
+  .nav button:disabled { opacity: 0.3; cursor: default; }
+  .nav .page-info {
+    font-size: 13px;
+    font-weight: 500;
+    opacity: 0.7;
+    min-width: 80px;
+    text-align: center;
+  }
+
+  .dots {
+    display: flex;
+    gap: 6px;
+    margin-top: 12px;
+    justify-content: center;
+  }
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .dot.active { background: rgba(255,255,255,0.8); }
+
+  .ar-text {
+    font-family: 'Cairo', sans-serif;
+    direction: rtl;
+  }
+
+  .section-tag {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+  }
+
+  .phase-timeline {
+    position: relative;
+    margin: 8px 0;
+  }
+  .phase-row {
+    display: flex;
+    align-items: stretch;
+    margin-bottom: 6px;
+  }
+  .phase-label {
+    width: 100px;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 10px 8px;
+    display: flex;
+    align-items: center;
+    border-radius: 6px 0 0 6px;
+    flex-shrink: 0;
+  }
+  .phase-label.p0 { background: var(--bg-subtle); color: var(--text-secondary); }
+  .phase-label.p1 { background: var(--green-light); color: var(--green); }
+  .phase-label.p2 { background: var(--primary-light); color: var(--primary); }
+  .phase-label.p3 { background: var(--gold-light); color: #8B6914; }
+
+  .phase-content {
+    flex: 1;
+    padding: 10px 14px;
+    background: var(--bg-subtle);
+    border-radius: 0 6px 6px 0;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-size: 12px;
+    line-height: 1.4;
+  }
+  .phase-content .scope { flex: 2; }
+  .phase-content .gate { flex: 1; font-style: italic; color: var(--text-secondary); font-size: 11px; }
+
+  .hidden-claim-card {
+    background: var(--bg-subtle);
+    border-radius: 8px;
+    padding: 12px 14px;
+    border-left: 4px solid var(--gold);
+    margin-bottom: 8px;
+  }
+  .hidden-claim-card .claim-name {
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--primary-dark);
+  }
+  .hidden-claim-card .claim-source {
+    font-size: 11px;
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+  }
+  .hidden-claim-card .claim-value {
+    font-size: 12px;
+    line-height: 1.4;
+  }
+
+  /* Action table */
+  .action-table td:first-child { font-weight: 600; white-space: nowrap; }
+</style>
+</head>
+<body>
+
+<div class="slide-container">
+
+  <!-- ============ SLIDE 1: TITLE ============ -->
+  <div class="slide active title-slide" data-slide="1">
+    <div class="uae-pass-logo">UAE PASS Digital Documents</div>
+    <div class="feature-code">DV-PREFILL-2026</div>
+    <h1>SP Form Pre-Fill<br>via Issuer Claims</h1>
+    <div class="subtitle">Enabling Verified Data Sharing Across the UAE PASS Ecosystem</div>
+    <div class="meta">
+      <span>April 2026</span>
+      <span>Status: Draft for TDRA Review</span>
+      <span>Prepared by DV Product Team</span>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 2: THE PROBLEM ============ -->
+  <div class="slide" data-slide="2">
+    <div class="slide-header">
+      <h2>The Problem: Verified Data Stuck Behind Manual Entry</h2>
+      <span class="slide-num">2 / 12</span>
+    </div>
+    <div class="slide-body">
+      <div class="columns">
+        <div class="col" style="flex: 1.2;">
+          <div class="section-tag">Current Reality</div>
+          <ul class="clean">
+            <li class="red">SPs ask users to manually re-enter data UAE PASS already holds as verified documents</li>
+            <li class="red">A typical onboarding form: <strong>8 to 15 fields</strong> the user has already proven to the government</li>
+            <li class="red">Result: friction, drop-off, data-entry errors, and downstream re-verification costs for SPs</li>
+            <li class="red">Users present documents for viewing then <em>retype the same data</em> into the SP's form</li>
+          </ul>
+
+          <div class="callout warning" style="margin-top: 16px;">
+            <strong>The paradox:</strong> UAE PASS verifies identity, delivers eSeal-backed documents to the SP — then the SP ignores the structured data and asks the user to type it again.
+          </div>
+        </div>
+        <div class="col" style="flex: 0.8;">
+          <div style="background: var(--bg-subtle); border-radius: 10px; padding: 20px; border: 2px dashed var(--border);">
+            <div style="font-size: 12px; font-weight: 700; color: var(--text-secondary); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px;">Typical SP Onboarding Form</div>
+            <div style="font-size: 12px; line-height: 2.2;">
+              <div style="background: white; border: 1px solid var(--border); border-radius: 4px; padding: 4px 8px; margin-bottom: 4px; color: var(--text-secondary);">Full Name (EN) <span style="color: var(--red);">*</span></div>
+              <div style="background: white; border: 1px solid var(--border); border-radius: 4px; padding: 4px 8px; margin-bottom: 4px; color: var(--text-secondary);">Emirates ID Number <span style="color: var(--red);">*</span></div>
+              <div style="background: white; border: 1px solid var(--border); border-radius: 4px; padding: 4px 8px; margin-bottom: 4px; color: var(--text-secondary);">Date of Birth <span style="color: var(--red);">*</span></div>
+              <div style="background: white; border: 1px solid var(--border); border-radius: 4px; padding: 4px 8px; margin-bottom: 4px; color: var(--text-secondary);">Nationality <span style="color: var(--red);">*</span></div>
+              <div style="background: white; border: 1px solid var(--border); border-radius: 4px; padding: 4px 8px; margin-bottom: 4px; color: var(--text-secondary);">Passport Number <span style="color: var(--red);">*</span></div>
+              <div style="background: white; border: 1px solid var(--border); border-radius: 4px; padding: 4px 8px; margin-bottom: 4px; color: var(--text-secondary);">Employer Name</div>
+              <div style="background: white; border: 1px solid var(--border); border-radius: 4px; padding: 4px 8px; margin-bottom: 4px; color: var(--text-secondary);">Residential Address</div>
+              <div style="background: white; border: 1px solid var(--border); border-radius: 4px; padding: 4px 8px; color: var(--text-secondary);">Visa Expiry Date</div>
+            </div>
+            <div style="text-align: center; margin-top: 10px; font-size: 11px; color: var(--red); font-weight: 600;">8+ fields already in UAE PASS</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 3: THE OPPORTUNITY ============ -->
+  <div class="slide" data-slide="3">
+    <div class="slide-header">
+      <h2>The Opportunity: From Identity Verification to Data Delivery</h2>
+      <span class="slide-num">3 / 12</span>
+    </div>
+    <div class="slide-body">
+      <div class="stat-row">
+        <div class="stat-box"><div class="num">66</div><div class="label">Live Documents</div></div>
+        <div class="stat-box accent"><div class="num">30+</div><div class="label">Federal & Local Issuers</div></div>
+        <div class="stat-box gold"><div class="num">54</div><div class="label">Onboarded SPs</div></div>
+        <div class="stat-box green"><div class="num">1000s</div><div class="label">Daily Sharing Events</div></div>
+      </div>
+
+      <div class="columns" style="margin-top: 8px;">
+        <div class="col">
+          <div class="callout success">
+            <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; color: var(--green);">Layer 1 — Visible Claims (Convenience)</div>
+            <p style="font-size: 13px;">Auto-fill SP forms from document face data: name, DOB, EID number, nationality, expiry dates. Eliminates manual re-entry for users; reduces errors for SPs.</p>
+          </div>
+          <ul class="clean" style="margin-top: 8px;">
+            <li class="green">Immediate user convenience</li>
+            <li class="green">Reduces onboarding time by minutes per session</li>
+            <li class="green">Data is eSeal-verified — SPs skip re-verification</li>
+          </ul>
+        </div>
+        <div class="col">
+          <div class="callout strategic">
+            <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; color: var(--primary);">Layer 2 — Hidden Claims (Strategic)</div>
+            <p style="font-size: 13px;">Share issuer-signed fields NOT on the document face: WPS employer status, ISCO occupation code, EJARI number. A verified data channel SPs cannot get elsewhere.</p>
+          </div>
+          <ul class="clean" style="margin-top: 8px;">
+            <li>Replaces 1-3 day manual verification steps</li>
+            <li>Positions UAE PASS as national verified data API</li>
+            <li>New value proposition for SP onboarding pipeline</li>
+          </ul>
+        </div>
+      </div>
+
+      <div style="text-align: center; margin-top: 12px; font-size: 13px; color: var(--text-secondary);">
+        UAE PASS is already the trust layer. Form Pre-Fill extends that trust from <strong>identity verification</strong> to <strong>verified data delivery</strong>.
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 4: HOW IT WORKS ============ -->
+  <div class="slide" data-slide="4">
+    <div class="slide-header">
+      <h2>How It Works: User Flow</h2>
+      <span class="slide-num">4 / 12</span>
+    </div>
+    <div class="slide-body">
+      <div class="flow">
+        <div class="flow-step">
+          <span class="step-num">1</span>
+          User opens SP application
+          <span class="ar">المستخدم يفتح تطبيق الجهة</span>
+        </div>
+        <div class="flow-arrow">&#8594;</div>
+        <div class="flow-step">
+          <span class="step-num">2</span>
+          SP requests specific claims via UAE PASS
+          <span class="ar">الجهة تطلب بيانات محددة</span>
+        </div>
+        <div class="flow-arrow">&#8594;</div>
+        <div class="flow-step">
+          <span class="step-num">3</span>
+          Consent screen shows exact fields
+          <span class="ar">شاشة الموافقة تعرض الحقول</span>
+        </div>
+        <div class="flow-arrow">&#8594;</div>
+        <div class="flow-step" style="border-top-color: var(--green);">
+          <span class="step-num" style="color: var(--green);">4</span>
+          User approves sharing
+          <span class="ar">المستخدم يوافق على المشاركة</span>
+        </div>
+        <div class="flow-arrow">&#8594;</div>
+        <div class="flow-step" style="border-top-color: var(--green);">
+          <span class="step-num" style="color: var(--green);">5</span>
+          Form auto-fills with eSeal-verified data
+          <span class="ar">النموذج يُملأ تلقائيًا ببيانات موثقة</span>
+        </div>
+      </div>
+
+      <div class="columns" style="margin-top: 16px;">
+        <div class="col">
+          <h4>Consent Screen — Visible Claims</h4>
+          <div style="background: var(--bg-subtle); border-radius: 8px; padding: 16px; border: 1px solid var(--border);">
+            <div style="font-size: 11px; font-weight: 700; color: var(--primary); margin-bottom: 8px;">ETISALAT RETAIL requests the following verified data:</div>
+            <div style="font-size: 11px; color: var(--text-secondary); margin-bottom: 8px; font-family: 'Cairo', sans-serif; direction: rtl; text-align: right;">:اتصالات للأفراد تطلب البيانات الموثقة التالية</div>
+            <div style="font-size: 12px;">
+              <div style="padding: 5px 0; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between;">
+                <span>Full Name (EN) / <span class="ar-text" style="font-size: 11px;">الاسم الكامل</span></span>
+                <span style="color: var(--green); font-size: 11px;">Emirates ID</span>
+              </div>
+              <div style="padding: 5px 0; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between;">
+                <span>EID Number / <span class="ar-text" style="font-size: 11px;">رقم الهوية</span></span>
+                <span style="color: var(--green); font-size: 11px;">Emirates ID</span>
+              </div>
+              <div style="padding: 5px 0; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between;">
+                <span>Nationality / <span class="ar-text" style="font-size: 11px;">الجنسية</span></span>
+                <span style="color: var(--green); font-size: 11px;">Emirates ID</span>
+              </div>
+              <div style="padding: 5px 0; display: flex; justify-content: space-between;">
+                <span>Date of Birth / <span class="ar-text" style="font-size: 11px;">تاريخ الميلاد</span></span>
+                <span style="color: var(--green); font-size: 11px;">Emirates ID</span>
+              </div>
+            </div>
+            <div style="margin-top: 12px; display: flex; gap: 8px; justify-content: center;">
+              <div style="background: var(--green); color: white; padding: 6px 24px; border-radius: 6px; font-size: 12px; font-weight: 600;">Approve / <span class="ar-text">موافق</span></div>
+              <div style="background: white; border: 1px solid var(--border); padding: 6px 24px; border-radius: 6px; font-size: 12px; font-weight: 600; color: var(--text-secondary);">Decline / <span class="ar-text">رفض</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="col">
+          <h4>Key Architecture Notes</h4>
+          <ul class="clean">
+            <li>Current model: document-level sharing via Verifiable Presentation</li>
+            <li>Pre-fill extracts specific fields (claims) from the VP payload</li>
+            <li>All shared data carries full eSeal provenance</li>
+            <li class="gold">Attribute-level API is exploratory for hidden claims (Phase 3)</li>
+          </ul>
+          <div class="callout policy" style="margin-top: 12px;">
+            <strong>Consent principle:</strong> User sees exactly which fields will be shared and from which document. No silent data extraction.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 5: DOCUMENT COVERAGE ============ -->
+  <div class="slide" data-slide="5">
+    <div class="slide-header">
+      <h2>Document Coverage and Claims Catalogue</h2>
+      <span class="slide-num">5 / 12</span>
+    </div>
+    <div class="slide-body">
+      <div class="section-tag">66 live documents across 9 categories &mdash; Phase 1 foundation highlighted</div>
+      <table>
+        <thead>
+          <tr>
+            <th>Category</th>
+            <th>Key Documents</th>
+            <th>Example Claims</th>
+            <th>Pre-fill Value</th>
+            <th>Phase</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="highlight">
+            <td><strong>Core Identity</strong></td>
+            <td>Emirates ID, Passport, Residence Visa (ICP)</td>
+            <td>Name EN/AR, EID no., DOB, gender, nationality, visa type, expiry</td>
+            <td><span class="badge high">HIGH</span></td>
+            <td><span class="badge phase1">Phase 1</span></td>
+          </tr>
+          <tr>
+            <td><strong>Employment</strong></td>
+            <td>Labour Card, Labour Contract (MoHRE), FAHR Work Contract</td>
+            <td>Employer, job title, work permit no., contract type</td>
+            <td><span class="badge high">HIGH</span></td>
+            <td><span class="badge phase2">Phase 2</span></td>
+          </tr>
+          <tr>
+            <td><strong>Address / Property</strong></td>
+            <td>Tenancy Contract (DLD, Fujairah), Title Deeds</td>
+            <td>Address, EJARI no., property type, area</td>
+            <td><span class="badge high">HIGH</span></td>
+            <td><span class="badge phase2">Phase 2</span></td>
+          </tr>
+          <tr>
+            <td><strong>Driving / Vehicles</strong></td>
+            <td>Driving Licence, Vehicle Licence (MoI/RTA)</td>
+            <td>Licence no., categories, VIN, plate, insurance expiry</td>
+            <td><span class="badge high">HIGH</span></td>
+            <td><span class="badge phase2">Phase 2</span></td>
+          </tr>
+          <tr>
+            <td><strong>Business / Trade</strong></td>
+            <td>Trade Licences (ADRA, UAQ, Fujairah)</td>
+            <td>Business name EN/AR, licence no., activity code</td>
+            <td><span class="badge high">HIGH</span></td>
+            <td><span class="badge phase2">Phase 2</span></td>
+          </tr>
+          <tr>
+            <td><strong>Education</strong></td>
+            <td>Attestations, Equivalencies, Graduation Certs (MoE, MoHESR)</td>
+            <td>Degree, institution, graduation date</td>
+            <td><span class="badge medium">MEDIUM</span></td>
+            <td><span class="badge phase2">Phase 2</span></td>
+          </tr>
+          <tr>
+            <td><strong>Tax / Financial</strong></td>
+            <td>Tax Residence Certificate (FTA)</td>
+            <td>TRN, country of tax residence, FATCA/CRS class</td>
+            <td><span class="badge medium">MEDIUM</span></td>
+            <td><span class="badge phase2">Phase 2</span></td>
+          </tr>
+          <tr>
+            <td><strong>Healthcare</strong></td>
+            <td>Medical Practitioner Licence (MoHAP)</td>
+            <td>Specialty, licence no., expiry</td>
+            <td><span class="badge medium">MEDIUM</span></td>
+            <td><span class="badge phase2">Phase 2</span></td>
+          </tr>
+          <tr>
+            <td><strong>Personal Status</strong></td>
+            <td>Marriage/Divorce Certs (MoJ, ADJD, RAK)</td>
+            <td>Marital status signal</td>
+            <td><span class="badge medium">MEDIUM</span></td>
+            <td><span class="badge phase3">Phase 3</span></td>
+          </tr>
+        </tbody>
+      </table>
+      <div style="display: flex; gap: 16px; margin-top: 10px;">
+        <div class="callout policy" style="flex: 1; margin: 0;">
+          <strong>Salary claim:</strong> Blocked pending explicit TDRA policy decision. Excluded from all phases.
+        </div>
+        <div class="callout warning" style="flex: 1; margin: 0;">
+          <strong>Sensitive claims</strong> (blood group, disability, police clearance, financial aid status) require separate policy instruments.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 6: HIDDEN CLAIMS ============ -->
+  <div class="slide" data-slide="6">
+    <div class="slide-header">
+      <h2>The Hidden Claims Opportunity</h2>
+      <span class="slide-num">6 / 12</span>
+    </div>
+    <div class="slide-body">
+      <div class="columns">
+        <div class="col" style="flex: 1.1;">
+          <div class="section-tag">Strategic data layer</div>
+          <div class="callout strategic" style="margin-top: 0;">
+            <strong>What are hidden claims?</strong> Issuer-signed fields included in the document's structured payload but NOT rendered on the visible document face. They carry full eSeal provenance — same trust as visible fields — but are invisible during normal document viewing.
+          </div>
+
+          <div style="margin-top: 10px;">
+            <div class="hidden-claim-card">
+              <div class="claim-name">WPS Employer Registration Status</div>
+              <div class="claim-source">Source: Labour Card (MoHRE)</div>
+              <div class="claim-value">Confirms employer is active in the Wages Protection System. Currently requires 1-3 day manual verification by banks for credit products.</div>
+            </div>
+            <div class="hidden-claim-card">
+              <div class="claim-name">ISCO Occupation Code</div>
+              <div class="claim-source">Source: Labour Card (MoHRE)</div>
+              <div class="claim-value">Standardised occupation code used globally for income-band estimation and credit scoring. Not visible on Labour Card face.</div>
+            </div>
+            <div class="hidden-claim-card">
+              <div class="claim-name">EJARI Unified Number</div>
+              <div class="claim-source">Source: Tenancy Contract (DLD)</div>
+              <div class="claim-value">Unique tenancy registration reference. Enables utility connection automation (DEWA) and insurance address verification.</div>
+            </div>
+          </div>
+        </div>
+        <div class="col" style="flex: 0.9;">
+          <div class="section-tag">Why this matters for TDRA</div>
+          <ul class="clean">
+            <li><strong>New product category:</strong> Verified data API, not just document sharing</li>
+            <li><strong>No alternative channel:</strong> SPs cannot get this data from document inspection or user self-declaration</li>
+            <li class="gold"><strong>Replaces manual verification:</strong> 1-3 day bank processes reduced to seconds</li>
+            <li><strong>B2G data infrastructure:</strong> Positions UAE PASS as national verified data backbone</li>
+          </ul>
+
+          <div class="callout policy" style="margin-top: 12px;">
+            <strong>Policy requirement:</strong> Each hidden claim category requires a distinct TDRA policy instrument. Users must explicitly see and approve non-visible data before sharing (new DDA consent UX pattern needed).
+          </div>
+
+          <div class="callout warning" style="margin-top: 8px;">
+            <strong>Recommendation:</strong> Present hidden claims as a separate strategic initiative with its own roadmap, not bundled into Form Pre-Fill Phases 1-2.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 7: SP IMPACT ============ -->
+  <div class="slide" data-slide="7">
+    <div class="slide-header">
+      <h2>SP Impact: Top Partners by Volume</h2>
+      <span class="slide-num">7 / 12</span>
+    </div>
+    <div class="slide-body">
+      <div class="section-tag">Top 10 onboarded SPs ranked by monthly sharing volume</div>
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 5%;">#</th>
+            <th style="width: 18%;">SP</th>
+            <th style="width: 10%;">Vol/mo</th>
+            <th style="width: 10%;">Sector</th>
+            <th style="width: 30%;">Pre-Fill Use Case</th>
+            <th style="width: 17%;">Documents Needed</th>
+            <th style="width: 10%;">Priority</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="highlight">
+            <td>1</td>
+            <td><strong>Etisalat Retail</strong></td>
+            <td>8,896</td>
+            <td>Telecom</td>
+            <td>SIM registration: name, EID no., nationality</td>
+            <td>EID only</td>
+            <td><span class="badge high">HIGH</span></td>
+          </tr>
+          <tr class="highlight">
+            <td>2</td>
+            <td><strong>Al Maryah</strong></td>
+            <td>7,383</td>
+            <td>Banking</td>
+            <td>Account opening + credit: full KYC pre-fill</td>
+            <td>EID + Labour Card + Tenancy</td>
+            <td><span class="badge high">HIGH</span></td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td><strong>DU</strong></td>
+            <td>4,605</td>
+            <td>Telecom</td>
+            <td>SIM registration: same as Etisalat</td>
+            <td>EID only</td>
+            <td><span class="badge high">HIGH</span></td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td><strong>Botim</strong></td>
+            <td>4,371</td>
+            <td>Fintech</td>
+            <td>Wallet onboarding: EID fields</td>
+            <td>EID only</td>
+            <td><span class="badge high">HIGH</span></td>
+          </tr>
+          <tr class="highlight">
+            <td>5</td>
+            <td><strong>ADIB</strong></td>
+            <td>3,997</td>
+            <td>Banking</td>
+            <td>Account + credit: EID + employment + address</td>
+            <td>EID + Labour Card + Tenancy</td>
+            <td><span class="badge high">HIGH</span></td>
+          </tr>
+          <tr>
+            <td>6</td>
+            <td><strong>Etisalat Business</strong></td>
+            <td>3,765</td>
+            <td>Telecom / B2B</td>
+            <td>B2B SIM: Trade Licence pre-fill</td>
+            <td>Trade Licence + EID</td>
+            <td><span class="badge high">HIGH</span></td>
+          </tr>
+          <tr>
+            <td>7</td>
+            <td><strong>ADNIC Motor</strong></td>
+            <td>&mdash;</td>
+            <td>Insurance</td>
+            <td>Motor quoting: vehicle + driver details</td>
+            <td>Vehicle Licence + Driving Licence</td>
+            <td><span class="badge high">HIGH</span></td>
+          </tr>
+          <tr>
+            <td>8</td>
+            <td><strong>ADSS / Al Ramz</strong></td>
+            <td>&mdash;</td>
+            <td>Investment</td>
+            <td>Tax residency for FATCA/CRS compliance</td>
+            <td>Tax Residence Cert + EID</td>
+            <td><span class="badge medium">MEDIUM</span></td>
+          </tr>
+          <tr>
+            <td>9</td>
+            <td><strong>GCC Exchange</strong></td>
+            <td>&mdash;</td>
+            <td>Remittance</td>
+            <td>CBUAE KYC compliance: EID + visa status</td>
+            <td>EID + Visa</td>
+            <td><span class="badge medium">MEDIUM</span></td>
+          </tr>
+          <tr>
+            <td>10</td>
+            <td><strong>CBD Assisted</strong></td>
+            <td>&mdash;</td>
+            <td>Banking</td>
+            <td>Assisted channel: agent-mediated pre-fill</td>
+            <td>EID + Labour Card</td>
+            <td><span class="badge medium">MEDIUM</span></td>
+          </tr>
+        </tbody>
+      </table>
+      <div style="display: flex; gap: 16px; margin-top: 8px;">
+        <div class="callout success" style="flex: 1; margin: 0;">
+          <strong>Recommended pilots:</strong> Etisalat Retail (highest volume, simplest use case — EID only) + ADIB (broadest document set, banking credit use case)
+        </div>
+        <div class="callout policy" style="flex: 1; margin: 0;">
+          <strong>Note:</strong> TRA field alignment required before telecom SPs can activate SIM registration pre-fill. Assisted channel (CBD) requires distinct DDA consent design.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 8: CANDIDATE NEW SPS ============ -->
+  <div class="slide" data-slide="8">
+    <div class="slide-header">
+      <h2>New SP Pipeline: Candidates Attracted by Pre-Fill</h2>
+      <span class="slide-num">8 / 12</span>
+    </div>
+    <div class="slide-body">
+      <div class="section-tag">Top candidate SPs not yet onboarded — Pre-Fill as the acquisition catalyst</div>
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 20%;">Candidate SP</th>
+            <th style="width: 12%;">Sector</th>
+            <th style="width: 28%;">Pre-Fill Use Case</th>
+            <th style="width: 22%;">Primary Documents</th>
+            <th style="width: 10%;">Value</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Emirates NBD (main app)</strong></td>
+            <td>Banking</td>
+            <td>Full digital onboarding — zero-paper account opening</td>
+            <td>EID + Visa + Passport + Labour Card</td>
+            <td><span class="badge vhigh">VERY HIGH</span></td>
+          </tr>
+          <tr>
+            <td><strong>DED Dubai</strong></td>
+            <td>Gov / Business</td>
+            <td>Licence renewal pre-fill — unlock B2B/SME segment</td>
+            <td>Trade Licence + EID</td>
+            <td><span class="badge vhigh">VERY HIGH</span></td>
+          </tr>
+          <tr>
+            <td><strong>mGovernment Portals</strong></td>
+            <td>Government</td>
+            <td>Universal gov form pre-fill across services</td>
+            <td>Full document catalogue</td>
+            <td><span class="badge vhigh">VERY HIGH</span></td>
+          </tr>
+          <tr>
+            <td><strong>Al Ansari Exchange</strong></td>
+            <td>Remittance</td>
+            <td>CBUAE KYC compliance — fast customer onboarding</td>
+            <td>EID + Visa + Passport</td>
+            <td><span class="badge high">HIGH</span></td>
+          </tr>
+          <tr>
+            <td><strong>DEWA / ADDC</strong></td>
+            <td>Utilities</td>
+            <td>New connection / move — address + identity</td>
+            <td>EID + Tenancy Contract</td>
+            <td><span class="badge high">HIGH</span></td>
+          </tr>
+          <tr>
+            <td><strong>RTA Dubai</strong></td>
+            <td>Gov / Transport</td>
+            <td>Vehicle registration renewal, licence renewal</td>
+            <td>EID + Vehicle Licence + Driving Licence</td>
+            <td><span class="badge high">HIGH</span></td>
+          </tr>
+          <tr>
+            <td><strong>Mashreq Bank</strong></td>
+            <td>Banking</td>
+            <td>Digital account opening — competitive parity with ENBD</td>
+            <td>EID + Visa + Labour Card</td>
+            <td><span class="badge high">HIGH</span></td>
+          </tr>
+          <tr>
+            <td><strong>Zand Bank</strong></td>
+            <td>Digital Banking</td>
+            <td>Zero-paper account opening — SME + retail</td>
+            <td>EID + Visa + Labour Card + Trade Licence</td>
+            <td><span class="badge medium">MEDIUM-HIGH</span></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="columns" style="margin-top: 10px;">
+        <div class="callout strategic" style="flex: 1; margin: 0;">
+          <strong>Untapped segment:</strong> Trade Licences (ADRA, UAQ, Fujairah) are live in DV with zero SME-oriented SPs onboarded. DED Dubai, DEWA (business), and Zand Bank represent an entirely new B2B/SME segment.
+        </div>
+        <div class="callout success" style="flex: 1; margin: 0;">
+          <strong>Form Pre-Fill as acquisition tool:</strong> "Verified data pre-fill" is a tangible, demonstrable benefit that differentiates UAE PASS from basic SSO in SP onboarding conversations.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 9: PHASING ============ -->
+  <div class="slide" data-slide="9">
+    <div class="slide-header">
+      <h2>Phased Delivery Plan</h2>
+      <span class="slide-num">9 / 12</span>
+    </div>
+    <div class="slide-body">
+      <div class="section-tag">Four phases with explicit gate conditions</div>
+
+      <div class="phase-timeline">
+        <div class="phase-row">
+          <div class="phase-label p0">Phase 0<br><span style="font-size: 10px; font-weight: 500;">Discovery</span></div>
+          <div class="phase-content">
+            <div class="scope">
+              <strong>Engineering VP payload audit</strong> — inspect existing Verifiable Presentation payloads to confirm structured field availability (hours, not weeks).<br>
+              <strong>TDRA policy engagement</strong> — confirm data sharing authorisation scope.<br>
+              <strong>ICP schema request</strong> — request formal field schema from ICP.
+            </div>
+            <div class="gate"><strong>Gate:</strong> Structured data confirmed for EID + Passport + Visa</div>
+          </div>
+        </div>
+
+        <div class="phase-row">
+          <div class="phase-label p1">Phase 1<br><span style="font-size: 10px; font-weight: 500;">Core Identity</span></div>
+          <div class="phase-content">
+            <div class="scope">
+              <strong>EID + Passport + Residence Visa (ICP) pre-fill</strong><br>
+              Claims: name EN/AR, EID no., DOB, gender, nationality, passport no., visa type, expiry dates<br>
+              <strong>Pilot SPs:</strong> Etisalat Retail + ADIB
+            </div>
+            <div class="gate"><strong>Gate:</strong> Phase 0 complete + TDRA policy confirmed + pilot SPs committed</div>
+          </div>
+        </div>
+
+        <div class="phase-row">
+          <div class="phase-label p2">Phase 2<br><span style="font-size: 10px; font-weight: 500;">Expansion</span></div>
+          <div class="phase-content">
+            <div class="scope">
+              <strong>Employment:</strong> Labour Card (employer, job title, work permit — salary excluded)<br>
+              <strong>Address:</strong> EID registered address (nationwide) + Tenancy Contract (Dubai/Fujairah)<br>
+              <strong>Vehicles + Business:</strong> Driving/Vehicle Licence, Trade Licences
+            </div>
+            <div class="gate"><strong>Gate:</strong> Phase 1 pilot results + issuer schema confirmed per category</div>
+          </div>
+        </div>
+
+        <div class="phase-row">
+          <div class="phase-label p3">Phase 3<br><span style="font-size: 10px; font-weight: 500;">Hidden Claims</span></div>
+          <div class="phase-content">
+            <div class="scope">
+              <strong>Hidden claims API / attribute extraction</strong><br>
+              WPS status, ISCO code, EJARI number, FATCA/CRS classification<br>
+              <strong>New DDA consent UX:</strong> explicit disclosure of non-visible fields<br>
+              <strong>Separate TDRA policy instrument per claim category</strong>
+            </div>
+            <div class="gate"><strong>Gate:</strong> TDRA policy instrument issued + DDA consent design approved</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 16px; margin-top: 10px;">
+        <div class="callout policy" style="flex: 1; margin: 0;">
+          <strong>Salary:</strong> Excluded from all phases until TDRA issues explicit policy instrument.
+        </div>
+        <div class="callout strategic" style="flex: 1; margin: 0;">
+          <strong>Phase 3 recommendation:</strong> Treat hidden claims as a separate strategic initiative with its own roadmap and potentially its own commercial model.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 10: ADDRESS COVERAGE ============ -->
+  <div class="slide" data-slide="10">
+    <div class="slide-header">
+      <h2>Address Pre-Fill: Coverage Map</h2>
+      <span class="slide-num">10 / 12</span>
+    </div>
+    <div class="slide-body">
+      <div class="section-tag">Honest assessment of address data availability by Emirate</div>
+
+      <div class="coverage-grid">
+        <div class="emirate-card covered">
+          <strong>Dubai</strong>
+          <span class="status">DLD / EJARI</span>
+        </div>
+        <div class="emirate-card covered">
+          <strong>Fujairah</strong>
+          <span class="status">Fujairah Mun.</span>
+        </div>
+        <div class="emirate-card partial" style="grid-column: span 5;">
+          <div style="display: flex; justify-content: space-around; width: 100%;">
+            <div><strong>Abu Dhabi</strong><br><span class="status">Tawtheeq not onboarded</span></div>
+            <div><strong>Sharjah</strong><br><span class="status">No issuer</span></div>
+            <div><strong>Ajman</strong><br><span class="status">No issuer</span></div>
+            <div><strong>RAK</strong><br><span class="status">No issuer</span></div>
+            <div><strong>UAQ</strong><br><span class="status">No issuer</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 12px; margin: 4px 0 12px;">
+        <div style="display: flex; align-items: center; gap: 6px; font-size: 11px;">
+          <div style="width: 14px; height: 14px; border-radius: 3px; background: var(--green-light); border: 2px solid var(--green);"></div>
+          Tenancy Contract live in DV
+        </div>
+        <div style="display: flex; align-items: center; gap: 6px; font-size: 11px;">
+          <div style="width: 14px; height: 14px; border-radius: 3px; background: var(--orange-light); border: 2px solid var(--orange);"></div>
+          Not yet onboarded (gap)
+        </div>
+      </div>
+
+      <div class="columns">
+        <div class="col">
+          <h4>Recommended Two-Layer Approach</h4>
+          <table style="font-size: 12px;">
+            <thead>
+              <tr>
+                <th>Layer</th>
+                <th>Source</th>
+                <th>Coverage</th>
+                <th>Phase</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Primary</strong></td>
+                <td>EID registered address (ICP)</td>
+                <td>Nationwide</td>
+                <td><span class="badge phase1">Phase 1</span></td>
+              </tr>
+              <tr>
+                <td><strong>Overlay</strong></td>
+                <td>Tenancy Contract (DLD / Fujairah)</td>
+                <td>~37-41% of residents</td>
+                <td><span class="badge phase2">Phase 2</span></td>
+              </tr>
+              <tr>
+                <td><strong>Future</strong></td>
+                <td>Tawtheeq (Abu Dhabi), Sharjah RERA</td>
+                <td>+30-35% est.</td>
+                <td>Future issuer onboarding</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="col">
+          <div class="callout policy">
+            <strong>EID address caveat:</strong> ICP-registered address may not reflect current residence. Must be labelled:<br><br>
+            <em>"Address on file with ICP (may not reflect current residence)"</em><br>
+            <span class="ar-text" style="font-size: 12px;">«العنوان المسجل لدى الهيئة الاتحادية للهوية (قد لا يعكس محل إقامتك الحالي)»</span>
+          </div>
+          <div class="callout strategic" style="margin-top: 8px;">
+            <strong>Fallback UX:</strong><br>
+            <em>"Your residential address could not be filled automatically. Please enter it manually."</em><br>
+            <span class="ar-text" style="font-size: 12px;">«تعذّر ملء عنوان إقامتك تلقائيًا. يُرجى إدخاله يدويًا.»</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 11: DECISIONS NEEDED ============ -->
+  <div class="slide" data-slide="11">
+    <div class="slide-header">
+      <h2>Decisions Needed from TDRA</h2>
+      <span class="slide-num">11 / 12</span>
+    </div>
+    <div class="slide-body">
+      <div class="section-tag">Four decisions required to proceed</div>
+
+      <div class="decision-grid">
+        <div class="decision-card">
+          <div class="q-num">1</div>
+          <h4 style="margin-bottom: 6px;">Data Sharing Authorisation Scope</h4>
+          <p>Does the existing UAE PASS data sharing authorisation framework cover Form Pre-Fill (extracting specific claims from shared documents), or is a <strong>new policy instrument</strong> required?</p>
+          <div style="margin-top: 8px; font-size: 11px; color: var(--text-secondary);"><strong>Impact:</strong> Determines whether Phase 1 can proceed under current authorities or requires a new approval cycle.</div>
+        </div>
+
+        <div class="decision-card">
+          <div class="q-num">2</div>
+          <h4 style="margin-bottom: 6px;">Salary as a Claim Category</h4>
+          <p>Is salary a permissible claim category for sharing with <strong>commercial SPs</strong> (banks, insurers)? Currently blocked pending TDRA decision.</p>
+          <div style="margin-top: 8px; font-size: 11px; color: var(--text-secondary);"><strong>Impact:</strong> Salary is the single highest-value claim for banking credit products. Decision unblocks or permanently excludes it.</div>
+        </div>
+
+        <div class="decision-card">
+          <div class="q-num">3</div>
+          <h4 style="margin-bottom: 6px;">Hidden Claims Policy Instrument</h4>
+          <p>Should a separate policy workstream be initiated for <strong>hidden claims</strong> (non-visible issuer payload fields)? Each claim category would require its own authorisation.</p>
+          <div style="margin-top: 8px; font-size: 11px; color: var(--text-secondary);"><strong>Impact:</strong> Opens or closes the strategic "verified data API" opportunity — the highest-value differentiation for UAE PASS.</div>
+        </div>
+
+        <div class="decision-card">
+          <div class="q-num">4</div>
+          <h4 style="margin-bottom: 6px;">Phase 0 Discovery Approval</h4>
+          <p>Approve initiation of <strong>Phase 0 discovery</strong>: Engineering VP payload audit, ICP schema request, and SP pilot outreach (Etisalat Retail + ADIB recommended).</p>
+          <div style="margin-top: 8px; font-size: 11px; color: var(--text-secondary);"><strong>Impact:</strong> Low-cost, high-information gate. Engineering audit is hours of work; results determine entire feature feasibility.</div>
+        </div>
+      </div>
+
+      <div class="callout policy" style="margin-top: 12px;">
+        <strong>Note:</strong> Decisions 1-3 can proceed in parallel with Phase 0 discovery. Decision 4 is the immediate ask — it costs very little and provides the data foundation for all subsequent decisions.
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 12: NEXT STEPS ============ -->
+  <div class="slide" data-slide="12">
+    <div class="slide-header">
+      <h2>Next Steps: Phase 0 Actions</h2>
+      <span class="slide-num">12 / 12</span>
+    </div>
+    <div class="slide-body">
+      <div class="section-tag">Immediate actions following TDRA approval of Phase 0</div>
+
+      <table class="action-table">
+        <thead>
+          <tr>
+            <th style="width: 28%;">Action</th>
+            <th style="width: 15%;">Owner</th>
+            <th style="width: 12%;">Timeline</th>
+            <th style="width: 35%;">Output</th>
+            <th style="width: 10%;">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Engineering VP payload audit</td>
+            <td>DV Engineering</td>
+            <td>1-2 days</td>
+            <td>Confirmed list of structured fields per ICP document (EID, Passport, Visa)</td>
+            <td><span class="badge blocked">NOT STARTED</span></td>
+          </tr>
+          <tr>
+            <td>ICP schema request</td>
+            <td>DV Product + ICP</td>
+            <td>1-2 weeks</td>
+            <td>Formal field schema and structured data commitment from ICP</td>
+            <td><span class="badge blocked">NOT STARTED</span></td>
+          </tr>
+          <tr>
+            <td>TDRA policy engagement</td>
+            <td>DV Product + TDRA</td>
+            <td>Ongoing</td>
+            <td>Answers to Decisions 1-3 (see Slide 11)</td>
+            <td><span class="badge blocked">NOT STARTED</span></td>
+          </tr>
+          <tr>
+            <td>SP pilot outreach — Etisalat Retail</td>
+            <td>DV Product</td>
+            <td>2 weeks</td>
+            <td>Pilot intent confirmed; SIM registration field mapping agreed</td>
+            <td><span class="badge blocked">NOT STARTED</span></td>
+          </tr>
+          <tr>
+            <td>SP pilot outreach — ADIB</td>
+            <td>DV Product</td>
+            <td>2 weeks</td>
+            <td>Pilot intent confirmed; account opening field mapping agreed</td>
+            <td><span class="badge blocked">NOT STARTED</span></td>
+          </tr>
+          <tr>
+            <td>DDA consent screen briefing</td>
+            <td>DV Product + DDA</td>
+            <td>Sprint planning</td>
+            <td>Consent screen requirements shared with DDA for visible claims (Phase 1) and hidden claims (Phase 3)</td>
+            <td><span class="badge blocked">NOT STARTED</span></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="columns" style="margin-top: 14px;">
+        <div class="callout success" style="flex: 1; margin: 0;">
+          <strong>Phase 0 cost:</strong> Minimal engineering effort (payload audit = hours). Primary investment is stakeholder alignment (TDRA policy, ICP schema, SP pilots). High information yield for low cost.
+        </div>
+        <div class="callout strategic" style="flex: 1; margin: 0;">
+          <strong>Phase 0 gate criteria:</strong> Structured field data confirmed for at least EID + Passport + Residence Visa. If unconfirmed, feature is paused until issuer data availability is resolved. No speculative development.
+        </div>
+      </div>
+
+      <div style="text-align: center; margin-top: 14px; padding: 10px; background: var(--primary-light); border-radius: 8px;">
+        <div style="font-size: 14px; font-weight: 700; color: var(--primary);">Immediate Ask: Approve Phase 0 Discovery</div>
+        <div style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">Engineering payload audit + ICP schema request + SP pilot outreach</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Navigation -->
+<div class="nav">
+  <button id="prevBtn" onclick="changeSlide(-1)" disabled>&larr; Previous</button>
+  <span class="page-info" id="pageInfo">1 / 12</span>
+  <button id="nextBtn" onclick="changeSlide(1)">Next &rarr;</button>
+</div>
+<div class="dots" id="dots"></div>
+
+<script>
+  let current = 1;
+  const total = 12;
+  const slides = document.querySelectorAll('.slide');
+  const dotsContainer = document.getElementById('dots');
+
+  // Create dots
+  for (let i = 1; i <= total; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'dot' + (i === 1 ? ' active' : '');
+    dot.onclick = () => goToSlide(i);
+    dotsContainer.appendChild(dot);
+  }
+
+  function goToSlide(n) {
+    slides.forEach(s => s.classList.remove('active'));
+    document.querySelector(`[data-slide="${n}"]`).classList.add('active');
+    current = n;
+    document.getElementById('pageInfo').textContent = `${current} / ${total}`;
+    document.getElementById('prevBtn').disabled = current === 1;
+    document.getElementById('nextBtn').disabled = current === total;
+    dotsContainer.querySelectorAll('.dot').forEach((d, i) => {
+      d.classList.toggle('active', i + 1 === current);
+    });
+  }
+
+  function changeSlide(dir) {
+    const next = current + dir;
+    if (next >= 1 && next <= total) goToSlide(next);
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') changeSlide(1);
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') changeSlide(-1);
+  });
+</script>
+
+</body>
+</html>
