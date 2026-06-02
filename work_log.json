@@ -2946,6 +2946,35 @@
       ],
       "status": "completed",
       "notes": "Sprint review meeting Wed 20 May 2026. Sprint 80 goals: (1) Complete Testing of Sprint 79 items [QA-owned, empty]; (2) Continue work on Fault Tolerance and Operational Support [6 items]; (3) Submit Report and DV Insurance APP development [3 items, new epic]; (4) Continue work on App SDK development [1 item]. Total items: 10. PM to override any Status from 'Done' to 'In progress'/'Blocked' before the meeting if needed. V1 label preserved."
+    },
+    {
+      "id": "WL-078",
+      "date": "2026-06-02",
+      "session_topic": "Sprint 81 Sprint Review deck — built from typed item list with goal-mapping alignment",
+      "tasks": [
+        "Parsed 10 sprint items from user-typed list (mixed FE/BE, no Jira CSV)",
+        "Aligned goal mapping with user before building — proposed Goal 2/3/4 assignment, user moved Arabic localization to Goal 3",
+        "Stripped t-shirt sizing labels ([M], [S], [L]) from item names per user instruction",
+        "Abstracted BE-list item #1 from 'Scripting of DB Backup mechanism for transactional tables corresponding to Documents (Issued and Self)' to cleaner deck-ready text",
+        "Abstracted FE-list item #3 (Hindole/unit testing/service integration) to 'Unit testing & bug fixes for Sprint 80 service-integration items'",
+        "Copied Sprint 80 deck as Sprint 81 template, applied text replacements via PowerShell COM",
+        "Rebuilt Goal 2 table (7 items), Goal 3 table (2 items), Goal 4 table (1 item)",
+        "Hit the Sprint-N-replacement bug: 'Sprint 80 -> Sprint 81' global replace clobbered 'Sprint 80 items' in Goal 1 references — fixed with targeted post-pass",
+        "Updated Goal 4 title to 'Continue work on App SDK development (FE)' (FE-only scope this sprint)",
+        "All Status cells set to Done Bold Calibri 12pt; standardized column widths"
+      ],
+      "artifacts": [
+        {
+          "name": "Sprint 81 Sprint Review.pptx",
+          "type": "pptx",
+          "description": "Sprint 81 review deck — 13 slides, 10 items mapped, ready for Wed 3 June 2026 review"
+        }
+      ],
+      "agents_used": [
+        "sprint-review skill"
+      ],
+      "status": "completed",
+      "notes": "Sprint review meeting Wed 3 June 2026. Sprint 81 goals: (1) Complete Testing of Sprint 80 items [QA-owned, empty]; (2) Continue work on Fault Tolerance and Operational Support [7 items]; (3) Continue work on Error state in Sharing journey UI update [2 items]; (4) Continue work on App SDK development (FE) [1 item]. Total items: 10. User confirmed assumption that 'Error reporting success toast' belongs with Sharing-error-state work (Goal 3). V1 label preserved. Build process now well-documented in project_sprint_review_status.md including the Sprint-N replacement-ordering pitfall."
     }
   ]
 }
