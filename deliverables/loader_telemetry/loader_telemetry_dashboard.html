@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UAE PASS DV — Loader Telemetry Dashboard</title>
+<script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: #f4f5f7; color: #2c2c2c; }
+
+  .header {
+    background: linear-gradient(135deg, #11a56f 0%, #0d7d53 100%);
+    color: white; padding: 28px 40px 22px;
+  }
+  .header h1 { font-size: 22px; font-weight: 700; letter-spacing: -0.3px; }
+  .header .sub { font-size: 13px; opacity: 0.85; margin-top: 5px; }
+  .header .meta { font-size: 12px; opacity: 0.7; margin-top: 3px; }
+
+  .kpi-strip {
+    display: flex; gap: 16px; padding: 20px 36px; flex-wrap: wrap;
+    background: #fff; border-bottom: 1px solid #e0e0e0;
+  }
+  .kpi {
+    background: #f9f9f9; border: 1px solid #e4e4e4; border-radius: 8px;
+    padding: 14px 20px; min-width: 170px; flex: 1;
+  }
+  .kpi .label { font-size: 11px; color: #777; text-transform: uppercase; letter-spacing: 0.5px; }
+  .kpi .value { font-size: 26px; font-weight: 700; color: #11a56f; margin-top: 4px; }
+  .kpi .detail { font-size: 11px; color: #999; margin-top: 3px; }
+  .kpi.warn .value { color: #e07b39; }
+  .kpi.crit .value { color: #d94f3d; }
+
+  .alert-box {
+    background: #fff3cd; border-left: 4px solid #e07b39;
+    margin: 18px 36px 4px; padding: 12px 16px; border-radius: 4px;
+    font-size: 13px; color: #5a3e1b;
+  }
+  .alert-box.critical { background: #fdecea; border-color: #d94f3d; color: #6b1a1a; }
+
+  .section { padding: 18px 36px 0; }
+  .section-title {
+    font-size: 14px; font-weight: 700; color: #333; text-transform: uppercase;
+    letter-spacing: 0.5px; border-bottom: 2px solid #11a56f; padding-bottom: 6px;
+    margin-bottom: 16px;
+  }
+
+  .chart-grid { display: grid; gap: 18px; }
+  .chart-grid.cols-2 { grid-template-columns: 1fr 1fr; }
+  .chart-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+
+  .chart-card {
+    background: #fff; border: 1px solid #e0e0e0; border-radius: 10px;
+    padding: 16px 18px; box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+  }
+  .chart-card .chart-title {
+    font-size: 12.5px; font-weight: 700; color: #333; margin-bottom: 4px;
+  }
+  .chart-card .chart-sub {
+    font-size: 11px; color: #888; margin-bottom: 12px;
+  }
+
+  .findings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 16px 36px; }
+  .finding {
+    background: #fff; border: 1px solid #e0e0e0; border-radius: 8px;
+    padding: 16px 18px;
+  }
+  .finding .num { font-size: 28px; font-weight: 800; color: #11a56f; }
+  .finding .num.warn { color: #e07b39; }
+  .finding .num.crit { color: #d94f3d; }
+  .finding .title { font-size: 13px; font-weight: 700; margin: 4px 0 6px; }
+  .finding .body { font-size: 12px; color: #555; line-height: 1.5; }
+
+  .recs { margin: 16px 36px 30px; }
+  .rec-table { width: 100%; border-collapse: collapse; background: #fff;
+               border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden; }
+  .rec-table th { background: #11a56f; color: white; padding: 10px 14px;
+                  font-size: 12px; text-align: left; font-weight: 600; }
+  .rec-table td { padding: 10px 14px; font-size: 12px; border-bottom: 1px solid #f0f0f0; }
+  .rec-table tr:last-child td { border-bottom: none; }
+  .rec-table tr:hover td { background: #f5f5f5; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 12px;
+           font-size: 10.5px; font-weight: 600; }
+  .badge.crit { background: #fdecea; color: #d94f3d; }
+  .badge.warn { background: #fff3cd; color: #b06000; }
+  .badge.ok   { background: #eafaf1; color: #11a56f; }
+
+  footer { text-align: center; padding: 20px; font-size: 11px; color: #aaa; border-top: 1px solid #e5e5e5; margin-top: 20px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>UAE PASS Digital Documents — Loader Telemetry Dashboard</h1>
+  <div class="sub">Infinite Loaders Detection Initiative (S70 / 2026 Roadmap) — Operational Baseline</div>
+  <div class="meta">Data: 22 Apr – 4 Jun 2026 (44 days) &nbsp;|&nbsp; 28.1M loader events &nbsp;|&nbsp; 14 loader cases &nbsp;|&nbsp; All times UTC+4 (UAE)</div>
+</div>
+
+<!-- KPI Strip -->
+<div class="kpi-strip">
+  <div class="kpi crit">
+    <div class="label">Infinite Loaders (&gt;10s)</div>
+    <div class="value">6.1%</div>
+    <div class="detail">1,714,663 of 28.1M events</div>
+  </div>
+  <div class="kpi crit">
+    <div class="label">Critical Screens (≥15%)</div>
+    <div class="value">4</div>
+    <div class="detail">EVIDENCE, SHARE, SELECTION lists</div>
+  </div>
+  <div class="kpi warn">
+    <div class="label">Warning Screens (7–14%)</div>
+    <div class="value">4</div>
+    <div class="detail">DETAILS, ACTION NOTIF, DOWNLOAD</div>
+  </div>
+  <div class="kpi warn">
+    <div class="label">ACTIONABLE NOTIF trend</div>
+    <div class="value">+21pp</div>
+    <div class="detail">8% → 29% in 5 weeks — ACTIVE INCIDENT</div>
+  </div>
+  <div class="kpi crit">
+    <div class="label">Android Evidence gap</div>
+    <div class="value">+14pp</div>
+    <div class="detail">Android 25.6% vs iOS 11.6%</div>
+  </div>
+  <div class="kpi">
+    <div class="label">Healthy Screens</div>
+    <div class="value">6</div>
+    <div class="detail">QR, docs list, notif list, issuers</div>
+  </div>
+</div>
+
+<!-- Active Incident Alert -->
+<div class="alert-box critical">
+  <strong>ACTIVE INCIDENT — ACTIONABLE_NOTIFICATION_DETAILS:</strong> Infinite-loader rate escalated from 8% on 9 May to 29% on 1–2 Jun 2026 (+21pp in 23 days).
+  This loader fires when a user taps a sharing-request push notification — i.e. it sits on the critical path of the document-sharing conversion funnel.
+  Rate dropped to ~6% on 3–4 Jun; cause of both the spike and the sudden drop requires immediate investigation.
+</div>
+<div class="alert-box" style="margin-top: 8px;">
+  <strong>NOTE — OldApp / Java entries:</strong> ACTIONABLE_NOTIFICATION_DETAILS has 1.13M events from a Java/backend agent ("OldApp") with 0% slow rate — these are <em>not</em> user-facing and inflate the denominator.
+  All platform breakdowns isolate iOS and Android.
+</div>
+
+<!-- Section 1: Overview -->
+<div class="section" style="margin-top: 18px;">
+  <div class="section-title">1. Infinite Loader Hotspot Ranking</div>
+  <div class="chart-grid" style="grid-template-columns: 3fr 2fr;">
+    <div class="chart-card">
+      <div class="chart-title">% of events taking &gt;10 seconds — ranked by infinite-loader rate</div>
+      <div class="chart-sub">Bars coloured by severity threshold. Volume annotation shows total events for each loader case.</div>
+      <div id="chart-ranked-bar" style="height:440px;"></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Volume vs Severity — Impact Map</div>
+      <div class="chart-sub">Bubble size = absolute count of &gt;10s events. Upper-right = highest business impact.</div>
+      <div id="chart-bubble" style="height:440px;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Section 2: Duration Distributions -->
+<div class="section" style="margin-top: 18px;">
+  <div class="section-title">2. Latency Distribution — Top Loader Cases by Volume</div>
+  <div class="chart-grid cols-2">
+    <div class="chart-card">
+      <div class="chart-title">ISSUED_DOCUMENT_EVIDENCE — Latency Profile</div>
+      <div class="chart-sub">20.4% of events &gt;10s. Bimodal: instant (=0ms) + slow tail. eSeal / cryptographic fetch path.</div>
+      <div id="chart-dist-evidence" style="height:280px;"></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">ISSUED_DOCUMENT_DETAILS — Latency Profile</div>
+      <div class="chart-sub">12.5% of events &gt;10s. Document detail screen; heaviest bucket is 501–1000ms but large 10k+ tail.</div>
+      <div id="chart-dist-details" style="height:280px;"></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">ACTIONABLE_NOTIFICATION_DETAILS — Latency Profile</div>
+      <div class="chart-sub">13.7% overall (rising to 29% by Jun 2026). 43% = 0ms — suggests cached/backend hits; mobile tail is severe.</div>
+      <div id="chart-dist-actionable" style="height:280px;"></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">DOCUMENTS_LIST — Latency Profile</div>
+      <div class="chart-sub">Only 2.7% &gt;10s but highest volume (8.8M events) — 243K absolute infinite loaders on the home screen.</div>
+      <div id="chart-dist-doclist" style="height:280px;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Section 3: Time Series -->
+<div class="section" style="margin-top: 18px;">
+  <div class="section-title">3. Trend Over Time — Daily Infinite-Loader Rate</div>
+  <div class="chart-grid" style="grid-template-columns: 1fr;">
+    <div class="chart-card">
+      <div class="chart-title">Daily % of events &gt;10s for top 5 offending screens (22 Apr – 4 Jun 2026)</div>
+      <div class="chart-sub">ACTIONABLE_NOTIFICATION_DETAILS shows a steep upward trend from ~8% to 29% — active incident. ISSUED_DOCUMENT_EVIDENCE is persistently elevated at 17–25%.</div>
+      <div id="chart-timeseries" style="height:400px;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Section 4: Platform breakdown -->
+<div class="section" style="margin-top: 18px;">
+  <div class="section-title">4. iOS vs Android Platform Gap</div>
+  <div class="chart-grid cols-2">
+    <div class="chart-card">
+      <div class="chart-title">Android minus iOS infinite-loader rate (percentage points)</div>
+      <div class="chart-sub">Positive = Android worse. ISSUED_DOCUMENT_EVIDENCE has the largest gap at +14pp. Explains part of the known 10pp iOS-vs-Android conversion gap.</div>
+      <div id="chart-platform-delta" style="height:380px;"></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Heatmap: Loader Case × Platform (% &gt;10s)</div>
+      <div class="chart-sub">Red = high infinite-loader rate. Android evidence load is worst at 25.6%.</div>
+      <div id="chart-heatmap-device" style="height:380px;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Section 5: Version trend -->
+<div class="section" style="margin-top: 18px;">
+  <div class="section-title">5. App Version Progression — Is Performance Improving?</div>
+  <div class="chart-grid" style="grid-template-columns: 1fr;">
+    <div class="chart-card">
+      <div class="chart-title">Infinite-loader rate by version (v6.5.0 → v6.7.0) — selected screens</div>
+      <div class="chart-sub">ISSUED_DOCUMENT_DETAILS improved from 25% (v6.5.1) to 10% (v6.7.0) — positive signal. ISSUED_DOCUMENT_EVIDENCE shows no improvement: 17% (v6.5.0) → 20% (v6.7.0). SHARE_DOCUMENT and QR_VERIFICATION only appear in v6.7.0 (no historical trend available — instrument in earlier versions).</div>
+      <div id="chart-version-trend" style="height:380px;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Key Findings -->
+<div class="section" style="margin-top: 22px;">
+  <div class="section-title">6. Key Findings</div>
+</div>
+<div class="findings-grid">
+  <div class="finding">
+    <div class="num crit">29%</div>
+    <div class="title">ACTIVE INCIDENT: Sharing notification loader spiked to 29%</div>
+    <div class="body">ACTIONABLE_NOTIFICATION_DETAILS (the loader that fires when users tap a sharing-request push notification) rose from 8% on 9 May to 29% on 1–2 Jun 2026. This sits directly on the sharing-request critical path. A total of 415K infinite-loader events in the capture window. Dropped to 6% on 3–4 Jun — cause unknown, requires root-cause analysis immediately.</div>
+  </div>
+  <div class="finding">
+    <div class="num crit">20%</div>
+    <div class="title">eSeal / Evidence fetch is the most severe persistent loader</div>
+    <div class="body">ISSUED_DOCUMENT_EVIDENCE averages 20.4% infinite-loader rate across the full 44-day period (477K events &gt;10s). This loader fires on every document opened by a user. Android is 25.6% vs iOS 11.6% — a 14pp platform gap. No clear improvement trend across versions v6.5–v6.7.</div>
+  </div>
+  <div class="finding">
+    <div class="num warn">12.5%</div>
+    <div class="title">Document detail screen: 392K infinite-loader events</div>
+    <div class="body">ISSUED_DOCUMENT_DETAILS (the main doc viewer screen) has 12.5% infinite loaders — 392K events in period. Notably improved from 25% in v6.5.1 to 10% in v6.7.0 (a positive signal from recent releases). Still 3.1M total events make this the second-largest absolute slow-loader source.</div>
+  </div>
+  <div class="finding">
+    <div class="num crit">34%</div>
+    <div class="title">Document selection (sharing flow) has highest rate — small volume</div>
+    <div class="body">DOCUMENT_SELECTION_UPLOADED_LIST hits 34% infinite loaders; DOCUMENT_SELECTION_ISSUED_LIST hits 26%. These fire during the sharing consent flow when users select documents. Low absolute volume (335 and 4,781 events) but the severity is a signal of structural latency in the sharing pipeline.</div>
+  </div>
+  <div class="finding">
+    <div class="num warn">15.8%</div>
+    <div class="title">SHARE_DOCUMENT loader: consent-to-delivery POST is slow</div>
+    <div class="body">SHARE_DOCUMENT (the verifiable-presentation delivery call) is 15.8% infinite loaders — 3,131 out of 19,871 sharing attempts hit a &gt;10s wait. This is a direct contributor to sharing-request conversion failure (complements the known 300-series consent drop-off). iOS and Android are near-parity here (~16%).</div>
+  </div>
+  <div class="finding">
+    <div class="num">6.1%</div>
+    <div class="title">System-wide: 1.71M infinite-loader events in 44 days</div>
+    <div class="body">Of 28.1M loader events, 6.1% took longer than 10 seconds. The additional 5–10s band (SLOW but not infinite) adds another ~5% in some screens. The combined 5–10s + 10s+ bucket on ISSUED_DOCUMENT_EVIDENCE is 37%, meaning over one-third of evidence loads are measurably degraded user experiences.</div>
+  </div>
+</div>
+
+<!-- Recommendations -->
+<div class="section" style="margin-top: 22px;">
+  <div class="section-title">7. Recommendations (Infinite Loaders Detection Initiative)</div>
+</div>
+<div class="recs">
+  <table class="rec-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Recommendation</th>
+        <th>Target Screen</th>
+        <th>Severity</th>
+        <th>Owner</th>
+        <th>Rationale</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>R1</strong></td>
+        <td>Immediate root-cause investigation of ACTIONABLE_NOTIFICATION_DETAILS spike (8% → 29%)</td>
+        <td>Sharing notification tap</td>
+        <td><span class="badge crit">CRITICAL</span></td>
+        <td>Eng / Backend</td>
+        <td>Active incident — this is the entry point for users responding to sharing requests. 415K users hit infinite loaders. The sudden drop on 3 Jun also needs explaining (rollback? upstream change?).</td>
+      </tr>
+      <tr>
+        <td><strong>R2</strong></td>
+        <td>Optimise eSeal / evidence fetch (ISSUED_DOCUMENT_EVIDENCE) — add caching layer or async loading</td>
+        <td>Document detail / evidence panel</td>
+        <td><span class="badge crit">CRITICAL</span></td>
+        <td>Eng / ICP / Issuer</td>
+        <td>Persistent 20.4% rate, 477K infinite-loader events. Android is 2.2x worse than iOS — investigate Android-specific HTTP client or connection-pool issue. Given the known 26% issuer-side failure rate from prior analysis, retry logic may resolve a portion.</td>
+      </tr>
+      <tr>
+        <td><strong>R3</strong></td>
+        <td>Set instrumentation alerting thresholds at 7% (warning) and 15% (critical) per loader case</td>
+        <td>All</td>
+        <td><span class="badge warn">GOVERNANCE</span></td>
+        <td>Eng / PM</td>
+        <td>This dataset establishes the baseline. The S70 Infinite Loaders Detection initiative needs actionable thresholds. Thresholds above are data-derived (natural break between OK / Warning / Critical cohorts).</td>
+      </tr>
+      <tr>
+        <td><strong>R4</strong></td>
+        <td>Add timeout UI (spinner → error state + retry CTA) for all loaders &gt;8s</td>
+        <td>EVIDENCE, DETAILS, SHARE_DOCUMENT</td>
+        <td><span class="badge warn">WARNING</span></td>
+        <td>DDA / FE Eng</td>
+        <td>Currently users see an infinite spinner with no feedback. An 8s timeout converts an abandoned session into a recoverable retry. Prioritise screens with &gt;10% rates first.</td>
+      </tr>
+      <tr>
+        <td><strong>R5</strong></td>
+        <td>Android-specific optimisation sprint for ISSUED_DOCUMENT_EVIDENCE and ISSUED_DOCUMENT_DETAILS</td>
+        <td>Evidence/detail screens</td>
+        <td><span class="badge warn">WARNING</span></td>
+        <td>Android Eng</td>
+        <td>Evidence: +14pp Android vs iOS gap; Details: +6pp gap. Cross-references the known 10pp iOS/Android sharing-conversion gap. Loader latency is likely a material driver of that gap.</td>
+      </tr>
+      <tr>
+        <td><strong>R6</strong></td>
+        <td>Profile and optimise SHARE_DOCUMENT POST endpoint — target sub-3s p95</td>
+        <td>Sharing consent → delivery</td>
+        <td><span class="badge warn">WARNING</span></td>
+        <td>Backend / SP Eng</td>
+        <td>15.8% of sharing attempts take &gt;10s on the final delivery call. This is directly visible to the user as a hanging consent screen after they have already approved. Immediate conversion impact.</td>
+      </tr>
+      <tr>
+        <td><strong>R7</strong></td>
+        <td>Monitor DOCUMENTS_LIST despite low rate — 243K absolute infinite loaders on home screen</td>
+        <td>Document vault home</td>
+        <td><span class="badge ok">MONITOR</span></td>
+        <td>PM / Eng</td>
+        <td>2.7% rate is low, but 8.8M events means 243K home-screen slow loads. This is often the first thing a user sees — even a low rate has outsized perception impact.</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<script>
+// ── Data ──────────────────────────────────────────────────────────────────────
+const CASES = [
+  'DOCUMENT_SELECTION_UPLOADED_LIST','DOCUMENT_SELECTION_ISSUED_LIST',
+  'ISSUED_DOCUMENT_EVIDENCE','SHARE_DOCUMENT','DOWNLOAD_SELF_SIGN_DOCUMENT',
+  'ACTIONABLE_NOTIFICATION_DETAILS','ISSUED_DOCUMENT_DETAILS','DOWNLOAD_DOCUMENT',
+  'QR_VERIFICATION','UPLOADED_DOCUMENT_EVIDENCE','ISSUERS_LIST',
+  'DOCUMENTS_LIST','NOTIFICATIONS_LIST','NON_ACTIONABLE_NOTIFICATION_DETAILS'
+];
+const SLOW_PCT = [34.0, 26.4, 20.4, 15.8, 14.0, 13.7, 12.5, 10.6, 6.8, 4.4, 3.7, 2.7, 1.3, 0.4];
+const VOLUMES = [335, 4781, 2338487, 19871, 9980, 3034219, 3148702, 23294, 277315, 50884, 2230746, 8842575, 4920192, 3237972];
+const SLOW_ABS = [114, 1264, 477142, 3131, 1402, 415378, 392352, 2469, 18901, 2239, 81801, 243152, 62698, 12620];
+
+function getSeverityColor(pct) {
+  if (pct >= 15) return '#d94f3d';
+  if (pct >= 7)  return '#e07b39';
+  return '#11a56f';
+}
+
+// ── Chart 1: Ranked Bar ───────────────────────────────────────────────────────
+const barColors = SLOW_PCT.map(getSeverityColor);
+Plotly.newPlot('chart-ranked-bar', [{
+  type: 'bar', orientation: 'h',
+  y: [...CASES].reverse(),
+  x: [...SLOW_PCT].reverse(),
+  marker: { color: [...barColors].reverse() },
+  text: SLOW_PCT.map((p, i) => `${p.toFixed(1)}%  (${(VOLUMES[i]/1e6).toFixed(1)}M events)`).reverse(),
+  textposition: 'outside',
+  hovertemplate: '<b>%{y}</b><br>Slow rate: %{x:.1f}%<extra></extra>',
+}], {
+  margin: { l: 260, r: 140, t: 10, b: 40 },
+  xaxis: { title: '% of events >10s', range: [0, 43] },
+  yaxis: { tickfont: { size: 11 } },
+  shapes: [{ type: 'line', x0: 15, x1: 15, y0: -0.5, y1: CASES.length - 0.5,
+             line: { color: '#d94f3d', dash: 'dash', width: 1.5 } },
+           { type: 'line', x0: 7, x1: 7, y0: -0.5, y1: CASES.length - 0.5,
+             line: { color: '#e07b39', dash: 'dot', width: 1.5 } }],
+  paper_bgcolor: 'transparent', plot_bgcolor: 'transparent',
+}, { responsive: true, displayModeBar: false });
+
+// ── Chart 2: Bubble / Impact Map ─────────────────────────────────────────────
+Plotly.newPlot('chart-bubble', [{
+  type: 'scatter', mode: 'markers+text',
+  x: VOLUMES.map(v => v/1e6),
+  y: SLOW_PCT,
+  marker: {
+    size: SLOW_ABS.map(v => Math.sqrt(v)/10),
+    color: SLOW_PCT.map(getSeverityColor),
+    opacity: 0.75, line: { color: 'white', width: 1 }
+  },
+  text: CASES.map(c => c.replace(/_/g, '<br>')),
+  textposition: 'top center',
+  textfont: { size: 9 },
+  hovertemplate: '<b>%{text}</b><br>Volume: %{x:.1f}M<br>Slow rate: %{y:.1f}%<extra></extra>',
+}], {
+  margin: { l: 50, r: 20, t: 10, b: 50 },
+  xaxis: { title: 'Total events (millions)', type: 'log' },
+  yaxis: { title: '% of events >10s' },
+  shapes: [{ type: 'line', x0: 0, x1: 10, y0: 15, y1: 15,
+             line: { color: '#d94f3d', dash: 'dash', width: 1 } },
+           { type: 'line', x0: 0, x1: 10, y0: 7, y1: 7,
+             line: { color: '#e07b39', dash: 'dot', width: 1 } }],
+  paper_bgcolor: 'transparent', plot_bgcolor: 'transparent',
+}, { responsive: true, displayModeBar: false });
+
+// ── Duration distribution data ────────────────────────────────────────────────
+const DUR_LABELS = ['<0ms','=0ms','1-50ms','51-100ms','101-500ms','501-1000ms','1001-5000ms','5001-10000ms','10000+ms'];
+const DUR_COLORS = ['#aaa','#ddd','#3fcaa7','#3fcaa7','#11a56f','#a89030','#e07b39','#c06030','#d94f3d'];
+
+function makeDurChart(divId, pcts) {
+  Plotly.newPlot(divId, [{
+    type: 'bar', x: DUR_LABELS, y: pcts,
+    marker: { color: DUR_COLORS },
+    hovertemplate: '<b>%{x}</b>: %{y:.1f}%<extra></extra>',
+    text: pcts.map(p => p > 5 ? p.toFixed(1)+'%' : ''),
+    textposition: 'outside', textfont: { size: 10 },
+  }], {
+    margin: { l: 40, r: 10, t: 10, b: 70 },
+    yaxis: { title: '% of events' },
+    xaxis: { tickangle: -35, tickfont: { size: 9.5 } },
+    paper_bgcolor: 'transparent', plot_bgcolor: 'transparent',
+  }, { responsive: true, displayModeBar: false });
+}
+
+// Pre-computed from raw data
+makeDurChart('chart-dist-evidence',  [0.0, 20.2, 0.0, 0.0, 0.3, 3.1, 39.4, 16.6, 20.4]);
+makeDurChart('chart-dist-details',   [0.0, 18.6, 0.0, 0.0, 4.2, 36.8, 24.8, 3.1, 12.5]);
+makeDurChart('chart-dist-actionable',[0.1, 43.3, 0.0, 0.0, 0.0, 1.0, 21.7, 20.1, 13.7]);
+makeDurChart('chart-dist-doclist',   [0.1, 18.4, 0.0, 0.0, 0.0, 16.4, 58.1, 4.2, 2.7]);
+
+// ── Time Series ───────────────────────────────────────────────────────────────
+const DATES = [
+  '2026-04-22','2026-04-23','2026-04-24','2026-04-25','2026-04-26','2026-04-27','2026-04-28','2026-04-29','2026-04-30',
+  '2026-05-01','2026-05-02','2026-05-03','2026-05-04','2026-05-05','2026-05-06','2026-05-07','2026-05-08','2026-05-09',
+  '2026-05-10','2026-05-11','2026-05-12','2026-05-13','2026-05-14','2026-05-15','2026-05-16','2026-05-17','2026-05-18',
+  '2026-05-19','2026-05-20','2026-05-21','2026-05-22','2026-05-23','2026-05-24','2026-05-25','2026-05-26','2026-05-27',
+  '2026-05-28','2026-05-29','2026-05-30','2026-05-31','2026-06-01','2026-06-02','2026-06-03','2026-06-04'
+];
+
+const EVIDENCE_DAILY = [null,null,null,null,null,null,null,null,22.8,19.3,17.8,17.5,18.3,18.0,18.5,18.3,19.1,19.5,19.8,19.3,19.1,18.9,19.4,19.7,19.4,19.2,24.3,21.4,20.2,21.9,18.3,17.9,18.3,17.6,17.9,18.5,18.3,18.4,17.8,19.2,20.1,20.8,17.5,18.3];
+const ACTIONABLE_DAILY = [null,null,null,null,null,null,null,0.0,16.8,16.3,12.6,10.7,12.7,14.4,14.2,15.5,16.2,7.6,8.2,8.3,7.7,8.4,9.3,8.8,9.2,8.0,11.2,9.7,11.7,11.5,14.7,15.2,15.3,18.1,15.9,16.6,17.7,19.9,21.8,22.7,28.7,28.3,5.4,6.2];
+const DETAILS_DAILY = [null,null,null,null,null,null,null,null,14.3,15.4,12.4,12.5,12.9,14.3,14.1,13.5,14.2,10.1,10.9,10.1,9.7,10.2,11.3,10.1,10.2,10.1,9.7,10.2,10.2,10.1,9.7,9.4,9.8,9.9,9.1,9.2,9.2,8.8,9.3,9.7,10.0,10.3,7.3,6.5];
+const SHARE_DAILY = [null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,14.2,15.5,14.7,15.2,16.5,16.7,17.1,15.8,16.3,14.5,15.0,17.2,18.1,17.6,16.8,15.9,16.1,15.7,14.8,15.2];
+const DOCSEL_DAILY = [null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,23.1,25.0,22.4,26.5,28.1,26.3,25.7,24.8,27.2,29.5,26.8,25.4,24.9,26.1,27.3,25.8,26.4,25.9,24.7,25.3];
+
+Plotly.newPlot('chart-timeseries', [
+  { x: DATES, y: ACTIONABLE_DAILY, name: 'ACTIONABLE_NOTIFICATION_DETAILS', mode: 'lines',
+    line: { color: '#d94f3d', width: 2.5 } },
+  { x: DATES, y: EVIDENCE_DAILY, name: 'ISSUED_DOCUMENT_EVIDENCE', mode: 'lines',
+    line: { color: '#e07b39', width: 2 } },
+  { x: DATES, y: DETAILS_DAILY, name: 'ISSUED_DOCUMENT_DETAILS', mode: 'lines',
+    line: { color: '#a89030', width: 2 } },
+  { x: DATES, y: SHARE_DAILY, name: 'SHARE_DOCUMENT', mode: 'lines',
+    line: { color: '#3a7abf', width: 2, dash: 'dot' } },
+  { x: DATES, y: DOCSEL_DAILY, name: 'DOCUMENT_SELECTION_ISSUED_LIST', mode: 'lines',
+    line: { color: '#9b59b6', width: 1.5, dash: 'dash' } },
+  { x: ['2026-04-22','2026-06-04'], y: [15,15], name: 'Critical threshold (15%)', mode: 'lines',
+    line: { color: '#d94f3d', dash: 'dashdot', width: 1 } },
+  { x: ['2026-04-22','2026-06-04'], y: [7,7], name: 'Warning threshold (7%)', mode: 'lines',
+    line: { color: '#e07b39', dash: 'dot', width: 1 } },
+], {
+  margin: { l: 55, r: 20, t: 10, b: 50 },
+  yaxis: { title: '% of events >10s', ticksuffix: '%' },
+  xaxis: { title: 'Date (UTC+4)' },
+  legend: { orientation: 'h', y: -0.15 },
+  hovermode: 'x unified',
+  paper_bgcolor: 'transparent', plot_bgcolor: 'transparent',
+}, { responsive: true, displayModeBar: false });
+
+// ── Platform delta bar ────────────────────────────────────────────────────────
+const PLAT_CASES = [
+  'ISSUED_DOCUMENT_EVIDENCE','DOCUMENT_SELECTION_UPLOADED_LIST','DOCUMENT_SELECTION_ISSUED_LIST',
+  'ISSUERS_LIST','ISSUED_DOCUMENT_DETAILS','DOWNLOAD_SELF_SIGN_DOCUMENT',
+  'DOCUMENTS_LIST','QR_VERIFICATION','NOTIFICATIONS_LIST',
+  'SHARE_DOCUMENT','ACTIONABLE_NOTIFICATION_DETAILS',
+  'DOWNLOAD_DOCUMENT','UPLOADED_DOCUMENT_EVIDENCE','NON_ACTIONABLE_NOTIFICATION_DETAILS'
+];
+const PLAT_IOS =     [11.6, 28.6, 24.8, 0.9,  9.6, 12.4, 1.3, 6.5,  0.7, 16.2, 21.9, 11.9,  4.9, 0.4];
+const PLAT_AND =     [25.6, 39.5, 29.4, 5.2, 15.6, 16.0, 3.6, 7.3,  1.7, 15.5, 21.7, 10.0,  3.9, 0.4];
+const PLAT_DELTA =   PLAT_AND.map((a, i) => a - PLAT_IOS[i]);
+
+const deltaColors = PLAT_DELTA.map(d => d > 5 ? '#d94f3d' : d > 0 ? '#e07b39' : '#11a56f');
+
+Plotly.newPlot('chart-platform-delta', [{
+  type: 'bar', orientation: 'h',
+  y: [...PLAT_CASES].reverse(),
+  x: [...PLAT_DELTA].reverse(),
+  marker: { color: [...deltaColors].reverse() },
+  text: PLAT_DELTA.map(d => (d >= 0 ? '+' : '') + d.toFixed(1) + 'pp').reverse(),
+  textposition: 'outside',
+  hovertemplate: '<b>%{y}</b><br>Delta: %{x:+.1f}pp<extra></extra>',
+}], {
+  margin: { l: 260, r: 80, t: 10, b: 50 },
+  xaxis: { title: 'Android minus iOS (pp). Positive = Android worse.' },
+  shapes: [{ type: 'line', x0: 0, x1: 0, y0: -0.5, y1: PLAT_CASES.length - 0.5,
+             line: { color: '#333', width: 1.5 } }],
+  paper_bgcolor: 'transparent', plot_bgcolor: 'transparent',
+}, { responsive: true, displayModeBar: false });
+
+// ── Heatmap: loader x device ──────────────────────────────────────────────────
+const HM_CASES = PLAT_CASES.slice().reverse();
+Plotly.newPlot('chart-heatmap-device', [{
+  type: 'heatmap',
+  z: [PLAT_IOS.slice().reverse(), PLAT_AND.slice().reverse()],
+  x: HM_CASES,
+  y: ['iOS', 'Android'],
+  colorscale: [[0,'#eafaf1'],[0.2,'#a89030'],[0.5,'#e07b39'],[1,'#d94f3d']],
+  showscale: true,
+  text: [PLAT_IOS.slice().reverse().map(v => v.toFixed(1)+'%'),
+         PLAT_AND.slice().reverse().map(v => v.toFixed(1)+'%')],
+  texttemplate: '%{text}', textfont: { size: 9 },
+  hovertemplate: '<b>%{x}</b><br>%{y}: %{z:.1f}%<extra></extra>',
+}], {
+  margin: { l: 70, r: 20, t: 10, b: 130 },
+  xaxis: { tickangle: -40, tickfont: { size: 9.5 } },
+  colorbar: { title: '% >10s', ticksuffix: '%' },
+  paper_bgcolor: 'transparent', plot_bgcolor: 'transparent',
+}, { responsive: true, displayModeBar: false });
+
+// ── Version trend ─────────────────────────────────────────────────────────────
+// SHARE_DOCUMENT and QR_VERIFICATION only have data for v6.7.0 (single-point, no trend line)
+// ISSUED_DOCUMENT_EVIDENCE and ISSUED_DOCUMENT_DETAILS have full v6.5.0–v6.7.0 history
+const VERSIONS = ['6.5.0','6.5.1','6.6.0','6.6.1','6.6.2','6.7.0'];
+const VER_EVIDENCE = [16.9, 32.9, 26.6, 12.3, 21.5, 19.7];
+const VER_DETAILS  = [16.8, 25.1, 21.9, 14.6, 19.6,  9.6];
+// Single-version data points (v6.7.0 only)
+const VER_SHARE_X  = ['6.7.0']; const VER_SHARE_Y = [15.9];
+const VER_QR_X     = ['6.7.0']; const VER_QR_Y    = [7.0];
+
+Plotly.newPlot('chart-version-trend', [
+  { x: VERSIONS, y: VER_EVIDENCE, name: 'ISSUED_DOCUMENT_EVIDENCE (trend)', mode: 'lines+markers',
+    line: { color: '#d94f3d', width: 2 }, marker: { size: 7 } },
+  { x: VERSIONS, y: VER_DETAILS, name: 'ISSUED_DOCUMENT_DETAILS (trend)', mode: 'lines+markers',
+    line: { color: '#e07b39', width: 2 }, marker: { size: 7 } },
+  { x: VER_SHARE_X, y: VER_SHARE_Y, name: 'SHARE_DOCUMENT (v6.7.0 only)', mode: 'markers',
+    marker: { color: '#3a7abf', size: 12, symbol: 'diamond' } },
+  { x: VER_QR_X, y: VER_QR_Y, name: 'QR_VERIFICATION (v6.7.0 only)', mode: 'markers',
+    marker: { color: '#11a56f', size: 12, symbol: 'square' } },
+  { x: VERSIONS, y: [15,15,15,15,15,15], name: 'Critical threshold (15%)', mode: 'lines',
+    line: { color: '#d94f3d', dash: 'dash', width: 1 } },
+  { x: VERSIONS, y: [7,7,7,7,7,7], name: 'Warning threshold (7%)', mode: 'lines',
+    line: { color: '#e07b39', dash: 'dot', width: 1 } },
+], {
+  margin: { l: 55, r: 20, t: 10, b: 70 },
+  yaxis: { title: '% of events >10s', ticksuffix: '%' },
+  xaxis: { title: 'App Version' },
+  legend: { orientation: 'h', y: -0.22 },
+  hovermode: 'x unified',
+  paper_bgcolor: 'transparent', plot_bgcolor: 'transparent',
+  annotations: [{
+    x: '6.7.0', y: 19.7, text: 'v6.7.0: Evidence stuck at 19.7%', showarrow: true,
+    arrowhead: 2, ax: 60, ay: -30, font: { size: 10, color: '#d94f3d' }
+  }, {
+    x: '6.7.0', y: 9.6, text: 'v6.7.0: Details improved to 9.6%', showarrow: true,
+    arrowhead: 2, ax: 60, ay: 25, font: { size: 10, color: '#11a56f' }
+  }]
+}, { responsive: true, displayModeBar: false });
+</script>
+
+<footer>
+  UAE PASS Digital Documents — Loader Telemetry Analysis &nbsp;|&nbsp; Data: 22 Apr – 4 Jun 2026 &nbsp;|&nbsp; 28.1M loader events across 14 screens &nbsp;|&nbsp; Infinite Loaders Detection Initiative (S70)
+</footer>
+</body>
+</html>
